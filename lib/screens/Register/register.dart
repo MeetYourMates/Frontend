@@ -9,7 +9,7 @@ import 'package:meet_your_mates/api/services/user_service.dart';
 //Constants
 import '../../constants.dart';
 //Screens
-import 'package:meet_your_mates/screens/Login/background.dart';
+import 'package:meet_your_mates/screens/Register/background.dart';
 //import 'package:meet_your_mates/api/util/shared_preference.dart';
 import 'package:meet_your_mates/api/util/validators.dart';
 //Models
