@@ -5,7 +5,6 @@ class User {
   String phone;
   String type;
   String token;
-  String renewalToken;
 
   User({this.userId, this.name, this.email, this.phone, this.type, this.token});
 
