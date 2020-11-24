@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/models/user.dart';
 import 'package:meet_your_mates/api/util/app_url.dart';
 import 'package:meet_your_mates/api/util/shared_preference.dart';
@@ -23,36 +24,34 @@ class AuthProvider with ChangeNotifier {
 
   Status get loggedInStatus => _loggedInStatus;
   Status get registeredInStatus => _registeredInStatus;
-
+  //Login Service without proper error handling TODO: FUTURE REPAIR
   Future<Map<String, dynamic>> login(String email, String password) async {
     var result;
 
-    final Map<String, dynamic> loginData = {
-      'user': {'email': email, 'password': password}
-    };
+    User userTmp = new User();
+    userTmp.email = email;
+    userTmp.password = password;
 
     _loggedInStatus = Status.Authenticating;
     notifyListeners();
 
     Response response = await post(
       AppUrl.login,
-      body: json.encode(loginData),
+      body: json.encode(userTmp.toJson()),
       headers: {'Content-Type': 'application/json'},
     );
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> responseData = json.decode(response.body);
-
-      var userData = responseData['data'];
-
-      User authUser = User.fromJson(userData);
-
-      UserPreferences().saveUser(authUser);
+      print(response.body);
+      Map responseData = jsonDecode(response.body);
+      Student authUser = Student.fromJson(responseData);
+      print(authUser);
+      UserPreferences().saveUser(authUser.user);
 
       _loggedInStatus = Status.LoggedIn;
       notifyListeners();
 
-      result = {'status': true, 'message': 'Successful', 'user': authUser};
+      result = {'status': true, 'message': 'Successful', 'student': authUser};
     } else {
       _loggedInStatus = Status.NotLoggedIn;
       notifyListeners();
@@ -66,19 +65,19 @@ class AuthProvider with ChangeNotifier {
 
   Future<Map<String, dynamic>> register(
       String email, String password, String passwordConfirmation) async {
-    final Map<String, dynamic> registrationData = {
-      'user': {
-        'email': email,
-        'password': password,
-        'password_confirmation': passwordConfirmation
-      }
-    };
+    User userTmp = new User();
+    if (password == passwordConfirmation) {
+      userTmp.email = email;
+      userTmp.password = password;
+    } else {
+      return {'status': false, 'message': 'Password not same', 'data': userTmp};
+    }
 
     _registeredInStatus = Status.Registering;
     notifyListeners();
 
     return await post(AppUrl.register,
-            body: json.encode(registrationData),
+            body: json.encode(userTmp.toJson()),
             headers: {'Content-Type': 'application/json'})
         .then(onValue)
         .catchError(onError);
@@ -86,12 +85,15 @@ class AuthProvider with ChangeNotifier {
 
   static Future<FutureOr> onValue(Response response) async {
     var result;
-    final Map<String, dynamic> responseData = json.decode(response.body);
+    final Map responseData = json.decode(response.body);
 
     if (response.statusCode == 200) {
-      var userData = responseData['data'];
+      print(response.body);
+      Map responseData = jsonDecode(response.body);
+      //Student authUser = Student.fromJson(responseData);
+      //print(authUser);
 
-      User authUser = User.fromJson(userData);
+      User authUser = User.fromJson(responseData);
 
       UserPreferences().saveUser(authUser);
       result = {

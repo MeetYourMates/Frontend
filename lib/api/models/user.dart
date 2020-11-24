@@ -1,20 +1,23 @@
 class User {
-  int userId;
-  String name;
+  String id;
   String email;
-  String phone;
-  String type;
+  String password;
   String token;
 
-  User({this.userId, this.name, this.email, this.phone, this.type, this.token});
-
+  User({this.id, this.email, this.password, this.token});
   factory User.fromJson(Map<String, dynamic> responseData) {
     return User(
-        userId: responseData['id'],
-        name: responseData['name'],
+        id: responseData['_id'],
         email: responseData['email'],
-        phone: responseData['phone'],
-        type: responseData['type'],
-        token: responseData['access_token']);
+        password: responseData['password'],
+        token: responseData['token']);
+  }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['_id'] = this.id;
+    data['email'] = this.email;
+    data['password'] = this.password;
+    data['token'] = this.token;
+    return data;
   }
 }

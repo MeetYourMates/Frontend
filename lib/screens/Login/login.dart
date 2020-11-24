@@ -1,3 +1,4 @@
+import 'package:meet_your_mates/api/models/student.dart';
 import 'package:provider/provider.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
@@ -68,8 +69,9 @@ class _LoginState extends State<Login> {
         //Callback to message recieved after login auth
         successfulMessage.then((response) {
           if (response['status']) {
-            User user = response['user'];
-            Provider.of<UserProvider>(context, listen: false).setUser(user);
+            Student student = response['student'];
+            Provider.of<UserProvider>(context, listen: false)
+                .setUser(student.user);
             Navigator.pushReplacementNamed(context, '/dashboard');
           } else {
             Flushbar(
