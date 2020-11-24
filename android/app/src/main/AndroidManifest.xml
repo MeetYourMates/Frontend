@@ -2,6 +2,7 @@
     package="com.example.meet_your_mates">
    <application
         android:label="meet_your_mates"
+        android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
