@@ -2,15 +2,16 @@
 
 A new Flutter project.
 
-## Getting Started
+## Getting Started (need to be on master to properly work on project)
+  1. flutter channel master (navigate to master branch)
 
-This project is a starting point for a Flutter application.
+  2. flutter upgrade
 
-A few resources to get you started if this is your first Flutter project:
+  3. flutter config --enable-web
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+  4. flutter devices
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Remember to clean and add the packages
+  1. flutter clean
+  2. flutter pub get
+
