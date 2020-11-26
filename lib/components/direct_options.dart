@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:direct_select/direct_select.dart';
 import 'my_selection_item.dart';
 
-int selectedIndex;
+int selectedIndex = 0;
 
 //Widget Implementation
 class DirectOptions extends StatefulWidget {
@@ -37,8 +37,7 @@ class _DirectOptionsState extends State<DirectOptions> {
               padding: const EdgeInsets.only(left: 10.0),
               child: Text(
                 widget.title,
-                style:
-                    TextStyle(color: Colors.grey, fontWeight: FontWeight.w500),
+                style: TextStyle(color: Colors.blue, fontSize: 20),
               ),
             ),
             DirectSelect(

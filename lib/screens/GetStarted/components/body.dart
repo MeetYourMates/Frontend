@@ -17,11 +17,24 @@ class _BodyState extends State<Body> {
   Widget build(BuildContext context) {
     var doStart = () {};
     Size size = MediaQuery.of(context).size;
-    final List<String> elementlist = [
+    List<String> universities = [
+      "Select your university",
       "UPC",
       "UB",
       "UAB",
       "UPF",
+    ];
+    List<String> campus = [
+      "Select your campus",
+      "EETAC",
+      "ESAB",
+      "ETSEIB",
+    ];
+    List<String> degrees = [
+      "Select your degree",
+      "Grau Enginyeria Telematica",
+      "Grau Enginyeria Telecomunicacions",
+      "Grau Enginyeria Aeroespacial",
     ];
     return SafeArea(
       child: Scaffold(
@@ -35,7 +48,9 @@ class _BodyState extends State<Body> {
                   "assets/images/getstarted.png",
                   width: size.width * 0.4,
                 ),
-                DirectOptions(title: "Universities", elements: elementlist),
+                DirectOptions(title: "University", elements: universities),
+                DirectOptions(title: "Campus", elements: campus),
+                DirectOptions(title: "Degree", elements: degrees),
                 SizedBox(height: size.height * 0.03),
                 RoundedButton(
                   text: "START",
