@@ -8,7 +8,9 @@ int selectedIndex = 0;
 class DirectOptions extends StatefulWidget {
   final List<String> elements;
   final String title;
-  const DirectOptions({Key key, this.title, this.elements}) : super(key: key);
+  final Function(String) onSelected;
+  const DirectOptions({Key key, this.title, this.elements, this.onSelected})
+      : super(key: key);
 
   @override
   _DirectOptionsState createState() => _DirectOptionsState();
@@ -50,6 +52,7 @@ class _DirectOptionsState extends State<DirectOptions> {
                 onSelectedItemChanged: (index) {
                   setState(() {
                     selectedIndex = index;
+                    widget.onSelected(widget.elements[index]);
                   });
                 },
                 mode: DirectSelectMode.tap,
