@@ -18,6 +18,7 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   final formKey = new GlobalKey<FormState>();
   String _university, _campus, _degree;
+  List<String> _subjects = [];
   @override
   Widget build(BuildContext context) {
     var doStart = () {
@@ -70,8 +71,9 @@ class _BodyState extends State<Body> {
                 SizedBox(height: size.height * 0.03),
                 Image.asset(
                   "assets/images/getstarted.png",
-                  width: size.width * 0.4,
+                  width: size.width * 0.6,
                 ),
+                SizedBox(height: size.height * 0.03),
                 DirectOptions(
                     title: "University",
                     elements: universities,
@@ -84,8 +86,8 @@ class _BodyState extends State<Body> {
                     title: "Degree",
                     elements: degrees,
                     onSelected: (value) => _degree = value),
-                MultipleOptions(title: "Subjects"),
                 SizedBox(height: size.height * 0.03),
+                MultipleOptions(title: "Subjects"),
                 RoundedButton(
                   text: "START",
                   press: doStart,

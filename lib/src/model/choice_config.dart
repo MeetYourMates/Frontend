@@ -8,12 +8,15 @@ enum S2ChoiceType {
   /// use radio widget
   /// for single choice
   radios,
+
   /// use checkbox widget
   /// for multiple choice
   checkboxes,
+
   /// use switch widget
   /// for multiple choice
   switches,
+
   /// use chip widget
   /// for single and multiple choice
   chips
@@ -23,8 +26,10 @@ enum S2ChoiceType {
 enum S2ChoiceLayout {
   /// use list view widget
   list,
+
   /// use wrap view widget
   wrap,
+
   /// use grid view widget
   grid
 }
@@ -35,7 +40,6 @@ typedef int S2SortComparator<E>(E a, E b);
 /// Comparator function to sort the choice group enhanced with predefined function
 @immutable
 class S2GroupSort with Diagnosticable {
-
   /// Comparator function to sort the group
   final S2SortComparator<S2ChoiceGroup> compare;
 
@@ -43,30 +47,33 @@ class S2GroupSort with Diagnosticable {
   S2GroupSort(this.compare) : assert(compare != null);
 
   /// Function to sort the group keys alphabetically by name in ascending order
-  factory S2GroupSort.byNameInAsc() => S2GroupSort((S2ChoiceGroup a, S2ChoiceGroup b) {
-    return a.name.toLowerCase().compareTo(b.name.toLowerCase());
-  });
+  factory S2GroupSort.byNameInAsc() =>
+      S2GroupSort((S2ChoiceGroup a, S2ChoiceGroup b) {
+        return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+      });
 
   /// Function to sort the group keys alphabetically by name in descending order
-  factory S2GroupSort.byNameInDesc() => S2GroupSort((S2ChoiceGroup a, S2ChoiceGroup b) {
-    return b.name.toLowerCase().compareTo(a.name.toLowerCase());
-  });
+  factory S2GroupSort.byNameInDesc() =>
+      S2GroupSort((S2ChoiceGroup a, S2ChoiceGroup b) {
+        return b.name.toLowerCase().compareTo(a.name.toLowerCase());
+      });
 
   /// Function to sort the group keys by items count in ascending order
-  factory S2GroupSort.byCountInAsc() => S2GroupSort((S2ChoiceGroup a, S2ChoiceGroup b) {
-    return a.count.compareTo(b.count);
-  });
+  factory S2GroupSort.byCountInAsc() =>
+      S2GroupSort((S2ChoiceGroup a, S2ChoiceGroup b) {
+        return a.count.compareTo(b.count);
+      });
 
   /// Function to sort the group keys by items count in descending order
-  factory S2GroupSort.byCountInDesc() => S2GroupSort((S2ChoiceGroup a, S2ChoiceGroup b) {
-    return b.count.compareTo(a.count);
-  });
+  factory S2GroupSort.byCountInDesc() =>
+      S2GroupSort((S2ChoiceGroup a, S2ChoiceGroup b) {
+        return b.count.compareTo(a.count);
+      });
 }
 
 /// Choices configuration
 @immutable
 class S2ChoiceConfig with Diagnosticable {
-
   /// Choice item widget type
   ///
   /// Single choice can't use [S2ChoiceType.checkboxes] and Multiple choice can't use [S2ChoiceType.radios]
@@ -167,13 +174,13 @@ class S2ChoiceConfig with Diagnosticable {
     this.activeStyle,
     this.headerStyle = const S2ChoiceHeaderStyle(),
     this.physics = const ScrollPhysics(),
-  }) :
-    assert(isGrouped != null),
-    assert(physics != null),
-    assert(useDivider != null);
+  })  : assert(isGrouped != null),
+        assert(physics != null),
+        assert(useDivider != null);
 
   /// Whether the [layout] is [S2ChoiceLayout.wrap] or [type] is [S2ChoiceType.chips]
-  bool get isWrapLayout => layout == S2ChoiceLayout.wrap || type == S2ChoiceType.chips;
+  bool get isWrapLayout =>
+      layout == S2ChoiceLayout.wrap || type == S2ChoiceType.chips;
 
   /// Whether the [layout] is [S2ChoiceLayout.grid]
   bool get isGridLayout => layout == S2ChoiceLayout.grid;

@@ -3,7 +3,6 @@ import '../widget.dart';
 
 /// Default trigger/tile widget
 class S2Tile<T> extends StatelessWidget {
-
   /// The value of the selected option.
   final String value;
 
@@ -112,80 +111,61 @@ class S2Tile<T> extends StatelessWidget {
     this.hideValue = false,
     this.padding,
     this.body,
-  }) :
-    title = title ?? state.titleWidget,
-    value = value ?? state.valueDisplay,
-    onTap = onTap ?? state.showModal,
-    super(key: key);
+  })  : title = title ?? state.titleWidget,
+        value = value ?? state.valueDisplay,
+        onTap = onTap ?? state.showModal,
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return body == null
-      ? _tileWidget
-      : Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            _tileWidget,
-            body,
-          ],
-        );
+        ? _tileWidget
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              _tileWidget,
+              body,
+            ],
+          );
   }
 
   Widget get _tileWidget {
-    return ListTile(
-      dense: dense,
-      enabled: enabled && isLoading != true,
-      selected: selected,
-      contentPadding: padding,
-      leading: leading,
-      title: title,
-      subtitle: isTwoLine && hideValue != true ? _valueWidget : null,
-      trailing: _trailingWidget,
-      onTap: onTap,
-    );
+    return Container(
+        alignment: Alignment(0.0, 0.0),
+        child: ListTile(
+          dense: dense,
+          enabled: enabled && isLoading != true,
+          selected: selected,
+          contentPadding: EdgeInsets.symmetric(horizontal: 5),
+          leading: leading,
+          title: _valueWidget,
+          subtitle: _emptyWidget,
+          trailing: _trailingWidget,
+          onTap: onTap,
+        ));
+  }
+
+  Widget get _emptyWidget {
+    return Container();
   }
 
   Widget get _trailingWidget {
-    return isTwoLine != true && hideValue != true
-      ? Container(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Container(
-                constraints: const BoxConstraints(maxWidth: 100),
-                child: _valueWidget,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 5),
-                child: _trailingIconWidget,
-              ),
-            ],
-          ),
-        )
-      : _trailingIconWidget;
+    return _trailingIconWidget;
   }
 
   Widget get _trailingIconWidget {
-    return isLoading != true
-      ? trailing != null
-        ? trailing
-        : const Icon(Icons.keyboard_arrow_right, color: Colors.grey)
-      : const SizedBox(
-          child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.black45),
-            strokeWidth: 1.5,
-          ),
-          height: 16.0,
-          width: 16.0,
-        );
+    return Icon(Icons.arrow_drop_down, color: Colors.black);
   }
 
   Widget get _valueWidget {
-    return Text(
-      isLoading ? loadingText : value,
-      style: const TextStyle(color: Colors.grey),
-      overflow: TextOverflow.ellipsis,
-      maxLines: 1,
-    );
+    return Container(
+        alignment: Alignment(0.15, 0.0),
+        margin: EdgeInsets.symmetric(vertical: 10),
+        child: Text(
+          isLoading ? loadingText : value,
+          style: const TextStyle(color: Colors.black, fontSize: 15),
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+        ));
   }
 }

@@ -106,7 +106,6 @@ class S2Builder<T> with Diagnosticable {
 
 /// Builder collection of single choice widget
 class S2SingleBuilder<T> extends S2Builder<T> {
-
   /// Builder for custom tile widget
   final S2WidgetBuilder<S2SingleState<T>> tile;
 
@@ -150,19 +149,19 @@ class S2SingleBuilder<T> extends S2Builder<T> {
     // WidgetBuilder choiceProgress,
     // S2ChoiceBuilder<T> choicePager,
   }) : super(
-    modalFilter: modalFilter,
-    modalFilterToggle: modalFilterToggle,
-    choice: choice,
-    choiceTitle: choiceTitle,
-    choiceSubtitle: choiceSubtitle,
-    choiceSecondary: choiceSecondary,
-    choiceDivider: choiceDivider,
-    choiceGroup: choiceGroup,
-    choiceHeader: choiceHeader,
-    choiceEmpty: choiceEmpty,
-    // choiceProgressBuilder: choiceProgressBuilder,
-    // choicePagerBuilder: choicePagerBuilder,
-  );
+          modalFilter: modalFilter,
+          modalFilterToggle: modalFilterToggle,
+          choice: choice,
+          choiceTitle: choiceTitle,
+          choiceSubtitle: choiceSubtitle,
+          choiceSecondary: choiceSecondary,
+          choiceDivider: choiceDivider,
+          choiceGroup: choiceGroup,
+          choiceHeader: choiceHeader,
+          choiceEmpty: choiceEmpty,
+          // choiceProgressBuilder: choiceProgressBuilder,
+          // choicePagerBuilder: choicePagerBuilder,
+        );
 
   /// Creates a copy of this [S2SingleBuilder] but with
   /// the given fields replaced with the new values.
@@ -242,7 +241,6 @@ class S2SingleBuilder<T> extends S2Builder<T> {
 
 /// Builder collection of multiple choice widget
 class S2MultiBuilder<T> extends S2Builder<T> {
-
   /// Builder for custom tile widget
   final S2WidgetBuilder<S2MultiState<T>> tile;
 
@@ -286,19 +284,19 @@ class S2MultiBuilder<T> extends S2Builder<T> {
     // WidgetBuilder choiceProgress,
     // S2ChoiceBuilder<T> choicePager,
   }) : super(
-    modalFilter: modalFilter,
-    modalFilterToggle: modalFilterToggle,
-    choice: choice,
-    choiceTitle: choiceTitle,
-    choiceSubtitle: choiceSubtitle,
-    choiceSecondary: choiceSecondary,
-    choiceDivider: choiceDivider,
-    choiceGroup: choiceGroup,
-    choiceHeader: choiceHeader,
-    choiceEmpty: choiceEmpty,
-    // choiceProgressBuilder: choiceProgressBuilder,
-    // choicePagerBuilder: choicePagerBuilder,
-  );
+          modalFilter: modalFilter,
+          modalFilterToggle: modalFilterToggle,
+          choice: choice,
+          choiceTitle: choiceTitle,
+          choiceSubtitle: choiceSubtitle,
+          choiceSecondary: choiceSecondary,
+          choiceDivider: choiceDivider,
+          choiceGroup: choiceGroup,
+          choiceHeader: choiceHeader,
+          choiceEmpty: choiceEmpty,
+          // choiceProgressBuilder: choiceProgressBuilder,
+          // choicePagerBuilder: choicePagerBuilder,
+        );
 
   /// Creates a copy of this [S2MultiBuilder] but with
   /// the given fields replaced with the new values.

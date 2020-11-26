@@ -5,7 +5,6 @@ import './choice_theme.dart';
 /// choice group data
 @immutable
 class S2ChoiceGroup with Diagnosticable {
-
   /// Group name
   final String name;
 
@@ -28,10 +27,10 @@ class S2ChoiceGroup with Diagnosticable {
 
   @override
   bool operator ==(Object other) =>
-    identical(this, other) ||
-    other is S2ChoiceGroup &&
-      runtimeType == other.runtimeType &&
-      name == other.name;
+      identical(this, other) ||
+      other is S2ChoiceGroup &&
+          runtimeType == other.runtimeType &&
+          name == other.name;
 
   @override
   int get hashCode => name.hashCode;

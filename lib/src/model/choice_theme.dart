@@ -28,7 +28,6 @@ enum S2ChoiceControl {
 /// Configure choices group header style
 @immutable
 class S2ChoiceHeaderStyle with Diagnosticable {
-
   /// Group header background color
   final Color backgroundColor;
 
@@ -104,7 +103,6 @@ class S2ChoiceHeaderStyle with Diagnosticable {
 /// Configure choices item style
 @immutable
 class S2ChoiceStyle with Diagnosticable {
-
   /// Choices item margin
   final EdgeInsetsGeometry margin;
 
