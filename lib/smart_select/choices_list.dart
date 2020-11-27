@@ -7,7 +7,6 @@ import 'scrollbar.dart';
 
 /// choices list widget
 class S2ChoicesList<T> extends StatelessWidget {
-
   /// single choice widget builder
   final Widget Function(S2Choice<T>) itemBuilder;
 
@@ -38,28 +37,29 @@ class S2ChoicesList<T> extends StatelessWidget {
       onNotification: (notification) => true,
       child: Scrollbar(
         child: config.isWrapLayout
-          ? _listWrap()
-          : config.isGridLayout
-            ? _listGrid()
-            : config.useDivider
-              ? _listSeparated()
-              : _listDefault(),
+            ? _listWrap()
+            : config.isGridLayout
+                ? _listGrid()
+                : config.useDivider
+                    ? _listSeparated()
+                    : _listDefault(),
       ),
     );
 
     return config.direction == Axis.horizontal
-      ? Wrap(children: <Widget>[result])
-      : result;
+        ? Wrap(children: <Widget>[result])
+        : result;
   }
 
   Widget _listWrap() {
     return SingleChildScrollView(
       physics: config.physics,
       scrollDirection: config.direction,
-      padding: config.padding ?? const EdgeInsets.symmetric(
-        vertical: 10.0,
-        horizontal: 15.0,
-      ),
+      padding: config.padding ??
+          const EdgeInsets.symmetric(
+            vertical: 10.0,
+            horizontal: 15.0,
+          ),
       child: Align(
         alignment: Alignment.topLeft,
         child: Wrap(
@@ -105,11 +105,12 @@ class S2ChoicesList<T> extends StatelessWidget {
       padding: config.padding ?? const EdgeInsets.all(10.0),
       itemCount: items.length,
       itemBuilder: (context, i) => itemBuilder(items[i]),
-      gridDelegate: config.gridDelegate ?? SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: config.gridCount,
-        crossAxisSpacing: config.gridSpacing,
-        mainAxisSpacing: config.gridSpacing,
-      ),
+      gridDelegate: config.gridDelegate ??
+          SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: config.gridCount,
+            crossAxisSpacing: config.gridSpacing,
+            mainAxisSpacing: config.gridSpacing,
+          ),
     );
   }
 
@@ -124,7 +125,6 @@ class S2ChoicesList<T> extends StatelessWidget {
 
 /// default divider widget
 class S2Divider extends StatelessWidget {
-
   /// divider color
   final Color color;
 
@@ -154,9 +154,8 @@ class S2Divider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(
-        vertical: spacing ?? S2Divider.defaultSpacing
-      ),
+      padding:
+          EdgeInsets.symmetric(vertical: spacing ?? S2Divider.defaultSpacing),
       child: SizedBox(
         height: thickness ?? S2Divider.defaultThickness,
         child: DecoratedBox(

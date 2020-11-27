@@ -18,29 +18,59 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   final formKey = new GlobalKey<FormState>();
   String _university, _campus, _degree;
+  bool enabled = false;
   List<String> _subjects = [];
+  validate() {
+    if (_university != "Select your university" &&
+        _campus != "Select your campus" &&
+        _degree != "Select your degree" &&
+        _university != null &&
+        _campus != null &&
+        _degree != null) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  void _toggleValidate() {
+    setState(() {
+      if (validate()) {
+        enabled = true;
+      } else {
+        enabled = false;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    var doFlushbar = () {
+      Flushbar(
+        title: "Oops!",
+        message:
+            "You must enter your universtity, campus, degree and subjects first.",
+        duration: Duration(seconds: 3),
+      ).show(context);
+    };
     var doStart = () {
       debugPrint('university: $_university');
       debugPrint('campus: $_campus');
       debugPrint('degree: $_degree');
+      debugPrint('subjects: $_subjects');
 
       if (_university != "Select your university" &&
           _campus != "Select your campus" &&
           _degree != "Select your degree" &&
           _university != null &&
           _campus != null &&
-          _degree != null) {
+          _degree != null &&
+          _subjects != null) {
       } else {
-        Flushbar(
-          title: "Oops!",
-          message: "You must enter your universtity, campus and degree first.",
-          duration: Duration(seconds: 3),
-        ).show(context);
+        doFlushbar();
       }
     };
-    var selectSubjects = () {};
+
     Size size = MediaQuery.of(context).size;
     List<String> universities = [
       "Select your university",
@@ -61,6 +91,7 @@ class _BodyState extends State<Body> {
       "Grau Enginyeria Telecomunicacions",
       "Grau Enginyeria Aeroespacial",
     ];
+
     return SafeArea(
       child: Scaffold(
         body: Background(
@@ -71,23 +102,29 @@ class _BodyState extends State<Body> {
                 SizedBox(height: size.height * 0.03),
                 Image.asset(
                   "assets/images/getstarted.png",
-                  width: size.width * 0.6,
+                  width: size.width * 0.4,
                 ),
-                SizedBox(height: size.height * 0.03),
                 DirectOptions(
                     title: "University",
                     elements: universities,
-                    onSelected: (value) => _university = value),
+                    onSelected: (value) =>
+                        {_university = value, _toggleValidate()}),
                 DirectOptions(
                     title: "Campus",
                     elements: campus,
-                    onSelected: (value) => _campus = value),
+                    onSelected: (value) =>
+                        {_campus = value, _toggleValidate()}),
                 DirectOptions(
                     title: "Degree",
                     elements: degrees,
-                    onSelected: (value) => _degree = value),
+                    onSelected: (value) =>
+                        {_degree = value, _toggleValidate()}),
+                MultipleOptions(
+                    title: "Subjects",
+                    enabled: enabled,
+                    onSelected: (value) => {_subjects = value},
+                    notEnableTap: doFlushbar),
                 SizedBox(height: size.height * 0.03),
-                MultipleOptions(title: "Subjects"),
                 RoundedButton(
                   text: "START",
                   press: doStart,

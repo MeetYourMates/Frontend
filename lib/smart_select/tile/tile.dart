@@ -1,3 +1,4 @@
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import '../widget.dart';
 
@@ -10,6 +11,7 @@ class S2Tile<T> extends StatelessWidget {
   ///
   /// Inoperative if [enabled] is false.
   final GestureTapCallback onTap;
+  final GestureTapCallback notEnableTap;
 
   /// The primary content of the list tile.
   final Widget title;
@@ -91,6 +93,7 @@ class S2Tile<T> extends StatelessWidget {
     this.hideValue = false,
     this.padding,
     this.body,
+    this.notEnableTap,
   }) : super(key: key);
 
   /// Create a default trigger widget from state
@@ -111,6 +114,7 @@ class S2Tile<T> extends StatelessWidget {
     this.hideValue = false,
     this.padding,
     this.body,
+    this.notEnableTap,
   })  : title = title ?? state.titleWidget,
         value = value ?? state.valueDisplay,
         onTap = onTap ?? state.showModal,
@@ -118,52 +122,31 @@ class S2Tile<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return body == null
-        ? _tileWidget
-        : Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              _tileWidget,
-              body,
-            ],
-          );
+    return new GestureDetector(
+      onTap: enabled ? onTap : notEnableTap,
+      child: SizedBox(
+          height: 60.0,
+          child: Card(
+            child: Stack(
+              children: <Widget>[
+                _buildItem(context),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Icon(Icons.arrow_drop_down),
+                )
+              ],
+            ),
+          )),
+    );
   }
 
-  Widget get _tileWidget {
+  Widget _buildItem(BuildContext context) {
     return Container(
-        alignment: Alignment(0.0, 0.0),
-        child: ListTile(
-          dense: dense,
-          enabled: enabled && isLoading != true,
-          selected: selected,
-          contentPadding: EdgeInsets.symmetric(horizontal: 5),
-          leading: leading,
-          title: _valueWidget,
-          subtitle: _emptyWidget,
-          trailing: _trailingWidget,
-          onTap: onTap,
-        ));
-  }
-
-  Widget get _emptyWidget {
-    return Container();
-  }
-
-  Widget get _trailingWidget {
-    return _trailingIconWidget;
-  }
-
-  Widget get _trailingIconWidget {
-    return Icon(Icons.arrow_drop_down, color: Colors.black);
-  }
-
-  Widget get _valueWidget {
-    return Container(
-        alignment: Alignment(0.15, 0.0),
-        margin: EdgeInsets.symmetric(vertical: 10),
+        alignment: Alignment.center,
         child: Text(
           isLoading ? loadingText : value,
-          style: const TextStyle(color: Colors.black, fontSize: 15),
+          style: const TextStyle(color: Colors.black),
+          textAlign: TextAlign.center,
           overflow: TextOverflow.ellipsis,
           maxLines: 1,
         ));

@@ -35,30 +35,14 @@ class SmartSelect<T> extends StatefulWidget {
   /// Modal configuration
   final S2ModalConfig modalConfig;
 
-  /// Whether show the options list
-  /// as single choice or multiple choice
-  final bool isMultiChoice;
-
-  /// The current value of the single choice widget.
-  final T singleValue;
-
   /// The current value of the multi choice widget.
   final List<T> multiValue;
-
-  /// Called when single choice value changed
-  final ValueChanged<S2SingleState<T>> singleOnChange;
 
   /// Called when multiple choice value changed
   final ValueChanged<S2MultiState<T>> multiOnChange;
 
-  /// Builder collection of single choice widget
-  final S2SingleBuilder<T> singleBuilder;
-
   /// Builder collection of multiple choice widget
   final S2MultiBuilder<T> multiBuilder;
-
-  /// Modal validation of single choice widget
-  final ValidationCallback<T> singleModalValidation;
 
   /// Modal validation of multiple choice widget
   final ValidationCallback<List<T>> multiModalValidation;
@@ -68,11 +52,6 @@ class SmartSelect<T> extends StatefulWidget {
     Key key,
     this.title,
     this.placeholder,
-    this.isMultiChoice,
-    this.singleValue,
-    this.singleOnChange,
-    this.singleModalValidation,
-    this.singleBuilder,
     this.multiValue,
     this.multiOnChange,
     this.multiModalValidation,
@@ -80,24 +59,12 @@ class SmartSelect<T> extends StatefulWidget {
     this.modalConfig = const S2ModalConfig(),
     this.choiceConfig = const S2ChoiceConfig(),
     this.choiceItems,
-  })  : assert(isMultiChoice != null),
-        assert(title != null || modalConfig?.title != null,
+  })  : assert(title != null || modalConfig?.title != null,
             'title and modalConfig.title must not be both null'),
-        assert(
-            (isMultiChoice && multiOnChange != null && multiBuilder != null) ||
-                (!isMultiChoice &&
-                    singleOnChange != null &&
-                    singleBuilder != null),
-            isMultiChoice
-                ? 'multiValue, multiOnChange, and multiBuilder must be not null in multiple choice'
-                : 'singleValue, singleOnChange, and singleBuilder must be not null in single choice'),
-        assert(
-            (isMultiChoice && choiceConfig.type != S2ChoiceType.radios) ||
-                (!isMultiChoice &&
-                    choiceConfig.type != S2ChoiceType.checkboxes),
-            isMultiChoice
-                ? 'multiple choice can\'t use S2ChoiceType.radios'
-                : 'Single choice can\'t use S2ChoiceType.checkboxes'),
+        assert(multiOnChange != null && multiBuilder != null,
+            'multiValue, multiOnChange, and multiBuilder must be not null in multiple choice'),
+        assert(choiceConfig.type != S2ChoiceType.radios,
+            'multiple choice can\'t use S2ChoiceType.radios'),
         assert(choiceItems != null, '`choiceItems` must not be null'),
         super(key: key);
 
@@ -157,10 +124,6 @@ class SmartSelect<T> extends StatefulWidget {
       title: title,
       placeholder: placeholder,
       choiceItems: choiceItems,
-      isMultiChoice: true,
-      singleValue: null,
-      singleOnChange: null,
-      singleBuilder: null,
       multiValue: value,
       multiOnChange: onChange,
       multiModalValidation: modalValidation,
@@ -210,7 +173,7 @@ class SmartSelect<T> extends StatefulWidget {
 
   @override
   S2State<T> createState() {
-    return isMultiChoice ? S2MultiState<T>() : S2SingleState<T>();
+    return S2MultiState<T>();
   }
 }
 
@@ -567,9 +530,7 @@ abstract class S2State<T> extends State<SmartSelect<T>> {
   /// by it's type from resolver
   S2ChoiceBuilder<T> get choiceBuilder {
     return S2ChoiceResolver<T>(
-            isMultiChoice: widget.isMultiChoice,
-            type: choiceConfig.type,
-            builder: (builder as S2Builder<T>))
+            type: choiceConfig.type, builder: (builder as S2Builder<T>))
         .choiceBuilder;
   }
 
@@ -584,13 +545,6 @@ abstract class S2State<T> extends State<SmartSelect<T>> {
               select: ([bool selected = true]) {
                 // set temporary value
                 changes.commit(choice.value, selected: selected);
-                // for single choice check if is filtering and use confirmation
-                if (widget.isMultiChoice != true) {
-                  // Pop filtering status
-                  if (filter.activated) Navigator.pop(context);
-                  // Pop navigator with confirmed return value
-                  if (!modalConfig.useConfirm) Navigator.pop(context, true);
-                }
               },
               style: defaultChoiceStyle.merge(choiceStyle).merge(choice.style),
               activeStyle: defaultActiveChoiceStyle
@@ -729,11 +683,7 @@ abstract class S2State<T> extends State<SmartSelect<T>> {
     super.didUpdateWidget(oldWidget);
 
     // reset the initial value
-    if (widget.isMultiChoice) {
-      if (oldWidget.multiValue != widget.multiValue) initValue();
-    } else {
-      if (oldWidget.singleValue != widget.singleValue) initValue();
-    }
+    if (oldWidget.multiValue != widget.multiValue) initValue();
   }
 
   @override
@@ -744,127 +694,6 @@ abstract class S2State<T> extends State<SmartSelect<T>> {
     filter?.dispose();
     changes?.dispose();
     super.dispose();
-  }
-}
-
-/// State for Single Choice
-class S2SingleState<T> extends S2State<T> {
-  /// value changes state
-  @override
-  S2SingleChanges<T> changes;
-
-  /// final value
-  @override
-  T value;
-
-  /// return an object or array of object
-  /// that represent the value
-  @override
-  S2Choice<T> get valueObject {
-    return widget.choiceItems?.firstWhere(
-        (S2Choice<T> item) => item.value == value,
-        orElse: () => null);
-  }
-
-  /// return a string or array of string
-  /// that represent the value
-  @override
-  String get valueTitle {
-    return valueObject != null ? valueObject.title : null;
-  }
-
-  /// return a string that can be used as display
-  /// when value is null it will display placeholder
-  @override
-  String get valueDisplay {
-    return valueTitle ?? widget.placeholder ?? '';
-  }
-
-  /// Called when single choice value changed
-  @override
-  ValueChanged<S2SingleState<T>> get onChange => widget.singleOnChange;
-
-  /// get collection of builder
-  @override
-  S2SingleBuilder<T> get builder => widget.singleBuilder;
-
-  /// get final modal validation
-  @override
-  ValidationCallback<T> get modalValidation => widget.singleModalValidation;
-
-  @override
-  void initValue() {
-    // set initial final value
-    setState(() => value = widget.singleValue);
-    // set initial cache value
-    changes = S2SingleChanges<T>(value, validation: modalValidation)
-      ..addListener(_changesHandler);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return builder?.tile?.call(context, this) ?? defaultTile;
-  }
-
-  /// get custom modal widget
-  @override
-  Widget get _customModal {
-    return builder?.modal?.call(modalContext, this);
-  }
-
-  /// get modal leading widget
-  @override
-  Widget get modalDivider {
-    return builder?.modalDivider?.call(modalContext, this);
-  }
-
-  /// get modal trailing widget
-  @override
-  Widget get modalFooter {
-    return builder?.modalFooter?.call(modalContext, this);
-  }
-
-  /// get custom modal header widget
-  @override
-  Widget get _customModalHeader {
-    return builder?.modalHeader?.call(modalContext, this);
-  }
-
-  /// get custom modal header widget
-  @override
-  List<Widget> get _customModalActions {
-    return builder?.modalActions?.call(modalContext, this);
-  }
-
-  /// get custom confirm button
-  @override
-  Widget get _customConfirmButton {
-    return builder?.modalConfirm?.call(modalContext, this);
-  }
-
-  /// get choices selector widget
-  @override
-  Widget get choiceSelector => null;
-
-  /// function to show the choice modal
-  @override
-  void showModal() async {
-    // reset cache value
-    changes.value = value;
-
-    // show modal by type and return confirmed value
-    bool confirmed = await _showModalByType();
-
-    // dont return value if modal need confirmation and not confirmed
-    if (modalConfig.useConfirm == true && confirmed != true) return;
-
-    // return value
-    if (changes.value != null) {
-      // set cache to final value
-      setState(() => value = changes.value);
-      // return state to onChange callback
-      onChange?.call(this);
-    }
   }
 }
 
