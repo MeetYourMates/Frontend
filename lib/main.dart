@@ -13,8 +13,8 @@ class MyApp extends StatelessWidget {
   Future<User> getUserData() => UserPreferences().getUser();
   Student getStudentData() {
     return Student(
-        id: "5fc3ddbcfed3af0524171911",
-        name: "Maite Fernandez",
+        id: "5fbcd8854506b76778cf3949",
+        name: "kru",
         university: "",
         degree: "",
         user: User(

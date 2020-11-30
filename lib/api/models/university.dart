@@ -15,7 +15,7 @@ class University {
   });
 
   List<String> getFacultyNames() {
-    List<String> facultyNames;
+    List<String> facultyNames = [];
     faculties.forEach((fac) {
       facultyNames.add(fac.name);
     });

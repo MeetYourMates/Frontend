@@ -2,7 +2,8 @@
     package="com.example.meet_your_mates">
    <application
         android:label="meet_your_mates"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

@@ -12,7 +12,7 @@ class Faculty {
   });
 
   List<String> getDegreeNames() {
-    List<String> degreeNames;
+    List<String> degreeNames = [];
     degrees.forEach((deg) {
       degreeNames.add(deg.name);
     });

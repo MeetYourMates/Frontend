@@ -9,7 +9,7 @@ class Universities {
   Universities({this.universityList});
 
   List<String> getUniversityNames() {
-    List<String> universityNames;
+    List<String> universityNames = [];
     universityList.forEach((uni) {
       universityNames.add(uni.name);
     });

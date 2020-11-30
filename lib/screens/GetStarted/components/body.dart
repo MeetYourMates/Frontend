@@ -23,11 +23,15 @@ class _BodyState extends State<Body> {
   final formKey = new GlobalKey<FormState>();
   String _university, _faculty, _degree;
   bool enabled = false;
-  bool choiceUni = false;
-  bool choiceFac = false;
+  bool choosenUni = false;
+  bool choosenFaculty = false;
+  Universities universities = new Universities();
+  List<String> universityNames = ["Select your University:"];
+  List<String> facultyNames = ["Select your Faculty:"];
+  List<String> degreeNames = ["Select your Degree:"];
   List<String> _subjects = [];
 
-  validate() {
+  validateAll() {
     if (_university != "Select your university" &&
         _faculty != "Select your campus" &&
         _degree != "Select your degree" &&
@@ -40,45 +44,29 @@ class _BodyState extends State<Body> {
     }
   }
 
-  validateUni() {
-    if (_university != "Select your university" && _university != null) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   void _toggleUniversity() {
     setState(() {
-      if (validateUni()) {
-        choiceUni = true;
+      if (_university != "Select your university" && _university != null) {
+        choosenUni = true;
       } else {
-        choiceFac = false;
+        choosenUni = false;
       }
     });
   }
 
-  validateFac() {
-    if (_university != "Select your university" && _university != null) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   void _toggleFaculty() {
     setState(() {
-      if (validateFac()) {
-        choiceFac = true;
+      if (_faculty != "Select your Faculty:" && _faculty != null) {
+        choosenFaculty = true;
       } else {
-        choiceFac = false;
+        choosenFaculty = false;
       }
     });
   }
 
   void _toggleValidate() {
     setState(() {
-      if (validate()) {
+      if (validateAll()) {
         enabled = true;
       } else {
         enabled = false;
@@ -89,10 +77,6 @@ class _BodyState extends State<Body> {
   @override
   Widget build(BuildContext context) {
     StartProvider start = Provider.of<StartProvider>(context);
-    Universities universities;
-    List<String> universityNames = ["Select your University:"];
-    List<String> facultyNames = ["Select your Faculty:"];
-    List<String> degreeNames = ["Select your Degree:"];
     var loading = Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -114,10 +98,11 @@ class _BodyState extends State<Body> {
       //Callback to message recieved after login auth
       successfulMessage.then((response) {
         if (response['status']) {
-          universities = response['universities'];
-          print(universities);
-          universityNames.addAll(universities.getUniversityNames());
-          print(universityNames);
+          //print("Printing" + response['universities']);
+          universities.universityList = response['universities'];
+          setState(() {
+            universityNames.addAll(universities.getUniversityNames());
+          });
         } else {
           Flushbar(
             title: "Failed Login",
@@ -184,13 +169,18 @@ class _BodyState extends State<Body> {
                       onSelected: (value) => {
                             _university = value,
                             _toggleUniversity(),
-                            facultyNames.addAll(universities
-                                .getUniversityByName(_university)
-                                .getFacultyNames())
+                            if (choosenUni)
+                              {
+                                setState(() {
+                                  facultyNames.addAll(universities
+                                      .getUniversityByName(_university)
+                                      .getFacultyNames());
+                                })
+                              }
                           }),
                   DirectOptions(
                       title: "Faculty",
-                      enable: choiceUni,
+                      enable: choosenUni,
                       elements: facultyNames,
                       onSelected: (value) => {
                             _faculty = value,
@@ -202,7 +192,7 @@ class _BodyState extends State<Body> {
                           }),
                   DirectOptions(
                       title: "Degree",
-                      enable: choiceFac,
+                      enable: choosenFaculty,
                       elements: degreeNames,
                       onSelected: (value) =>
                           {_degree = value, _toggleValidate()}),

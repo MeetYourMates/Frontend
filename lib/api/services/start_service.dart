@@ -36,6 +36,7 @@ class StartProvider with ChangeNotifier {
     );
 
     if (response.statusCode == 200) {
+      print("Response Unis:" + response.body);
       List<University> universities = (json.decode(response.body) as List)
           .map((i) => University.fromJson(i))
           .toList();
