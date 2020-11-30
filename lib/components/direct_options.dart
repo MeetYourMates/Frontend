@@ -8,8 +8,14 @@ int selectedIndex = 0;
 class DirectOptions extends StatefulWidget {
   final List<String> elements;
   final String title;
+  final bool enable;
   final Function(String) onSelected;
-  const DirectOptions({Key key, this.title, this.elements, this.onSelected})
+  const DirectOptions(
+      {Key key,
+      this.title,
+      this.elements,
+      this.onSelected,
+      this.enable = false})
       : super(key: key);
 
   @override
@@ -42,21 +48,26 @@ class _DirectOptionsState extends State<DirectOptions> {
                 style: TextStyle(color: Colors.blue, fontSize: 20),
               ),
             ),
-            DirectSelect(
-                itemExtent: 35.0,
-                selectedIndex: selectedIndex,
-                child: MySelectionItem(
-                  isForList: false,
-                  title: widget.elements[selectedIndex],
-                ),
-                onSelectedItemChanged: (index) {
-                  setState(() {
-                    selectedIndex = index;
-                    widget.onSelected(widget.elements[index]);
-                  });
-                },
-                mode: DirectSelectMode.tap,
-                items: _buildItems()),
+            AbsorbPointer(
+                absorbing: !widget.enable,
+                child: Opacity(
+                  opacity: widget.enable ? 1 : 0.35,
+                  child: DirectSelect(
+                      itemExtent: 35.0,
+                      selectedIndex: selectedIndex,
+                      child: MySelectionItem(
+                        isForList: false,
+                        title: widget.elements[selectedIndex],
+                      ),
+                      onSelectedItemChanged: (index) {
+                        setState(() {
+                          selectedIndex = index;
+                          widget.onSelected(widget.elements[index]);
+                        });
+                      },
+                      mode: DirectSelectMode.tap,
+                      items: _buildItems()),
+                ))
           ]),
     );
   }
