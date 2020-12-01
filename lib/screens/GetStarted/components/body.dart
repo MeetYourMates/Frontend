@@ -245,6 +245,14 @@ class _BodyState extends State<Body> {
                                     print("Faculties Name List: " +
                                         temp.join("/"))
                                   }
+                                else
+                                  {
+                                    //Changed back to not correct Option
+                                    facultyNames.value.removeWhere((item) =>
+                                        item != "Select your Faculty:"),
+                                    degreeNames.value.removeWhere((item) =>
+                                        item != "Select your Degree:"),
+                                  }
                               });
                     },
                     valueListenable: universityNames,
@@ -277,6 +285,14 @@ class _BodyState extends State<Body> {
                                     print(
                                         "Degrees Name List: " + temp.join("/"))
                                   }
+                                else
+                                  {
+                                    //Changed back to not correct Option
+                                    facultyNames.value.removeWhere((item) =>
+                                        item != "Select your Faculty:"),
+                                    degreeNames.value.removeWhere((item) =>
+                                        item != "Select your Degree:"),
+                                  }
                               });
                     },
                     valueListenable: facultyNames,
@@ -307,6 +323,14 @@ class _BodyState extends State<Body> {
                                         .getDegreeByName(_degree)
                                         .id,
                                     loadchoicesSubjects(id)
+                                  }
+                                else
+                                  {
+                                    //Changed back to not correct Option
+                                    facultyNames.value.removeWhere((item) =>
+                                        item != "Select your Faculty:"),
+                                    degreeNames.value.removeWhere((item) =>
+                                        item != "Select your Degree:"),
                                   }
                               });
                     },
