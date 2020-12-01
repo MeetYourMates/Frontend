@@ -101,14 +101,13 @@ class StartProvider with ChangeNotifier {
     return result;
   }
 
-  Future<Map<String, dynamic>> start(
-      String subjectName, String subjectId, Student student) async {
+  Future<Map<String, dynamic>> start(String subjectId, String studentId) async {
     var result;
     _enrolledStatus = Status.GettingEnrolled;
     notifyListeners();
 
     String json =
-        '{"subjectId":"' + subjectId + '","studentId":"' + student.id + '"}';
+        '{"subjectId":"' + subjectId + '","studentId":"' + studentId + '"}';
 
     Response response = await post(AppUrl.addsubjects,
         body: json, headers: {'Content-Type': 'application/json'});
@@ -121,17 +120,11 @@ class StartProvider with ChangeNotifier {
       if (response.statusCode == 409) {
         _enrolledStatus = Status.AlreadyEnrolled;
         notifyListeners();
-        result = {
-          'status': false,
-          'message': "You were already enrolled in " + subjectName
-        };
+        result = {'status': false, 'message': "You were already enrolled in "};
       } else {
         _enrolledStatus = Status.EnrollFailed;
         notifyListeners();
-        result = {
-          'status': false,
-          'message': "Failed to get you enrolled in " + subjectName
-        };
+        result = {'status': false, 'message': "Failed to get you enrolled in "};
       }
     }
 

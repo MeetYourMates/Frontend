@@ -134,7 +134,25 @@ class _BodyState extends State<Body> {
         }
       });
     };
-
+    var startEnrollment = (String subjectId, String studentId) {
+      //SubjectName SubjectId student
+      final Future<Map<String, dynamic>> successfulMessage =
+          start.start(subjectId, studentId);
+      //Callback to message recieved after login auth
+      successfulMessage.then((response) {
+        if (response['status']) {
+          //print("Printing" + response['universities']);
+          universities.universityList = response['universities'];
+          universityNames.value.addAll(universities.getUniversityNames());
+        } else {
+          Flushbar(
+            title: "Failed",
+            message: response['message']['message'].toString(),
+            duration: Duration(seconds: 3),
+          ).show(context);
+        }
+      });
+    };
     var loadchoicesSubjects = (String degreeId) {
       final Future<Map<String, dynamic>> successfulMessage =
           start.getSubjectData(degreeId);
@@ -166,11 +184,17 @@ class _BodyState extends State<Body> {
           _university != null &&
           _faculty != null &&
           _degree != null &&
-          _subjects.isEmpty == true) {
+          _subjects.isNotEmpty) {
+        //Execute Enrollment
+        _subjects.forEach((_subjId) {
+          startEnrollment(_subjId, element);
+          print("Subject On Each: " + _subjId);
+        });
       } else {
         doFlushbar();
       }
     };
+
     //Local Temperory Variable
     List<String> temp = new List<String>();
     Size size = MediaQuery.of(context).size;
