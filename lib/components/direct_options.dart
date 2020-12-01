@@ -6,7 +6,6 @@ import 'my_selection_item.dart';
 // ignore: must_be_immutable
 class DirectOptions extends StatefulWidget {
   final List<String> elements;
-  var selectedIndex = 0;
   final String title;
   final bool enable;
   final Function(String) onSelected;
@@ -23,6 +22,7 @@ class DirectOptions extends StatefulWidget {
 }
 
 class _DirectOptionsState extends State<DirectOptions> {
+  final ValueNotifier<int> _index = ValueNotifier(0);
   //final List<String> elements;
   List<Widget> _buildItems() {
     print(widget.elements);
@@ -54,27 +54,34 @@ class _DirectOptionsState extends State<DirectOptions> {
                 absorbing: !widget.enable,
                 child: Opacity(
                   opacity: widget.enable ? 1 : 0.35,
-                  child: DirectSelect(
-                      itemExtent: 35.0,
-                      selectedIndex: (widget.selectedIndex >= 0 &&
-                              widget.selectedIndex < widget.elements.length)
-                          ? widget.selectedIndex
-                          : 0,
-                      child: MySelectionItem(
-                        isForList: false,
-                        title: widget.elements[widget.selectedIndex],
-                      ),
-                      onSelectedItemChanged: (index) {
-                        setState(() {
-                          index = (index >= 0 && index < widget.elements.length)
-                              ? index
-                              : 0;
-                          widget.selectedIndex = index;
-                          widget.onSelected(widget.elements[index]);
-                        });
-                      },
-                      mode: DirectSelectMode.tap,
-                      items: _buildItems()),
+                  child: ValueListenableBuilder(
+                    builder: (BuildContext context, int indx, Widget child) {
+                      // This builder will only get called when the _counter
+                      // is updated.
+                      return DirectSelect(
+                          itemExtent: 35.0,
+                          selectedIndex: indx,
+                          child: MySelectionItem(
+                            isForList: false,
+                            title: widget.elements[indx],
+                          ),
+                          onSelectedItemChanged: (index) {
+                            setState(() {
+                              index =
+                                  (index >= 0 && index < widget.elements.length)
+                                      ? index
+                                      : 0;
+                              _index.value = index;
+                              widget.onSelected(widget.elements[index]);
+                              _index.value = index;
+                            });
+                          },
+                          mode: DirectSelectMode.tap,
+                          items: _buildItems());
+                    },
+                    valueListenable: _index,
+                    child: Container(),
+                  ),
                 ))
           ]),
     );
