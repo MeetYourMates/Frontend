@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import '../smart_select.dart';
-import '../choices.dart' as choices;
 
 class MultipleOptions extends StatefulWidget {
-  final List<String> elements;
+  final List<Map<String, dynamic>> elements;
   final String title;
   final bool enabled;
   final GestureTapCallback notEnableTap;
@@ -12,7 +11,7 @@ class MultipleOptions extends StatefulWidget {
   const MultipleOptions(
       {Key key,
       this.title,
-      this.elements,
+      @required this.elements,
       this.onSelected,
       this.enabled,
       this.notEnableTap})
@@ -60,10 +59,10 @@ class _MultipleOptionsState extends State<MultipleOptions> {
                       }),
                   //List of Items
                   choiceItems: S2Choice.listFrom<String, Map>(
-                    source: choices.subjects,
+                    source: widget.elements,
                     value: (index, item) => item['id'],
                     title: (index, item) => item['name'],
-                    group: (index, item) => item['semester'],
+                    group: (index, item) => item['group'],
                   ),
                   choiceGrouped: true,
                   modalType: S2ModalType.bottomSheet,

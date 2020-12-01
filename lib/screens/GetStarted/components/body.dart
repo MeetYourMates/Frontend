@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:meet_your_mates/api/models/student.dart';
+import '../../../choices.dart' as choices;
 import 'package:meet_your_mates/api/models/universities.dart';
 import 'package:meet_your_mates/api/services/start_service.dart';
 import 'package:meet_your_mates/components/direct_options.dart';
@@ -37,8 +38,13 @@ class _BodyState extends State<Body> {
   //List<String> universityNames = ["Select your University:"];
   //List<String> facultyNames = ["Select your Faculty:"];
   //List<String> degreeNames = ["Select your Degree:"];
+  final ValueNotifier<List<Map<String, dynamic>>> _choicesSubjects =
+      ValueNotifier([
+    {"id": "Test", "name": "test", "group": "test"}
+  ]);
+  //List<Map<String, dynamic>> _choicesSubjects =
+  //    new List<Map<String, dynamic>>();
   List<String> _subjects = [];
-
   validateAll() {
     if (_university != "Select your University:" &&
         _faculty != "Select your Faculty:" &&
@@ -106,7 +112,7 @@ class _BodyState extends State<Body> {
       Flushbar(
         title: "Oops!",
         message:
-            "You must enter your universtity, faculty, degree and subjects first.",
+            "You must enter your universtity, faculty, degree and choicesSubjects first.",
         duration: Duration(seconds: 3),
       ).show(context);
     };
@@ -129,13 +135,15 @@ class _BodyState extends State<Body> {
       });
     };
 
-    var loadSubjects = (String degreeId) {
+    var loadchoicesSubjects = (String degreeId) {
       final Future<Map<String, dynamic>> successfulMessage =
           start.getSubjectData(degreeId);
       //Callback to message recieved after login auth
       successfulMessage.then((response) {
         if (response['status']) {
-          _subjects = response['subjects'];
+          _choicesSubjects.value.clear();
+          _choicesSubjects.value = response['subjects'];
+          print("_choicesSubjects" + _choicesSubjects.value.toString());
           _toggleValidate();
         } else {
           Flushbar(
@@ -150,7 +158,7 @@ class _BodyState extends State<Body> {
       debugPrint('university: $_university');
       debugPrint('faculty: $_faculty');
       debugPrint('degree: $_degree');
-      debugPrint('subjects: $_subjects');
+      debugPrint('choicesSubjects: $_choicesSubjects');
 
       if (_university != "Select your university" &&
           _faculty != "Select your faculty" &&
@@ -252,6 +260,7 @@ class _BodyState extends State<Body> {
                         Widget child) {
                       // This builder will only get called when the _counter
                       // is updated.
+                      var id;
                       return DirectOptions(
                           title: "Degree",
                           elements: _degreeNames,
@@ -261,19 +270,39 @@ class _BodyState extends State<Body> {
                                 _toggleDegree(),
                                 if (choosenDegree)
                                   {
-                                    //Here we call for subjects and show gettingEnrolled Status!
-                                    loadSubjects(_degree)
+                                    //Here we call for choicesSubjects and show gettingEnrolled Status!
+                                    //Find the Degreeid from name
+                                    degreeNames
+                                        .value[_degreeNames.indexOf(_degree)],
+                                    id = universities
+                                        .getUniversityByName(_university)
+                                        .getFacultyByName(_faculty)
+                                        .getDegreeByName(_degree)
+                                        .id,
+                                    loadchoicesSubjects(id)
                                   }
                               });
                     },
                     valueListenable: degreeNames,
                     child: Container(),
                   ),
-                  MultipleOptions(
-                      title: "Subjects",
-                      enabled: choosenDegree,
-                      onSelected: (value) => {_subjects = value},
-                      notEnableTap: doFlushbar),
+                  ValueListenableBuilder(
+                    builder: (BuildContext context,
+                        List<Map<String, dynamic>> _subjsList, Widget child) {
+                      // This builder will only get called when the _counter
+                      // is updated.
+                      return MultipleOptions(
+                          title: "choicesSubjects",
+                          elements: _subjsList != null
+                              ? _subjsList
+                              : choices.subjects,
+                          enabled: choosenDegree,
+                          onSelected: (value) => {_subjects = value},
+                          notEnableTap: doFlushbar);
+                    },
+                    valueListenable: _choicesSubjects,
+                    child: Container(),
+                  ),
                   SizedBox(height: size.height * 0.03),
                   start.enrolledStatus == Status.GettingEnrolled
                       ? loading
