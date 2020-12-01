@@ -1,5 +1,3 @@
-import 'package:meet_your_mates/api/models/subject.dart';
-
 class Degree {
   String id;
   String name;

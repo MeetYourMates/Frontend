@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:direct_select/direct_select.dart';
 import 'my_selection_item.dart';
 
-int selectedIndex = 0;
-
 //Widget Implementation
+// ignore: must_be_immutable
 class DirectOptions extends StatefulWidget {
   final List<String> elements;
+  var selectedIndex = 0;
   final String title;
   final bool enable;
   final Function(String) onSelected;
-  const DirectOptions(
+  DirectOptions(
       {Key key,
       this.title,
       this.elements,
@@ -25,11 +25,13 @@ class DirectOptions extends StatefulWidget {
 class _DirectOptionsState extends State<DirectOptions> {
   //final List<String> elements;
   List<Widget> _buildItems() {
-    return widget.elements
-        .map((val) => MySelectionItem(
+    print(widget.elements);
+    List<Widget> returnWidgetSelectItems = new List<Widget>();
+    widget.elements
+        .forEach((val) => returnWidgetSelectItems.add(MySelectionItem(
               title: val,
-            ))
-        .toList();
+            )));
+    return returnWidgetSelectItems;
   }
 
   //Widget Design
@@ -54,14 +56,20 @@ class _DirectOptionsState extends State<DirectOptions> {
                   opacity: widget.enable ? 1 : 0.35,
                   child: DirectSelect(
                       itemExtent: 35.0,
-                      selectedIndex: selectedIndex,
+                      selectedIndex: (widget.selectedIndex >= 0 &&
+                              widget.selectedIndex < widget.elements.length)
+                          ? widget.selectedIndex
+                          : 0,
                       child: MySelectionItem(
                         isForList: false,
-                        title: widget.elements[selectedIndex],
+                        title: widget.elements[widget.selectedIndex],
                       ),
                       onSelectedItemChanged: (index) {
                         setState(() {
-                          selectedIndex = index;
+                          index = (index >= 0 && index < widget.elements.length)
+                              ? index
+                              : 0;
+                          widget.selectedIndex = index;
                           widget.onSelected(widget.elements[index]);
                         });
                       },

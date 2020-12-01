@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:meet_your_mates/api/models/degree.dart';
 import 'package:meet_your_mates/api/models/student.dart';
+import 'package:meet_your_mates/api/models/subject.dart';
 import 'package:meet_your_mates/api/models/university.dart';
 import 'package:meet_your_mates/api/util/app_url.dart';
 
@@ -76,11 +77,15 @@ class StartProvider with ChangeNotifier {
     if (response.statusCode == 200) {
       Map responseData = jsonDecode(response.body);
       Degree degree = Degree.fromJson(responseData);
-
+      List<Subject> subjects = new List<Subject>();
+      List<String> subjs = new List<String>();
       _enrolledStatus = Status.DataLoaded;
       notifyListeners();
-
-      result = {'status': true, 'message': 'Successful', 'degree': degree};
+      //We have to convert to json {"id":"objId","name":"nameSubs"}
+      //subjects = degree.getSubjects(); //Need to Implement This!!
+      subjects.forEach((val) => subjs.add('"id":$val.id,"name":$val.name'));
+      //Now from Subjects list create a list of String with above format
+      result = {'status': true, 'message': 'Successful', 'subjects': subjs};
     } else {
       _enrolledStatus = Status.DataFailed;
       notifyListeners();

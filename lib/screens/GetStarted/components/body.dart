@@ -21,20 +21,28 @@ class Body extends StatefulWidget {
 
 class _BodyState extends State<Body> {
   final formKey = new GlobalKey<FormState>();
-  String _university, _faculty, _degree;
+  String _university = "", _faculty = "", _degree = "";
+  //Value Notifier with Initial Values
+  final ValueNotifier<List<String>> universityNames =
+      ValueNotifier(["Select your University:"]);
+  final ValueNotifier<List<String>> facultyNames =
+      ValueNotifier(["Select your Faculty:"]);
+  final ValueNotifier<List<String>> degreeNames =
+      ValueNotifier(["Select your Degree:"]);
   bool enabled = false;
   bool choosenUni = false;
   bool choosenFaculty = false;
+  bool choosenDegree = false;
   Universities universities = new Universities();
-  List<String> universityNames = ["Select your University:"];
-  List<String> facultyNames = ["Select your Faculty:"];
-  List<String> degreeNames = ["Select your Degree:"];
+  //List<String> universityNames = ["Select your University:"];
+  //List<String> facultyNames = ["Select your Faculty:"];
+  //List<String> degreeNames = ["Select your Degree:"];
   List<String> _subjects = [];
 
   validateAll() {
-    if (_university != "Select your university" &&
-        _faculty != "Select your campus" &&
-        _degree != "Select your degree" &&
+    if (_university != "Select your University:" &&
+        _faculty != "Select your Faculty:" &&
+        _degree != "Select your Degree:" &&
         _university != null &&
         _faculty != null &&
         _degree != null) {
@@ -60,6 +68,16 @@ class _BodyState extends State<Body> {
         choosenFaculty = true;
       } else {
         choosenFaculty = false;
+      }
+    });
+  }
+
+  void _toggleDegree() {
+    setState(() {
+      if (_degree != "Select your Degree:" && _degree != null) {
+        choosenDegree = true;
+      } else {
+        choosenDegree = false;
       }
     });
   }
@@ -100,31 +118,33 @@ class _BodyState extends State<Body> {
         if (response['status']) {
           //print("Printing" + response['universities']);
           universities.universityList = response['universities'];
-          setState(() {
-            universityNames.addAll(universities.getUniversityNames());
-          });
+          universityNames.value.addAll(universities.getUniversityNames());
         } else {
           Flushbar(
-            title: "Failed Login",
+            title: "Failed",
             message: response['message']['message'].toString(),
             duration: Duration(seconds: 3),
           ).show(context);
         }
       });
     };
+
     var loadSubjects = (String degreeId) {
-      //   final Future<Map<String, dynamic>> successfulMessage =
-      //         start.;
-      //     //Callback to message recieved after login auth
-      //     successfulMessage.then((response) {
-      //       if (response['status']) {
-      //          universities = response['universities'];
-      //       } else {
-      //         Flushbar(
-      //           title: "Failed Login",
-      //           message: response['message']['message'].toString(),
-      //           duration: Duration(seconds: 3),
-      //         ).show(context);
+      final Future<Map<String, dynamic>> successfulMessage =
+          start.getSubjectData(degreeId);
+      //Callback to message recieved after login auth
+      successfulMessage.then((response) {
+        if (response['status']) {
+          _subjects = response['subjects'];
+          _toggleValidate();
+        } else {
+          Flushbar(
+            title: "Failed",
+            message: response['message']['message'].toString(),
+            duration: Duration(seconds: 3),
+          ).show(context);
+        }
+      });
     };
     var doStart = () {
       debugPrint('university: $_university');
@@ -143,6 +163,8 @@ class _BodyState extends State<Body> {
         doFlushbar();
       }
     };
+    //Local Temperory Variable
+    List<String> temp = new List<String>();
     Size size = MediaQuery.of(context).size;
     return StatefulWrapper(
       onInit: () {
@@ -162,43 +184,94 @@ class _BodyState extends State<Body> {
                     width: size.width * 0.4,
                   ),
                   //loadUniversities(),
-                  DirectOptions(
-                      title: "University",
-                      elements: universityNames,
-                      enable: true,
-                      onSelected: (value) => {
-                            _university = value,
-                            _toggleUniversity(),
-                            if (choosenUni)
-                              {
-                                setState(() {
-                                  facultyNames.addAll(universities
-                                      .getUniversityByName(_university)
-                                      .getFacultyNames());
-                                })
-                              }
-                          }),
-                  DirectOptions(
-                      title: "Faculty",
-                      enable: choosenUni,
-                      elements: facultyNames,
-                      onSelected: (value) => {
-                            _faculty = value,
-                            _toggleFaculty(),
-                            degreeNames.addAll(universities
-                                .getUniversityByName(_university)
-                                .getFacultyByName(_faculty)
-                                .getDegreeNames())
-                          }),
-                  DirectOptions(
-                      title: "Degree",
-                      enable: choosenFaculty,
-                      elements: degreeNames,
-                      onSelected: (value) =>
-                          {_degree = value, _toggleValidate()}),
+                  ValueListenableBuilder(
+                    builder: (BuildContext context,
+                        List<String> _universityNames, Widget child) {
+                      // This builder will only get called when the _counter
+                      // is updated.
+                      return DirectOptions(
+                          title: "University",
+                          elements: _universityNames,
+                          enable: true,
+                          onSelected: (value) => {
+                                _university = value,
+                                print("University Changed: " + value),
+                                _toggleUniversity(),
+                                if (choosenUni)
+                                  {
+                                    //Clearing current degreeList and adding new Data
+                                    temp.clear(),
+                                    temp.addAll(universities
+                                        .getUniversityByName(_university)
+                                        .getFacultyNames()),
+                                    facultyNames.value.removeWhere((item) =>
+                                        item != "Select your University:"),
+                                    facultyNames.value.addAll(temp),
+                                    print("Faculties Name List: " +
+                                        temp.join("/"))
+                                  }
+                              });
+                    },
+                    valueListenable: universityNames,
+                    child: Container(),
+                  ),
+                  ValueListenableBuilder(
+                    builder: (BuildContext context, List<String> _facultNames,
+                        Widget child) {
+                      // This builder will only get called when the _counter
+                      // is updated.
+                      return DirectOptions(
+                          title: "Faculty",
+                          elements: _facultNames,
+                          enable: choosenUni,
+                          onSelected: (value) => {
+                                _faculty = value,
+                                print("Faculty Changed: " + value),
+                                _toggleFaculty(),
+                                if (choosenFaculty)
+                                  {
+                                    //Clearing current degreeList and adding new Data
+                                    temp.clear(),
+                                    temp.addAll(universities
+                                        .getUniversityByName(_university)
+                                        .getFacultyByName(_faculty)
+                                        .getDegreeNames()),
+                                    degreeNames.value.removeWhere((item) =>
+                                        item != "Select your Faculty:"),
+                                    degreeNames.value.addAll(temp),
+                                    print(
+                                        "Degrees Name List: " + temp.join("/"))
+                                  }
+                              });
+                    },
+                    valueListenable: facultyNames,
+                    child: Container(),
+                  ),
+                  ValueListenableBuilder(
+                    builder: (BuildContext context, List<String> _degreeNames,
+                        Widget child) {
+                      // This builder will only get called when the _counter
+                      // is updated.
+                      return DirectOptions(
+                          title: "Degree",
+                          elements: _degreeNames,
+                          enable: choosenFaculty,
+                          onSelected: (value) => {
+                                _degree = value,
+                                _toggleDegree(),
+                                if (choosenDegree)
+                                  {
+                                    //Here we call for subjects and show gettingEnrolled Status!
+                                    loadSubjects(_degree)
+                                  }
+                              });
+                    },
+                    valueListenable: degreeNames,
+                    child: Container(),
+                  ),
                   MultipleOptions(
                       title: "Subjects",
-                      enabled: enabled,
+                      enabled: choosenDegree,
                       onSelected: (value) => {_subjects = value},
                       notEnableTap: doFlushbar),
                   SizedBox(height: size.height * 0.03),
