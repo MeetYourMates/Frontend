@@ -187,8 +187,11 @@ class _BodyState extends State<Body> {
           _subjects.isNotEmpty) {
         //Execute Enrollment
         _subjects.forEach((_subjId) {
-          startEnrollment(_subjId, element);
-          print("Subject On Each: " + _subjId);
+          startEnrollment(_subjId, widget.student.id);
+          print("Subject On Each: " +
+              _subjId +
+              " For Student: " +
+              widget.student.id);
         });
       } else {
         doFlushbar();
