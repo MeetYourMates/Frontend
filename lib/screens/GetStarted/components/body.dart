@@ -31,9 +31,9 @@ class _BodyState extends State<Body> {
   final ValueNotifier<List<String>> degreeNames =
       ValueNotifier(["Select your Degree:"]);
   bool enabled = false;
-  bool choosenUni = false;
-  bool choosenFaculty = false;
-  bool choosenDegree = false;
+  bool chosenUni = false;
+  bool chosenFaculty = false;
+  bool chosenDegree = false;
   Universities universities = new Universities();
   //List<String> universityNames = ["Select your University:"];
   //List<String> facultyNames = ["Select your Faculty:"];
@@ -61,9 +61,9 @@ class _BodyState extends State<Body> {
   void _toggleUniversity() {
     setState(() {
       if (_university != "Select your university" && _university != null) {
-        choosenUni = true;
+        chosenUni = true;
       } else {
-        choosenUni = false;
+        chosenUni = false;
       }
     });
   }
@@ -71,9 +71,9 @@ class _BodyState extends State<Body> {
   void _toggleFaculty() {
     setState(() {
       if (_faculty != "Select your Faculty:" && _faculty != null) {
-        choosenFaculty = true;
+        chosenFaculty = true;
       } else {
-        choosenFaculty = false;
+        chosenFaculty = false;
       }
     });
   }
@@ -81,9 +81,9 @@ class _BodyState extends State<Body> {
   void _toggleDegree() {
     setState(() {
       if (_degree != "Select your Degree:" && _degree != null) {
-        choosenDegree = true;
+        chosenDegree = true;
       } else {
-        choosenDegree = false;
+        chosenDegree = false;
       }
     });
   }
@@ -232,7 +232,7 @@ class _BodyState extends State<Body> {
                                 _university = value,
                                 print("University Changed: " + value),
                                 _toggleUniversity(),
-                                if (choosenUni)
+                                if (chosenUni)
                                   {
                                     //Clearing current degreeList and adding new Data
                                     temp.clear(),
@@ -258,12 +258,12 @@ class _BodyState extends State<Body> {
                       return DirectOptions(
                           title: "Faculty",
                           elements: _facultNames,
-                          enable: choosenUni,
+                          enable: chosenUni,
                           onSelected: (value) => {
                                 _faculty = value,
                                 print("Faculty Changed: " + value),
                                 _toggleFaculty(),
-                                if (choosenFaculty)
+                                if (chosenFaculty)
                                   {
                                     //Clearing current degreeList and adding new Data
                                     temp.clear(),
@@ -291,11 +291,11 @@ class _BodyState extends State<Body> {
                       return DirectOptions(
                           title: "Degree",
                           elements: _degreeNames,
-                          enable: choosenFaculty,
+                          enable: chosenFaculty,
                           onSelected: (value) => {
                                 _degree = value,
                                 _toggleDegree(),
-                                if (choosenDegree)
+                                if (chosenDegree)
                                   {
                                     //Here we call for choicesSubjects and show gettingEnrolled Status!
                                     //Find the Degreeid from name
@@ -318,14 +318,18 @@ class _BodyState extends State<Body> {
                         List<Map<String, dynamic>> _subjsList, Widget child) {
                       // This builder will only get called when the _counter
                       // is updated.
-                      return MultipleOptions(
-                          title: "choicesSubjects",
-                          elements: _subjsList != null
-                              ? _subjsList
-                              : choices.subjects,
-                          enabled: choosenDegree,
-                          onSelected: (value) => {_subjects = value},
-                          notEnableTap: doFlushbar);
+                      return AbsorbPointer(
+                          absorbing: !chosenDegree,
+                          child: Opacity(
+                              opacity: chosenDegree ? 1 : 0.35,
+                              child: MultipleOptions(
+                                  title: "Subjects",
+                                  elements: _subjsList != null
+                                      ? _subjsList
+                                      : choices.subjects,
+                                  enabled: chosenDegree,
+                                  onSelected: (value) => {_subjects = value},
+                                  notEnableTap: doFlushbar)));
                     },
                     valueListenable: _choicesSubjects,
                     child: Container(),
