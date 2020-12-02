@@ -3,10 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:meet_your_mates/api/models/degree.dart';
 import 'package:meet_your_mates/api/models/degreeWithList.dart';
-import 'package:meet_your_mates/api/models/student.dart';
-import 'package:meet_your_mates/api/models/subject.dart';
 import 'package:meet_your_mates/api/models/university.dart';
 import 'package:meet_your_mates/api/util/app_url.dart';
 

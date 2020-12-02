@@ -35,15 +35,10 @@ class _BodyState extends State<Body> {
   bool chosenFaculty = false;
   bool chosenDegree = false;
   Universities universities = new Universities();
-  //List<String> universityNames = ["Select your University:"];
-  //List<String> facultyNames = ["Select your Faculty:"];
-  //List<String> degreeNames = ["Select your Degree:"];
   final ValueNotifier<List<Map<String, dynamic>>> _choicesSubjects =
       ValueNotifier([
     {"id": "Test", "name": "test", "group": "test"}
   ]);
-  //List<Map<String, dynamic>> _choicesSubjects =
-  //    new List<Map<String, dynamic>>();
   List<String> _subjects = [];
   validateAll() {
     if (_university != "Select your University:" &&
@@ -60,7 +55,7 @@ class _BodyState extends State<Body> {
 
   void _toggleUniversity() {
     setState(() {
-      if (_university != "Select your university" && _university != null) {
+      if (_university != "Select your University:" && _university != null) {
         chosenUni = true;
       } else {
         chosenUni = false;
@@ -108,11 +103,12 @@ class _BodyState extends State<Body> {
         Text("We are getting you enrolled ... Please wait")
       ],
     );
+
     var doFlushbar = () {
       Flushbar(
         title: "Oops!",
         message:
-            "You must enter your universtity, faculty, degree and choicesSubjects first.",
+            "You must enter your universtity, faculty, degree and subjects first.",
         duration: Duration(seconds: 3),
       ).show(context);
     };
@@ -125,6 +121,8 @@ class _BodyState extends State<Body> {
           //print("Printing" + response['universities']);
           universities.universityList = response['universities'];
           universityNames.value.addAll(universities.getUniversityNames());
+          universityNames.value.remove("Select your University:");
+          print(universityNames);
         } else {
           Flushbar(
             title: "Failed",
