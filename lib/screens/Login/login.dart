@@ -1,10 +1,12 @@
+import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/student.dart';
+import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:provider/provider.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 //Services
 import 'package:meet_your_mates/api/services/auth_service.dart';
-import 'package:meet_your_mates/api/services/user_service.dart';
+
 //Utilities
 
 //Constants
@@ -13,7 +15,7 @@ import 'package:meet_your_mates/constants.dart';
 import 'package:meet_your_mates/screens/Login/background.dart';
 import 'package:meet_your_mates/api/util/validators.dart';
 //Models
-import 'package:meet_your_mates/api/models/user.dart';
+
 //Components
 import 'package:meet_your_mates/components/already_have_an_account_acheck.dart';
 import 'package:meet_your_mates/components/rounded_button.dart';
@@ -26,7 +28,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final formKey = new GlobalKey<FormState>();
-
+  var logger = Logger();
   String _username, _password;
 
   @override
@@ -63,16 +65,17 @@ class _LoginState extends State<Login> {
 
       if (form.validate()) {
         form.save();
-
+        logger.d("Do Login Pressed user:$_username pass:$_password");
         final Future<Map<String, dynamic>> successfulMessage =
             auth.login(_username, _password);
         //Callback to message recieved after login auth
         successfulMessage.then((response) {
           if (response['status']) {
             Student student = response['student'];
-            Provider.of<UserProvider>(context, listen: false)
-                .setUser(student.user);
-            Navigator.pushReplacementNamed(context, '/dashboard');
+            Provider.of<StudentProvider>(context, listen: false)
+                .setStudent(student);
+            //Navigator.pushReplacementNamed(context, '/dashboard');
+            logger.d("Logged In Succesfull!");
           } else {
             Flushbar(
               title: "Failed Login",
@@ -82,7 +85,7 @@ class _LoginState extends State<Login> {
           }
         });
       } else {
-        print("form is invalid");
+        logger.w("form is invalid");
       }
     };
 

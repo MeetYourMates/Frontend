@@ -1,11 +1,11 @@
+import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 //Services
-import 'package:meet_your_mates/api/services/user_service.dart';
+
 //Utilities
 
 //Models
-import 'package:meet_your_mates/api/models/user.dart';
 
 class DashBoard extends StatefulWidget {
   @override
@@ -15,8 +15,8 @@ class DashBoard extends StatefulWidget {
 class _DashBoardState extends State<DashBoard> {
   @override
   Widget build(BuildContext context) {
-    User user = Provider.of<UserProvider>(context).user;
-
+    //Provides Access to Student and ability to update student in the whole app
+    StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text("DASHBOARD PAGE"),
@@ -27,7 +27,7 @@ class _DashBoardState extends State<DashBoard> {
           SizedBox(
             height: 100,
           ),
-          Center(child: Text(user.email)),
+          Center(child: Text("User Entered!")),
           SizedBox(height: 100),
           RaisedButton(
             onPressed: () {},

@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/models/user.dart';
 import 'package:meet_your_mates/api/util/app_url.dart';
@@ -21,9 +22,10 @@ enum Status {
 class AuthProvider with ChangeNotifier {
   Status _loggedInStatus = Status.NotLoggedIn;
   Status _registeredInStatus = Status.NotRegistered;
-
+  var logger = Logger();
   Status get loggedInStatus => _loggedInStatus;
   Status get registeredInStatus => _registeredInStatus;
+  // ignore: todo
   //Login Service without proper error handling TODO: FUTURE REPAIR
   Future<Map<String, dynamic>> login(String email, String password) async {
     var result;
@@ -42,16 +44,20 @@ class AuthProvider with ChangeNotifier {
     );
 
     if (response.statusCode == 200) {
-      print(response.body);
+      logger.d(response.body);
       Map responseData = jsonDecode(response.body);
-      Student authUser = Student.fromJson(responseData);
-      print(authUser);
-      UserPreferences().saveUser(authUser.user);
-
+      Student authenticatedStudent = Student.fromJson(responseData);
+      logger.d(authenticatedStudent);
+      UserPreferences().saveUser(userTmp);
+      logger.d("User in Shared Preferences: " + userTmp.toString());
       _loggedInStatus = Status.LoggedIn;
       notifyListeners();
 
-      result = {'status': true, 'message': 'Successful', 'student': authUser};
+      result = {
+        'status': true,
+        'message': 'Successful',
+        'student': authenticatedStudent
+      };
     } else {
       _loggedInStatus = Status.NotLoggedIn;
       notifyListeners();
@@ -90,16 +96,16 @@ class AuthProvider with ChangeNotifier {
     if (response.statusCode == 200) {
       print(response.body);
       Map responseData = jsonDecode(response.body);
-      //Student authUser = Student.fromJson(responseData);
-      //print(authUser);
+      //Student authenticatedStudent = Student.fromJson(responseData);
+      //print(authenticatedStudent);
 
-      User authUser = User.fromJson(responseData);
+      User authenticatedStudent = User.fromJson(responseData);
 
-      UserPreferences().saveUser(authUser);
+      UserPreferences().saveUser(authenticatedStudent);
       result = {
         'status': true,
         'message': 'Successfully registered',
-        'data': authUser
+        'data': authenticatedStudent
       };
     } else {
       result = {

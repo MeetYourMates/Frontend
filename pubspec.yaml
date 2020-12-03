@@ -39,6 +39,8 @@ dependencies:
   shared_preferences: ^0.5.8
   provider: ^4.3.1
   flushbar: ^1.10.4
+  connectivity: ^2.0.2
+  logger: ^0.9.4
 dev_dependencies:
   flutter_test:
     sdk: flutter
