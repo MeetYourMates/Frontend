@@ -14,15 +14,20 @@ enum Status {
   Registered,
   Authenticating,
   Registering,
-  LoggedOut
+  LoggedOut,
+  Validating,
+  NotValidated,
+  Validated
 }
 
 class AuthProvider with ChangeNotifier {
   Status _loggedInStatus = Status.NotLoggedIn;
   Status _registeredInStatus = Status.NotRegistered;
+  Status _validatedStatus = Status.NotValidated;
 
   Status get loggedInStatus => _loggedInStatus;
   Status get registeredInStatus => _registeredInStatus;
+  Status get validatedStatus => _validatedStatus;
 
   Future<Map<String, dynamic>> login(String email, String password) async {
     var result;
@@ -64,24 +69,55 @@ class AuthProvider with ChangeNotifier {
     return result;
   }
 
-  Future<Map<String, dynamic>> register(
-      String email, String password, String passwordConfirmation) async {
-    final Map<String, dynamic> registrationData = {
-      'user': {
-        'email': email,
-        'password': password,
-        'password_confirmation': passwordConfirmation
-      }
+  Future<Map<String, dynamic>> register(String email, String password) async {
+    var result;
+
+    final Map<String, dynamic> registerData = {
+      'email': email,
+      'password': password
     };
 
     _registeredInStatus = Status.Registering;
     notifyListeners();
 
-    return await post(AppUrl.register,
-            body: json.encode(registrationData),
-            headers: {'Content-Type': 'application/json'})
-        .then(onValue)
-        .catchError(onError);
+    Response response = await post(AppUrl.register,
+        body: json.encode(registerData),
+        headers: {'Content-Type': 'application/json'});
+
+    if (response.statusCode == 201) {
+      User newUser = new User(
+          userId: null, name: null, email: email, phone: null, type: null);
+      UserPreferences().saveUser(newUser);
+      _registeredInStatus = Status.Registered;
+      notifyListeners();
+      result = {'status': true, 'message': "User registered"};
+    } else if (response.statusCode == 409) {
+      _registeredInStatus = Status.NotRegistered;
+      notifyListeners();
+      result = {'status': false, 'message': "user already exists"};
+    } else {
+      _registeredInStatus = Status.NotRegistered;
+      notifyListeners();
+      result = {'status': false, 'message': "Error"};
+    }
+    return result;
+  }
+
+  Future<Map<String, dynamic>> validateCode(String code) async {
+    var result;
+    _validatedStatus = Status.Validating;
+    notifyListeners();
+    Response response = await get(AppUrl.validate + code);
+    if (response.statusCode == 201) {
+      _validatedStatus = Status.Validated;
+      notifyListeners();
+      result = {'status': true, 'message': "User validated"};
+    } else {
+      _validatedStatus = Status.NotValidated;
+      notifyListeners();
+      result = {'status': false, 'message': "User validated"};
+    }
+    return result;
   }
 
   static Future<FutureOr> onValue(Response response) async {

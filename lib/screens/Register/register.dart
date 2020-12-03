@@ -53,13 +53,16 @@ class _RegisterState extends State<Register> {
     };
     var doRegister = () {
       final form = formKey.currentState;
-      if (form.validate()) {
+      if (form.validate() && (_password == _confirmPassword)) {
         form.save();
-        auth.register(_username, _password, _confirmPassword).then((response) {
+        auth
+            .register(
+          _username,
+          _password,
+        )
+            .then((response) {
           if (response['status']) {
-            User user = response['data'];
-            Provider.of<UserProvider>(context, listen: false).setUser(user);
-            Navigator.pushReplacementNamed(context, '/dashboard');
+            Navigator.pushReplacementNamed(context, '/validate');
           } else {
             Flushbar(
               title: "Registration Failed",

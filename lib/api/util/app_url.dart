@@ -4,6 +4,7 @@ class AppUrl {
 
   static const String baseURL = localBaseURL;
   static const String login = baseURL + "/access";
-  static const String register = baseURL + "/signUp";
+  static const String register = baseURL + "auth/signUp";
   static const String forgotPassword = baseURL + "/forgotPassword";
+  static const String validate = baseURL + "auth/validate/";
 }
