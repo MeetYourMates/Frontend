@@ -1,4 +1,5 @@
 import 'package:meet_your_mates/api/models/student.dart';
+
 import 'package:provider/provider.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,7 @@ import 'package:meet_your_mates/constants.dart';
 import 'package:meet_your_mates/screens/Login/background.dart';
 import 'package:meet_your_mates/api/util/validators.dart';
 //Models
-import 'package:meet_your_mates/api/models/user.dart';
+
 //Components
 import 'package:meet_your_mates/components/already_have_an_account_acheck.dart';
 import 'package:meet_your_mates/components/rounded_button.dart';
@@ -73,6 +74,7 @@ class _LoginState extends State<Login> {
             Provider.of<UserProvider>(context, listen: false)
                 .setUser(student.user);
             Navigator.pushReplacementNamed(context, '/dashboard');
+           
           } else {
             Flushbar(
               title: "Failed Login",
@@ -143,8 +145,10 @@ class _LoginState extends State<Login> {
                       ? loading
                       : RoundedButton(
                           text: "LOGIN",
-                          press: doLogin,
-                        ),
+                          press: () {
+                          doLogin();
+                          
+                          }),
                   SizedBox(height: size.height * 0.03),
                   AlreadyHaveAnAccountCheck(
                     press: () {
