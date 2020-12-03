@@ -10,9 +10,13 @@ class Universities {
 
   List<String> getUniversityNames() {
     List<String> universityNames = [];
-    universityList.forEach((uni) {
-      universityNames.add(uni.name);
-    });
+    if (universityList != null) {
+      if (universityList.isNotEmpty) {
+        universityList.forEach((uni) {
+          universityNames.add(uni.name);
+        });
+      }
+    }
     return universityNames;
   }
 

@@ -32,7 +32,6 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     AuthProvider auth = Provider.of<AuthProvider>(context);
-
     var loading = Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[

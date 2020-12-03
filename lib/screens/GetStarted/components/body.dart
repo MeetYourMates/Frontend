@@ -25,19 +25,18 @@ class _BodyState extends State<Body> {
   final formKey = new GlobalKey<FormState>();
   String _university = "", _faculty = "", _degree = "";
   //Value Notifier with Initial Values
-  final ValueNotifier<List<String>> universityNames =
+  ValueNotifier<List<String>> universityNames =
       ValueNotifier(["Select your University:"]);
-  final ValueNotifier<List<String>> facultyNames =
+  ValueNotifier<List<String>> facultyNames =
       ValueNotifier(["Select your Faculty:"]);
-  final ValueNotifier<List<String>> degreeNames =
+  ValueNotifier<List<String>> degreeNames =
       ValueNotifier(["Select your Degree:"]);
   bool enabled = false;
   bool chosenUni = false;
   bool chosenFaculty = false;
   bool chosenDegree = false;
   Universities universities = new Universities();
-  final ValueNotifier<List<Map<String, dynamic>>> _choicesSubjects =
-      ValueNotifier([
+  ValueNotifier<List<Map<String, dynamic>>> _choicesSubjects = ValueNotifier([
     {"id": "Test", "name": "test", "group": "test"}
   ]);
   List<String> _subjects = [];
@@ -123,39 +122,14 @@ class _BodyState extends State<Body> {
           universities.universityList = response['universities'];
           universityNames.value.addAll(universities.getUniversityNames());
           universityNames.value.remove("Select your University:");
-          print(universityNames);
+          logger.d("Load Universities: " + universityNames.toString());
         } else {
-          Flushbar(
-            title: "Failed",
-            message: response['message'].toString(),
-            duration: Duration(seconds: 3),
-          ).show(context);
+          logger.d("Load Universities: " + response.toString());
+          doFlushbar("Unable to Retrieve Universities");
         }
       });
     };
-    var startEnrollment = (String subjectId, String studentId) {
-      //SubjectName SubjectId student
-      final Future<Map<String, dynamic>> successfulMessage =
-          start.start(subjectId, studentId);
-      //Callback to message recieved after login auth
-      successfulMessage.then((response) {
-        if (response['status']) {
-          //print("Printing" + response['universities']);
-          universities.universityList = response['universities'];
-          universityNames.value.addAll(universities.getUniversityNames());
-          logger.d("Enrollment: Succesfull");
-          return true;
-        } else {
-          Flushbar(
-            title: "Failed",
-            message: response['message'].toString(),
-            duration: Duration(seconds: 3),
-          ).show(context);
-        }
-      });
-      logger.d("Enrollment: Failed");
-      return false;
-    };
+
     var loadchoicesSubjects = (String degreeId) {
       final Future<Map<String, dynamic>> successfulMessage =
           start.getSubjectData(degreeId);
@@ -175,40 +149,52 @@ class _BodyState extends State<Body> {
         }
       });
     };
-    var doStart = () {
+
+    Future<bool> enrollStudents() async {
+      bool enrollStatus = false;
+      //For and Not ForEach because stupid dart makes the await call useless
+      //and we loose syncronicity between the result and the code execution
+      for (int i = 0; i < _subjects.length; i++) {
+        Map<String, dynamic> response =
+            await start.start(_subjects[i], _studentProvider.student.id);
+        enrollStatus = enrollStatus || response['status'];
+        print("Subjects Do Start stateBool: " + enrollStatus.toString());
+        logger.d("Enrolling in Selected Subject $i");
+      }
+      return enrollStatus;
+    }
+
+    void doStart() async {
       debugPrint('university: $_university');
       debugPrint('faculty: $_faculty');
       debugPrint('degree: $_degree');
       debugPrint('choicesSubjects: $_choicesSubjects');
 
-      if (_university != "Select your university" &&
-          _faculty != "Select your faculty" &&
-          _degree != "Select your degree" &&
+      if (_university != "Select your university:" &&
+          _faculty != "Select your faculty:" &&
+          _degree != "Select your degree:" &&
           _university != null &&
           _faculty != null &&
           _degree != null &&
           _subjects.isNotEmpty) {
         //Execute Enrollment
-        bool statusFinal = true;
-        _subjects.forEach((_subjId) {
-          startEnrollment(_subjId, _studentProvider.student.id);
-          print("Subject On Each: " +
-              _subjId +
-              " For Student: " +
-              _studentProvider.student.id);
-        });
-        logger.d("Status: " + statusFinal.toString());
-        if (statusFinal) {
+        final bool enrollStatus = await enrollStudents();
+        logger.d("enrollStudents Status: " + await enrollStatus.toString());
+        if (enrollStatus) {
+          logger.d("Succesfully Enrolled and Launched Dashboard");
           Navigator.pushReplacementNamed(context, '/dashboard');
         } else {
           //Failed
-          doFlushbar("Failed Enrollment");
+          logger.d("Failed Enrollment in all Subjects!");
+          doFlushbar("Failed Enrollment in all Subjects!");
         }
       } else {
         doFlushbar(
             "You must enter your universtity, faculty, degree and subjects first.");
       }
-    };
+    }
+
+    //var doStart = () async {};
 
     //Local Temperory Variable
     List<String> temp = new List<String>();

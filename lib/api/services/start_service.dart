@@ -124,7 +124,6 @@ class StartProvider with ChangeNotifier {
         result = {'status': false, 'message': "Failed to get you enrolled in "};
       }
     }
-
     return result;
   }
 }

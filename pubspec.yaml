@@ -47,6 +47,7 @@ dependencies:
   theme_patrol: ^0.0.1
   dio: ^3.0.7
   sticky_headers: ^0.1.8+1
+  auto_size_text: ^2.1.0
 
 dev_dependencies:
   flutter_test:
