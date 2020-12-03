@@ -41,6 +41,7 @@ dependencies:
   flushbar: ^1.10.4
   connectivity: ^2.0.2
   logger: ^0.9.4
+  bottom_navy_bar: ^5.6.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
