@@ -67,10 +67,7 @@ class _ValidateState extends State<Validate> {
                   _validationCode = codeController.text;
                   auth.validateCode(_validationCode).then((response) => {
                         if (response['status'])
-                          {
-                            Navigator.pushReplacementNamed(
-                                context, '/dashboard')
-                          }
+                          {Navigator.pushReplacementNamed(context, '/login')}
                       });
                 } else {}
               }),

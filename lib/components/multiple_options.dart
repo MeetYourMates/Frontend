@@ -4,17 +4,10 @@ import '../smart_select.dart';
 class MultipleOptions extends StatefulWidget {
   final List<Map<String, dynamic>> elements;
   final String title;
-  final bool enabled;
-  final GestureTapCallback notEnableTap;
   final Function(List<String>) onSelected;
 
   const MultipleOptions(
-      {Key key,
-      this.title,
-      @required this.elements,
-      this.onSelected,
-      this.enabled,
-      this.notEnableTap})
+      {Key key, this.title, @required this.elements, this.onSelected})
       : super(key: key);
   @override
   _MultipleOptionsState createState() => _MultipleOptionsState();
@@ -70,8 +63,6 @@ class _MultipleOptionsState extends State<MultipleOptions> {
                   tileBuilder: (context, state) {
                     return S2Tile.fromState(
                       state,
-                      enabled: widget.enabled,
-                      notEnableTap: widget.notEnableTap,
                       isTwoLine: false,
                     );
                   })),

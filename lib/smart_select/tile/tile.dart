@@ -10,7 +10,6 @@ class S2Tile<T> extends StatelessWidget {
   ///
   /// Inoperative if [enabled] is false.
   final GestureTapCallback onTap;
-  final GestureTapCallback notEnableTap;
 
   /// The primary content of the list tile.
   final Widget title;
@@ -45,7 +44,6 @@ class S2Tile<T> extends StatelessWidget {
   /// If false, this list tile is styled with the disabled color from the
   /// current [Theme] and the [onTap] and [onLongPress] callbacks are
   /// inoperative.
-  final bool enabled;
 
   /// If this tile is also [enabled] then icons and text are rendered with the same color.
   ///
@@ -86,13 +84,11 @@ class S2Tile<T> extends StatelessWidget {
     this.loadingText = 'Loading..',
     this.isLoading = false,
     this.isTwoLine = false,
-    this.enabled = true,
     this.selected = false,
     this.dense = false,
     this.hideValue = false,
     this.padding,
     this.body,
-    this.notEnableTap,
   }) : super(key: key);
 
   /// Create a default trigger widget from state
@@ -107,13 +103,11 @@ class S2Tile<T> extends StatelessWidget {
     this.loadingText = 'Loading..',
     this.isLoading = false,
     this.isTwoLine = false,
-    this.enabled = true,
     this.selected = false,
     this.dense = false,
     this.hideValue = false,
     this.padding,
     this.body,
-    this.notEnableTap,
   })  : title = title ?? state.titleWidget,
         value = value ?? state.valueDisplay,
         onTap = onTap ?? state.showModal,
@@ -122,7 +116,7 @@ class S2Tile<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new GestureDetector(
-      onTap: enabled ? onTap : notEnableTap,
+      onTap: onTap,
       child: SizedBox(
           height: 60.0,
           child: Card(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flushbar/flushbar.dart';
-import 'package:meet_your_mates/api/models/student.dart';
+import 'package:logger/logger.dart';
+import 'package:meet_your_mates/api/services/student_service.dart';
 import '../../../choices.dart' as choices;
 import 'package:meet_your_mates/api/models/universities.dart';
 import 'package:meet_your_mates/api/services/start_service.dart';
@@ -13,14 +14,14 @@ import 'background.dart';
 import 'package:flutter/foundation.dart';
 
 class Body extends StatefulWidget {
-  final Student student;
-  const Body({Key key, @required this.student}) : super(key: key);
+  const Body({Key key}) : super(key: key);
 
   @override
   _BodyState createState() => _BodyState();
 }
 
 class _BodyState extends State<Body> {
+  var logger = Logger();
   final formKey = new GlobalKey<FormState>();
   String _university = "", _faculty = "", _degree = "";
   //Value Notifier with Initial Values
@@ -95,6 +96,7 @@ class _BodyState extends State<Body> {
 
   @override
   Widget build(BuildContext context) {
+    StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
     StartProvider start = Provider.of<StartProvider>(context);
     var loading = Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -104,11 +106,10 @@ class _BodyState extends State<Body> {
       ],
     );
 
-    var doFlushbar = () {
+    var doFlushbar = (String message) {
       Flushbar(
         title: "Oops!",
-        message:
-            "You must enter your universtity, faculty, degree and subjects first.",
+        message: message,
         duration: Duration(seconds: 3),
       ).show(context);
     };
@@ -126,7 +127,7 @@ class _BodyState extends State<Body> {
         } else {
           Flushbar(
             title: "Failed",
-            message: response['message']['message'].toString(),
+            message: response['message'].toString(),
             duration: Duration(seconds: 3),
           ).show(context);
         }
@@ -142,14 +143,18 @@ class _BodyState extends State<Body> {
           //print("Printing" + response['universities']);
           universities.universityList = response['universities'];
           universityNames.value.addAll(universities.getUniversityNames());
+          logger.d("Enrollment: Succesfull");
+          return true;
         } else {
           Flushbar(
             title: "Failed",
-            message: response['message']['message'].toString(),
+            message: response['message'].toString(),
             duration: Duration(seconds: 3),
           ).show(context);
         }
       });
+      logger.d("Enrollment: Failed");
+      return false;
     };
     var loadchoicesSubjects = (String degreeId) {
       final Future<Map<String, dynamic>> successfulMessage =
@@ -164,7 +169,7 @@ class _BodyState extends State<Body> {
         } else {
           Flushbar(
             title: "Failed",
-            message: response['message']['message'].toString(),
+            message: response['message'].toString(),
             duration: Duration(seconds: 3),
           ).show(context);
         }
@@ -184,15 +189,24 @@ class _BodyState extends State<Body> {
           _degree != null &&
           _subjects.isNotEmpty) {
         //Execute Enrollment
+        bool statusFinal = true;
         _subjects.forEach((_subjId) {
-          startEnrollment(_subjId, widget.student.id);
+          startEnrollment(_subjId, _studentProvider.student.id);
           print("Subject On Each: " +
               _subjId +
               " For Student: " +
-              widget.student.id);
+              _studentProvider.student.id);
         });
+        logger.d("Status: " + statusFinal.toString());
+        if (statusFinal) {
+          Navigator.pushReplacementNamed(context, '/dashboard');
+        } else {
+          //Failed
+          doFlushbar("Failed Enrollment");
+        }
       } else {
-        doFlushbar();
+        doFlushbar(
+            "You must enter your universtity, faculty, degree and subjects first.");
       }
     };
 
@@ -345,13 +359,12 @@ class _BodyState extends State<Body> {
                           child: Opacity(
                               opacity: chosenDegree ? 1 : 0.35,
                               child: MultipleOptions(
-                                  title: "Subjects",
-                                  elements: _subjsList != null
-                                      ? _subjsList
-                                      : choices.subjects,
-                                  enabled: chosenDegree,
-                                  onSelected: (value) => {_subjects = value},
-                                  notEnableTap: doFlushbar)));
+                                title: "Subjects",
+                                elements: _subjsList != null
+                                    ? _subjsList
+                                    : choices.subjects,
+                                onSelected: (value) => {_subjects = value},
+                              )));
                     },
                     valueListenable: _choicesSubjects,
                     child: Container(),

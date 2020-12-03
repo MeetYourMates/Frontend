@@ -109,7 +109,7 @@ class StartProvider with ChangeNotifier {
     Response response = await post(AppUrl.addsubjects,
         body: json, headers: {'Content-Type': 'application/json'});
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       _enrolledStatus = Status.Enrolled;
       notifyListeners();
       result = {'status': true, 'message': 'Successful'};

@@ -72,7 +72,7 @@ class _LoginState extends State<Login> {
             Student student = response['student'];
             Provider.of<StudentProvider>(context, listen: false)
                 .setStudent(student);
-            Navigator.pushReplacementNamed(context, '/dashboard');
+            Navigator.pushReplacementNamed(context, '/getStarted');
             logger.d("Logged In Succesfull!");
           } else {
             Flushbar(
