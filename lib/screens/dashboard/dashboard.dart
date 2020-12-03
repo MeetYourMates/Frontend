@@ -1,5 +1,7 @@
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
+import 'package:meet_your_mates/api/util/shared_preference.dart';
+import 'package:meet_your_mates/components/rounded_button.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 //Services
@@ -50,8 +52,14 @@ class _DashBoardState extends State<DashBoard> {
               color: Colors.green,
             ),
             Container(
-              color: Colors.blue,
-            ),
+                color: Colors.blue,
+                child: RoundedButton(
+                  text: "LOGOUT",
+                  press: () => {
+                    UserPreferences().removeUser(),
+                    Navigator.pushReplacementNamed(context, '/login')
+                  },
+                )),
           ],
         ),
       ),
