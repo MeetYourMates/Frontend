@@ -16,15 +16,21 @@ enum Status {
   Registered,
   Authenticating,
   Registering,
-  LoggedOut
+  LoggedOut,
+  Validating,
+  NotValidated,
+  Validated
 }
 
 class AuthProvider with ChangeNotifier {
   Status _loggedInStatus = Status.NotLoggedIn;
   Status _registeredInStatus = Status.NotRegistered;
-  var logger = Logger();
+  Status _validatedStatus = Status.NotValidated;
+
   Status get loggedInStatus => _loggedInStatus;
   Status get registeredInStatus => _registeredInStatus;
+  Status get validatedStatus => _validatedStatus;
+  var logger = Logger();
   // ignore: todo
   //Login Service without proper error handling TODO: FUTURE REPAIR
   Future<Map<String, dynamic>> login(String email, String password) async {
@@ -33,7 +39,6 @@ class AuthProvider with ChangeNotifier {
     User userTmp = new User();
     userTmp.email = email;
     userTmp.password = password;
-
     _loggedInStatus = Status.Authenticating;
     notifyListeners();
 
@@ -69,24 +74,54 @@ class AuthProvider with ChangeNotifier {
     return result;
   }
 
-  Future<Map<String, dynamic>> register(
-      String email, String password, String passwordConfirmation) async {
-    User userTmp = new User();
-    if (password == passwordConfirmation) {
-      userTmp.email = email;
-      userTmp.password = password;
-    } else {
-      return {'status': false, 'message': 'Password not same', 'data': userTmp};
-    }
+  Future<Map<String, dynamic>> register(String email, String password) async {
+    var result;
+
+    final Map<String, dynamic> registerData = {
+      'email': email,
+      'password': password
+    };
 
     _registeredInStatus = Status.Registering;
     notifyListeners();
 
-    return await post(AppUrl.register,
-            body: json.encode(userTmp.toJson()),
-            headers: {'Content-Type': 'application/json'})
-        .then(onValue)
-        .catchError(onError);
+    Response response = await post(AppUrl.register,
+        body: json.encode(registerData),
+        headers: {'Content-Type': 'application/json'});
+
+    if (response.statusCode == 201) {
+      User newUser = new User(id: null, email: email, password: password);
+      UserPreferences().saveUser(newUser);
+      _registeredInStatus = Status.Registered;
+      notifyListeners();
+      result = {'status': true, 'message': "User registered"};
+    } else if (response.statusCode == 409) {
+      _registeredInStatus = Status.NotRegistered;
+      notifyListeners();
+      result = {'status': false, 'message': "user already exists"};
+    } else {
+      _registeredInStatus = Status.NotRegistered;
+      notifyListeners();
+      result = {'status': false, 'message': "Error"};
+    }
+    return result;
+  }
+
+  Future<Map<String, dynamic>> validateCode(String code) async {
+    var result;
+    _validatedStatus = Status.Validating;
+    notifyListeners();
+    Response response = await get(AppUrl.validate + code);
+    if (response.statusCode == 201) {
+      _validatedStatus = Status.Validated;
+      notifyListeners();
+      result = {'status': true, 'message': "User validated"};
+    } else {
+      _validatedStatus = Status.NotValidated;
+      notifyListeners();
+      result = {'status': false, 'message': "User validated"};
+    }
+    return result;
   }
 
   static Future<FutureOr> onValue(Response response) async {

@@ -6,7 +6,6 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 //Services
 import 'package:meet_your_mates/api/services/auth_service.dart';
-
 //Utilities
 
 //Constants
@@ -15,7 +14,6 @@ import 'package:meet_your_mates/constants.dart';
 import 'package:meet_your_mates/screens/Login/background.dart';
 import 'package:meet_your_mates/api/util/validators.dart';
 //Models
-
 //Components
 import 'package:meet_your_mates/components/already_have_an_account_acheck.dart';
 import 'package:meet_your_mates/components/rounded_button.dart';
@@ -128,6 +126,7 @@ class _LoginState extends State<Login> {
                   TextFieldContainer(
                     child: TextFormField(
                       autofocus: false,
+                      obscureText: true,
                       validator: (value) =>
                           value.isEmpty ? "Please enter password" : null,
                       onSaved: (value) => _password = value,

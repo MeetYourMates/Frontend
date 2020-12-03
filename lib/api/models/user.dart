@@ -22,8 +22,6 @@ class User {
 
   @override
   String toString() {
-    // TODO: implement toString
-
     return "id: " +
         (id == null ? "NULL" : id) +
         "email:" +

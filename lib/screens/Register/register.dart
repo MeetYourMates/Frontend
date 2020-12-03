@@ -3,7 +3,6 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 //Services
 import 'package:meet_your_mates/api/services/auth_service.dart';
-import 'package:meet_your_mates/api/services/user_service.dart';
 //Utilities
 
 //Constants
@@ -13,7 +12,7 @@ import 'package:meet_your_mates/screens/Register/background.dart';
 //import 'package:meet_your_mates/api/util/shared_preference.dart';
 import 'package:meet_your_mates/api/util/validators.dart';
 //Models
-import 'package:meet_your_mates/api/models/user.dart';
+
 //Components
 import 'package:meet_your_mates/components/already_have_an_account_acheck.dart';
 import 'package:meet_your_mates/components/or_divider.dart';
@@ -53,13 +52,16 @@ class _RegisterState extends State<Register> {
     };
     var doRegister = () {
       final form = formKey.currentState;
-      if (form.validate()) {
+      if (form.validate() && (_password == _confirmPassword)) {
         form.save();
-        auth.register(_username, _password, _confirmPassword).then((response) {
+        auth
+            .register(
+          _username,
+          _password,
+        )
+            .then((response) {
           if (response['status']) {
-            User user = response['data'];
-            Provider.of<UserProvider>(context, listen: false).setUser(user);
-            Navigator.pushReplacementNamed(context, '/dashboard');
+            Navigator.pushReplacementNamed(context, '/validate');
           } else {
             Flushbar(
               title: "Registration Failed",
@@ -114,6 +116,7 @@ class _RegisterState extends State<Register> {
                   TextFieldContainer(
                     child: TextFormField(
                       autofocus: false,
+                      obscureText: true,
                       validator: (value) =>
                           value.isEmpty ? "Please enter password" : null,
                       onSaved: (value) => _password = value,
@@ -131,6 +134,7 @@ class _RegisterState extends State<Register> {
                   TextFieldContainer(
                     child: TextFormField(
                       autofocus: false,
+                      obscureText: true,
                       validator: (value) =>
                           value.isEmpty ? "Please reenter password" : null,
                       onSaved: (value) => _confirmPassword = value,

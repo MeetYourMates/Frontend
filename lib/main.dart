@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:meet_your_mates/screens/Login/login.dart';
 import 'package:meet_your_mates/screens/Register/register.dart';
 import 'package:meet_your_mates/screens/Dashboard/dashboard.dart';
+import 'package:meet_your_mates/screens/Validate/validate.dart';
 //Services
 import 'package:meet_your_mates/api/services/auth_service.dart';
 import 'package:meet_your_mates/api/services/user_service.dart';
@@ -82,6 +83,7 @@ class MyApp extends StatelessWidget {
             '/dashboard': (context) => DashBoard(),
             '/login': (context) => Login(),
             '/register': (context) => Register(),
+            '/validate': (context) => Validate(),
           }),
     );
   }
