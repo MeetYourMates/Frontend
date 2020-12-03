@@ -4,13 +4,12 @@ import 'package:meet_your_mates/components/text_field_container.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 //Services
-import 'package:meet_your_mates/api/services/user_service.dart';
+
 //Utilities
 
 //Screens
 import 'package:meet_your_mates/screens/Validate/background.dart';
 //Models
-import 'package:meet_your_mates/api/models/user.dart';
 
 import '../../constants.dart';
 
@@ -33,8 +32,6 @@ class _ValidateState extends State<Validate> {
   Widget build(BuildContext context) {
     var _validationCode;
     AuthProvider auth = Provider.of<AuthProvider>(context);
-
-    var doValidation = () {};
 
     return SafeArea(
         child: Scaffold(
