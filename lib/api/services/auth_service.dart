@@ -141,25 +141,28 @@ class AuthProvider with ChangeNotifier {
 
     _registeredInStatus = Status.Registering;
     notifyListeners();
+    try {
+      Response response = await post(AppUrl.register,
+          body: json.encode(registerData),
+          headers: {'Content-Type': 'application/json'});
 
-    Response response = await post(AppUrl.register,
-        body: json.encode(registerData),
-        headers: {'Content-Type': 'application/json'});
-
-    if (response.statusCode == 201) {
-      User newUser = new User(id: null, email: email, password: password);
-      UserPreferences().saveUser(newUser);
-      _registeredInStatus = Status.Registered;
-      notifyListeners();
-      result = {'status': true, 'message': "User registered"};
-    } else if (response.statusCode == 409) {
-      _registeredInStatus = Status.NotRegistered;
-      notifyListeners();
-      result = {'status': false, 'message': "user already exists"};
-    } else {
-      _registeredInStatus = Status.NotRegistered;
-      notifyListeners();
-      result = {'status': false, 'message': "Error"};
+      if (response.statusCode == 201) {
+        User newUser = new User(id: null, email: email, password: password);
+        UserPreferences().saveUser(newUser);
+        _registeredInStatus = Status.Registered;
+        notifyListeners();
+        result = {'status': true, 'message': "User registered"};
+      } else if (response.statusCode == 409) {
+        _registeredInStatus = Status.NotRegistered;
+        notifyListeners();
+        result = {'status': false, 'message': "user already exists"};
+      } else {
+        _registeredInStatus = Status.NotRegistered;
+        notifyListeners();
+        result = {'status': false, 'message': "Error"};
+      }
+    } catch (err) {
+      result = {'status': false, 'message': "Error Couln't Register!"};
     }
     return result;
   }

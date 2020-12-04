@@ -97,12 +97,12 @@ class _BodyState extends State<Body> {
   @override
   Widget build(BuildContext context) {
     StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
-    StartProvider start = Provider.of<StartProvider>(context, listen: false);
+    StartProvider start = Provider.of<StartProvider>(context, listen: true);
     Future _fetchUniversities() async {
       return _memoizerUniversities.runOnce(() async {
         logger.d("_memoizerUniversities Executed");
-        Map<String, dynamic> status = await start.getStartedData();
-        return status;
+        Map<String, dynamic> result = await start.getStartedData();
+        return result;
       });
     }
 
@@ -186,8 +186,6 @@ class _BodyState extends State<Body> {
       }
     }
 
-    //var doStart = () async {};
-
     //Local Temperory Variable
     List<String> temp = new List<String>();
     Size size = MediaQuery.of(context).size;
@@ -208,7 +206,10 @@ class _BodyState extends State<Body> {
                 universityNames.value.remove("Select your University:");
                 logger.d("Load Universities: " + universityNames.toString());
               } else {
-                return Text('Unable to Retrieve Universities');
+                return Scaffold(
+                    body: Center(
+                        child: Text(
+                            "Unexpected error. Unable to Retrieve Universities")));
               }
               return SafeArea(
                 child: Scaffold(
