@@ -157,10 +157,10 @@ class _BodyState extends State<Body> {
     }
 
     void doStart() async {
-      debugPrint('university: $_university');
-      debugPrint('faculty: $_faculty');
-      debugPrint('degree: $_degree');
-      debugPrint('choicesSubjects: $_choicesSubjects');
+      logger.d('university: $_university');
+      logger.d('faculty: $_faculty');
+      logger.d('degree: $_degree');
+      logger.d('choicesSubjects: $_choicesSubjects');
 
       if (_university != "Select your university:" &&
           _faculty != "Select your faculty:" &&
@@ -171,7 +171,7 @@ class _BodyState extends State<Body> {
           _subjects.isNotEmpty) {
         //Execute Enrollment
         final bool enrollStatus = await enrollStudents();
-        logger.d("enrollStudents Status: " + await enrollStatus.toString());
+        logger.d("enrollStudents Status: " + enrollStatus.toString());
         if (enrollStatus) {
           logger.d("Succesfully Enrolled and Launched Dashboard");
           Navigator.pushReplacementNamed(context, '/dashboard');

@@ -43,11 +43,21 @@ class AuthProvider with ChangeNotifier {
     _loggedInStatus = Status.Authenticating;
     notifyListeners();
     Student authenticatedStudent = new Student();
-    Response response = await post(
-      AppUrl.login,
-      body: json.encode(userTmp.toJson()),
-      headers: {'Content-Type': 'application/json'},
-    );
+    Response response;
+    try {
+      response = await post(
+        AppUrl.login,
+        body: json.encode(userTmp.toJson()),
+        headers: {'Content-Type': 'application/json'},
+      );
+    } catch (err) {
+      //Cannot Even Send a request -->Probably No connection
+      res = -1;
+      return result = {
+        'status': res,
+        'message': "Cannot make Request, connect to Internet!"
+      };
+    }
     //NEW WAY
     if (response.statusCode == 200) {
       //Logged In succesfully  from server
@@ -66,7 +76,7 @@ class AuthProvider with ChangeNotifier {
         };
       } catch (err) {
         res = -1;
-        result = {'status': false, 'message': "Failed To Login!"};
+        result = {'status': res, 'message': "Failed To Login!"};
       }
     } else if (response.statusCode == 203) {
       //Not Validated
@@ -86,7 +96,7 @@ class AuthProvider with ChangeNotifier {
         };
       } catch (err) {
         res = -1;
-        result = {'status': false, 'message': "Failed To Login!"};
+        result = {'status': res, 'message': "Failed To Login!"};
       }
     } else if (response.statusCode == 206) {
       //Let's Get Started not completed
@@ -105,7 +115,7 @@ class AuthProvider with ChangeNotifier {
         };
       } catch (err) {
         result = {
-          'status': false,
+          'status': res,
           'message': "Failed To Login!--> Error: " + err.toString()
         };
         _loggedInStatus = Status.NotLoggedIn;
@@ -116,10 +126,7 @@ class AuthProvider with ChangeNotifier {
       res = -1;
       _loggedInStatus = Status.NotLoggedIn;
       notifyListeners();
-      result = {
-        'status': false,
-        'message': json.decode(response.body)['error']
-      };
+      result = {'status': res, 'message': json.decode(response.body)['error']};
     }
     return result;
   }
