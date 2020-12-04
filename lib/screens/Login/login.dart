@@ -32,7 +32,6 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     AuthProvider auth = Provider.of<AuthProvider>(context);
-
     var loading = Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -68,16 +67,33 @@ class _LoginState extends State<Login> {
             auth.login(_username, _password);
         //Callback to message recieved after login auth
         successfulMessage.then((response) {
-          if (response['status']) {
+          if (response['status'] == 0) {
+            //Login Correct
+            Student student = response['student'];
+            Provider.of<StudentProvider>(context, listen: false)
+                .setStudent(student);
+            Navigator.pushReplacementNamed(context, '/dashboard');
+            logger.d("Logged In Succesfull!");
+          } else if (response['status'] == 1) {
+            //Not Validated
+            Student student = response['student'];
+            Provider.of<StudentProvider>(context, listen: false)
+                .setStudent(student);
+            Navigator.pushReplacementNamed(context, '/validate');
+            logger.d("Logged In Not Validated!");
+          } else if (response['status'] == 2) {
+            //Let's Get Started not completed
             Student student = response['student'];
             Provider.of<StudentProvider>(context, listen: false)
                 .setStudent(student);
             Navigator.pushReplacementNamed(context, '/getStarted');
-            logger.d("Logged In Succesfull!");
+            logger.d("Logged In Let's Get Started not completed!");
           } else {
+            logger.d("Logged In Failed: " + response['message'].toString());
+
             Flushbar(
               title: "Failed Login",
-              message: response['message']['message'].toString(),
+              message: response['message'].toString(),
               duration: Duration(seconds: 3),
             ).show(context);
           }

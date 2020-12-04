@@ -52,29 +52,37 @@ class _RegisterState extends State<Register> {
     };
     var doRegister = () {
       final form = formKey.currentState;
-      if (form.validate() && (_password == _confirmPassword)) {
+      if (form.validate()) {
         form.save();
-        auth
-            .register(
-          _username,
-          _password,
-        )
-            .then((response) {
-          if (response['status']) {
-            Navigator.pushReplacementNamed(context, '/validate');
-          } else {
-            Flushbar(
-              title: "Registration Failed",
-              message: response.toString(),
-              duration: Duration(seconds: 10),
-            ).show(context);
-          }
-        });
+        if ((_password == _confirmPassword)) {
+          auth
+              .register(
+            _username,
+            _password,
+          )
+              .then((response) {
+            if (response['status']) {
+              Navigator.pushReplacementNamed(context, '/validate');
+            } else {
+              Flushbar(
+                title: "Registration Failed",
+                message: response['message'].toString(),
+                duration: Duration(seconds: 10),
+              ).show(context);
+            }
+          });
+        } else {
+          Flushbar(
+            title: "Invalid Password",
+            message: "Password's Not Same",
+            duration: Duration(seconds: 3),
+          ).show(context);
+        }
       } else {
         Flushbar(
           title: "Invalid form",
-          message: "Please Complete the form properly",
-          duration: Duration(seconds: 10),
+          message: "Please Fill The Form Properly",
+          duration: Duration(seconds: 3),
         ).show(context);
       }
     };

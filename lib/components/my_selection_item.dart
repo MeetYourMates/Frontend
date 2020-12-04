@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 //You can use any Widget
@@ -37,8 +38,12 @@ class MySelectionItem extends StatelessWidget {
       width: MediaQuery.of(context).size.width,
       alignment: Alignment.center,
       child: FittedBox(
-          child: Text(
+          child: AutoSizeText(
         title,
+        style: TextStyle(fontSize: 14),
+        minFontSize: 14,
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
       )),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:meet_your_mates/api/services/auth_service.dart';
+import 'package:meet_your_mates/api/util/shared_preference.dart';
 import 'package:meet_your_mates/components/rounded_button.dart';
 import 'package:meet_your_mates/components/text_field_container.dart';
 import 'package:provider/provider.dart';
@@ -71,6 +72,12 @@ class _ValidateState extends State<Validate> {
                       });
                 } else {}
               }),
+          RoundedButton(
+              text: "Logout",
+              press: () => {
+                    UserPreferences().removeUser(),
+                    Navigator.pushReplacementNamed(context, '/login')
+                  }),
         ])))));
   }
 }
