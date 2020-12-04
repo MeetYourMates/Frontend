@@ -26,7 +26,7 @@ class _DirectOptionsState extends State<DirectOptions> {
   final ValueNotifier<int> _index = ValueNotifier(0);
   //final List<String> elements;
   List<Widget> _buildItems() {
-    print(widget.elements);
+    //print(widget.elements);
     List<Widget> returnWidgetSelectItems = new List<Widget>();
     if (widget.elements.isNotEmpty) {
       widget.elements

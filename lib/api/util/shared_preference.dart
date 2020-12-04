@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 
 class UserPreferences {
-  var logger = Logger();
+  var logger = Logger(level: Level.warning);
   Future<bool> saveUser(User user) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString("userId", user.id);

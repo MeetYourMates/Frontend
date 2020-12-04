@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/degreeWithList.dart';
 import 'package:meet_your_mates/api/models/university.dart';
 import 'package:meet_your_mates/api/util/app_url.dart';
@@ -21,13 +22,12 @@ enum Status {
 class StartProvider with ChangeNotifier {
   Status _enrolledStatus = Status.NotEnrolled;
   Status get enrolledStatus => _enrolledStatus;
-
+  var logger = Logger(level: Level.warning);
   //Login Service without proper error handling T
   Future<Map<String, dynamic>> getStartedData() async {
     var result;
 
     _enrolledStatus = Status.LoadingData;
-    notifyListeners();
 
     Response response = await get(
       AppUrl.universities,
@@ -35,7 +35,7 @@ class StartProvider with ChangeNotifier {
     );
 
     if (response.statusCode == 200) {
-      print("Response Unis:" + response.body);
+      logger.d("Response Unis:" + response.body);
       List<University> universities = (json.decode(response.body) as List)
           .map((i) => University.fromJson(i))
           .toList();
@@ -43,7 +43,6 @@ class StartProvider with ChangeNotifier {
       // UserPreferences().saveUser(authUser.user);
 
       _enrolledStatus = Status.DataLoaded;
-      notifyListeners();
 
       result = {
         'status': true,
@@ -52,7 +51,6 @@ class StartProvider with ChangeNotifier {
       };
     } else {
       _enrolledStatus = Status.DataFailed;
-      notifyListeners();
       result = {
         'status': false,
         'message': json.decode(response.body)['error']
@@ -74,8 +72,8 @@ class StartProvider with ChangeNotifier {
 
     if (response.statusCode == 200) {
       //Error Cannot Decode
-      print("Recieved Response Subj Json: " + (response.body));
-      //print("Recieved Response Subj: " + jsonDecode(response.body));
+      logger.d("Recieved Response Subj Json: " + (response.body));
+      //logger.d("Recieved Response Subj: " + jsonDecode(response.body));
       Map responseData = jsonDecode(response.body);
       DegreeWithList degree = DegreeWithList.fromJson(responseData);
       List<Map<String, dynamic>> subjs = new List<Map<String, dynamic>>();

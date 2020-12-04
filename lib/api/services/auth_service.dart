@@ -15,6 +15,7 @@ enum Status {
   LoggedIn,
   Registered,
   Authenticating,
+  NotCompleted,
   Registering,
   LoggedOut,
   Validating,
@@ -35,35 +36,84 @@ class AuthProvider with ChangeNotifier {
   //Login Service without proper error handling TODO: FUTURE REPAIR
   Future<Map<String, dynamic>> login(String email, String password) async {
     var result;
-
+    int res = -1;
     User userTmp = new User();
     userTmp.email = email;
     userTmp.password = password;
     _loggedInStatus = Status.Authenticating;
     notifyListeners();
-
+    Student authenticatedStudent = new Student();
     Response response = await post(
       AppUrl.login,
       body: json.encode(userTmp.toJson()),
       headers: {'Content-Type': 'application/json'},
     );
-
+    //NEW WAY
     if (response.statusCode == 200) {
-      logger.d(response.body);
-      Map responseData = jsonDecode(response.body);
-      Student authenticatedStudent = Student.fromJson(responseData);
-      logger.d(authenticatedStudent);
-      UserPreferences().saveUser(userTmp);
-      logger.d("User in Shared Preferences: " + userTmp.toString());
-      _loggedInStatus = Status.LoggedIn;
-      notifyListeners();
-
-      result = {
-        'status': true,
-        'message': 'Successful',
-        'student': authenticatedStudent
-      };
+      //Logged In succesfully  from server
+      try {
+        Map responseData = jsonDecode(response.body);
+        authenticatedStudent = Student.fromJson(responseData);
+        UserPreferences().saveUser(userTmp);
+        logger.d("User in Shared Preferences: " + userTmp.toString());
+        _loggedInStatus = Status.LoggedIn;
+        notifyListeners();
+        res = 0;
+        result = {
+          'status': res,
+          'message': _loggedInStatus,
+          'student': authenticatedStudent
+        };
+      } catch (err) {
+        res = -1;
+        result = {'status': false, 'message': "Failed To Login!"};
+      }
+    } else if (response.statusCode == 203) {
+      //Not Validated
+      try {
+        //Not Validated Mean Student Doesn't Exist
+        Map responseData = jsonDecode(response.body);
+        authenticatedStudent = Student.fromJson(responseData);
+        UserPreferences().saveUser(userTmp);
+        logger.d("User in Shared Preferences: " + userTmp.toString());
+        _loggedInStatus = Status.NotValidated;
+        notifyListeners();
+        res = 1;
+        result = {
+          'status': res,
+          'message': _loggedInStatus,
+          'student': authenticatedStudent
+        };
+      } catch (err) {
+        res = -1;
+        result = {'status': false, 'message': "Failed To Login!"};
+      }
+    } else if (response.statusCode == 206) {
+      //Let's Get Started not completed
+      try {
+        Map responseData = jsonDecode(response.body);
+        authenticatedStudent = Student.fromJson(responseData);
+        UserPreferences().saveUser(userTmp);
+        logger.d("User in Shared Preferences: " + userTmp.toString());
+        _loggedInStatus = Status.NotCompleted;
+        notifyListeners();
+        res = 2;
+        result = {
+          'status': res,
+          'message': _loggedInStatus,
+          'student': authenticatedStudent
+        };
+      } catch (err) {
+        result = {
+          'status': false,
+          'message': "Failed To Login!--> Error: " + err.toString()
+        };
+        _loggedInStatus = Status.NotLoggedIn;
+        notifyListeners();
+        res = -1;
+      }
     } else {
+      res = -1;
       _loggedInStatus = Status.NotLoggedIn;
       notifyListeners();
       result = {
