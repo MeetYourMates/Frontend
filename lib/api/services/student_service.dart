@@ -14,7 +14,10 @@ class StudentProvider with ChangeNotifier {
   var logger = Logger();
   void setStudent(Student student) {
     if (student != null) {
+      User usr = new User();
+      usr = _student.user;
       _student = student;
+      _student.user = usr;
       notifyListeners();
     }
   }
@@ -37,6 +40,8 @@ class StudentProvider with ChangeNotifier {
         try {
           Map responseData = jsonDecode(response.body);
           _student = (Student.fromJson(responseData));
+          userTmp.id = _student.user.id;
+          _student.user = userTmp;
           res = 0;
         } catch (err) {
           logger.e("Error AutoLogin 200: " + err.toString());
@@ -47,6 +52,8 @@ class StudentProvider with ChangeNotifier {
         try {
           Map responseData = jsonDecode(response.body);
           _student = (Student.fromJson(responseData));
+          userTmp.id = _student.user.id;
+          _student.user = userTmp;
           res = 1;
         } catch (err) {
           logger.e("Error AutoLogin 203: " + err.toString());
@@ -57,6 +64,8 @@ class StudentProvider with ChangeNotifier {
         try {
           Map responseData = jsonDecode(response.body);
           _student = (Student.fromJson(responseData));
+          userTmp.id = _student.user.id;
+          _student.user = userTmp;
           res = 2;
         } catch (err) {
           logger.e("Error AutoLogin 204: " + err.toString());
