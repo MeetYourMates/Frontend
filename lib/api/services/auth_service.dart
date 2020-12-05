@@ -64,6 +64,8 @@ class AuthProvider with ChangeNotifier {
       try {
         Map responseData = jsonDecode(response.body);
         authenticatedStudent = Student.fromJson(responseData);
+        userTmp.id = authenticatedStudent.user.id;
+        authenticatedStudent.user = userTmp;
         UserPreferences().saveUser(userTmp);
         logger.d("User in Shared Preferences: " + userTmp.toString());
         _loggedInStatus = Status.LoggedIn;
@@ -84,6 +86,8 @@ class AuthProvider with ChangeNotifier {
         //Not Validated Mean Student Doesn't Exist
         Map responseData = jsonDecode(response.body);
         authenticatedStudent = Student.fromJson(responseData);
+        userTmp.id = authenticatedStudent.user.id;
+        authenticatedStudent.user = userTmp;
         UserPreferences().saveUser(userTmp);
         logger.d("User in Shared Preferences: " + userTmp.toString());
         _loggedInStatus = Status.NotValidated;
@@ -103,6 +107,8 @@ class AuthProvider with ChangeNotifier {
       try {
         Map responseData = jsonDecode(response.body);
         authenticatedStudent = Student.fromJson(responseData);
+        userTmp.id = authenticatedStudent.user.id;
+        authenticatedStudent.user = userTmp;
         UserPreferences().saveUser(userTmp);
         logger.d("User in Shared Preferences: " + userTmp.toString());
         _loggedInStatus = Status.NotCompleted;

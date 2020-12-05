@@ -71,21 +71,21 @@ class _LoginState extends State<Login> {
             //Login Correct
             Student student = response['student'];
             Provider.of<StudentProvider>(context, listen: false)
-                .setStudent(student);
+                .setStudentWithUser(student);
             Navigator.pushReplacementNamed(context, '/dashboard');
             logger.d("Logged In Succesfull!");
           } else if (response['status'] == 1) {
             //Not Validated
             Student student = response['student'];
             Provider.of<StudentProvider>(context, listen: false)
-                .setStudent(student);
+                .setStudentWithUser(student);
             Navigator.pushReplacementNamed(context, '/validate');
             logger.d("Logged In Not Validated!");
           } else if (response['status'] == 2) {
             //Let's Get Started not completed
             Student student = response['student'];
             Provider.of<StudentProvider>(context, listen: false)
-                .setStudent(student);
+                .setStudentWithUser(student);
             Navigator.pushReplacementNamed(context, '/getStarted');
             logger.d("Logged In Let's Get Started not completed!");
           } else {
