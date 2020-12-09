@@ -1,5 +1,5 @@
 import 'package:provider/provider.dart';
-import 'package:flushbar/flushbar.dart';
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 //Services
 import 'package:meet_your_mates/api/services/auth_service.dart';
@@ -62,7 +62,8 @@ class _RegisterState extends State<Register> {
           )
               .then((response) {
             if (response['status']) {
-              Navigator.pushReplacementNamed(context, '/validate');
+              //If status is ok than we make the user login and continue with the process
+              Navigator.pushReplacementNamed(context, '/login');
             } else {
               Flushbar(
                 title: "Registration Failed",

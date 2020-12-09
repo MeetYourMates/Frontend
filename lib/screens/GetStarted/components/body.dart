@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flushbar/flushbar.dart';
+import 'package:another_flushbar/flushbar.dart';
 import 'package:async/async.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
