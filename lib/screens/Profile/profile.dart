@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meet_your_mates/api/util/shared_preference.dart';
 import 'package:meet_your_mates/screens/Insignias/background.dart';
 import 'package:meet_your_mates/screens/Insignias/insignias.dart';
 import 'package:meet_your_mates/screens/Trophies/trophies.dart';
@@ -25,31 +26,49 @@ class _ProfileState extends State<Profile> {
       body: Background(
         child: Column(
           children: <Widget>[
-            Header(
-              icon: 'assets/images/profileExample.jpg',
+            Expanded(
+              flex: 2,
+              child: Header(
+                icon: 'assets/images/profileExample.jpg',
+              ),
             ),
-            StackContainer(
-              username: _studentProvider.student.user.email + ".name",
-              email: _studentProvider.student.user.email,
+            Expanded(
+              flex: 1,
+              child: StackContainer(
+                username: _studentProvider.student.name,
+                email: _studentProvider.student.user.email,
+              ),
             ),
-            Rating(rating: 3),
-            ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) => InsigniaCard(),
-              shrinkWrap: true,
-              itemCount: 1,
+            Expanded(
+              flex: 1,
+              child: Rating(rating: 3),
             ),
-            ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) => TrophiesCard(),
-              shrinkWrap: true,
-              itemCount: 1,
+            Expanded(
+              flex: 1,
+              child: ListView.builder(
+                physics: NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) => InsigniaCard(),
+                shrinkWrap: true,
+                itemCount: 1,
+              ),
             ),
-            ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) => LogOutCard(),
-              shrinkWrap: true,
-              itemCount: 1,
+            Expanded(
+              flex: 1,
+              child: ListView.builder(
+                physics: NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) => TrophiesCard(),
+                shrinkWrap: true,
+                itemCount: 1,
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: ListView.builder(
+                physics: NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) => LogOutCard(),
+                shrinkWrap: true,
+                itemCount: 1,
+              ),
             ),
           ],
         ),
@@ -68,7 +87,6 @@ class StackContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 43.0,
       child: Stack(
         children: <Widget>[
           Align(
@@ -109,7 +127,6 @@ class Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 200,
       padding: EdgeInsets.only(bottom: 20),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -320,6 +337,7 @@ class LogOutCard extends StatelessWidget {
             children: <Widget>[
               IconButton(
                 onPressed: () {
+                  UserPreferences().removeUser();
                   Navigator.push(context,
                       new MaterialPageRoute(builder: (context) => new Login()));
                 },
@@ -360,7 +378,6 @@ class Rating extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 45,
       padding: EdgeInsets.symmetric(vertical: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -368,8 +385,6 @@ class Rating extends StatelessWidget {
           Column(
             children: <Widget>[
               Container(
-                width: 150,
-                height: 20,
                 child: SmoothStarRating(
                   size: 30,
                   color: Colors.yellow,

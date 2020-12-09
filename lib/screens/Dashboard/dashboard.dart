@@ -50,8 +50,10 @@ class _DashBoardState extends State<DashBoard> {
             ),
             Container(
               color: Colors.grey[100],
-              child: Profile(),
-            ),
+              child: SizedBox.expand(
+                child: Profile(),
+              ),
+            )
           ],
         ),
       ),
