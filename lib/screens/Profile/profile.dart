@@ -1,52 +1,74 @@
 import 'package:flutter/material.dart';
+import 'package:meet_your_mates/api/util/shared_preference.dart';
+import 'package:meet_your_mates/screens/Insignias/background.dart';
 import 'package:meet_your_mates/screens/Insignias/insignias.dart';
 import 'package:meet_your_mates/screens/Trophies/trophies.dart';
 import 'package:meet_your_mates/screens/Login/login.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
-import 'package:meet_your_mates/api/models/student.dart';
-import 'package:meet_your_mates/api/models/user.dart';
+import 'package:meet_your_mates/api/services/student_service.dart';
+import 'package:provider/provider.dart';
 
 class Profile extends StatefulWidget {
-
   @override
   _ProfileState createState() => _ProfileState();
 }
 
 class _ProfileState extends State<Profile> {
-  
-  Student demoS = new Student(id: "5fc69db23a483b0fe87c69bf", name: "JoseCarlos", university: null, degree: null, user: User(email: "pol@pol.pol", password: "pol"), trophies: null, insignias: null);
+  final formKey = new GlobalKey<FormState>();
+
+  _ProfileState();
 
   @override
   Widget build(BuildContext context) {
+    StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
+
     return Scaffold(
-      body: SingleChildScrollView(
+      body: Background(
         child: Column(
           children: <Widget>[
-            Header(
-              icon: 'assets/images/profileExample.jpg',
+            Expanded(
+              flex: 2,
+              child: Header(
+                icon: 'assets/images/profileExample.jpg',
+              ),
             ),
-            StackContainer(
-              username: 'Juan',
-              email: 'pepe@trabajador.com',
+            Expanded(
+              flex: 1,
+              child: StackContainer(
+                username: _studentProvider.student.name,
+                email: _studentProvider.student.user.email,
+              ),
             ),
-            Rating(rating: 3),
-            ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) => InsigniaCard(),
-              shrinkWrap: true,
-              itemCount: 1,
+            Expanded(
+              flex: 1,
+              child: Rating(rating: 3),
             ),
-            ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) => TrophiesCard(),
-              shrinkWrap: true,
-              itemCount: 1,
+            Expanded(
+              flex: 1,
+              child: ListView.builder(
+                physics: NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) => InsigniaCard(),
+                shrinkWrap: true,
+                itemCount: 1,
+              ),
             ),
-            ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) => LogOutCard(),
-              shrinkWrap: true,
-              itemCount: 1,
+            Expanded(
+              flex: 1,
+              child: ListView.builder(
+                physics: NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) => TrophiesCard(),
+                shrinkWrap: true,
+                itemCount: 1,
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: ListView.builder(
+                physics: NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) => LogOutCard(),
+                shrinkWrap: true,
+                itemCount: 1,
+              ),
             ),
           ],
         ),
@@ -65,7 +87,6 @@ class StackContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 43.0,
       child: Stack(
         children: <Widget>[
           Align(
@@ -75,7 +96,7 @@ class StackContainer extends StatelessWidget {
               children: <Widget>[
                 SizedBox(height: 4.0),
                 Text(
-                  this.username,
+                  this.username != null ? this.username : "Error",
                   style: TextStyle(
                     fontSize: 21.0,
                     fontWeight: FontWeight.bold,
@@ -106,7 +127,6 @@ class Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 200,
       padding: EdgeInsets.only(bottom: 20),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -317,6 +337,7 @@ class LogOutCard extends StatelessWidget {
             children: <Widget>[
               IconButton(
                 onPressed: () {
+                  UserPreferences().removeUser();
                   Navigator.push(context,
                       new MaterialPageRoute(builder: (context) => new Login()));
                 },
@@ -357,7 +378,6 @@ class Rating extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 45,
       padding: EdgeInsets.symmetric(vertical: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -365,8 +385,6 @@ class Rating extends StatelessWidget {
           Column(
             children: <Widget>[
               Container(
-                width: 150,
-                height: 20,
                 child: SmoothStarRating(
                   size: 30,
                   color: Colors.yellow,

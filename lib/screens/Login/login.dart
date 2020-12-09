@@ -1,11 +1,11 @@
+import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/student.dart';
-
+import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:provider/provider.dart';
-import 'package:flushbar/flushbar.dart';
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 //Services
 import 'package:meet_your_mates/api/services/auth_service.dart';
-import 'package:meet_your_mates/api/services/user_service.dart';
 //Utilities
 
 //Constants
@@ -14,7 +14,6 @@ import 'package:meet_your_mates/constants.dart';
 import 'package:meet_your_mates/screens/Login/background.dart';
 import 'package:meet_your_mates/api/util/validators.dart';
 //Models
-
 //Components
 import 'package:meet_your_mates/components/already_have_an_account_acheck.dart';
 import 'package:meet_your_mates/components/rounded_button.dart';
@@ -27,13 +26,12 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final formKey = new GlobalKey<FormState>();
-
+  var logger = Logger();
   String _username, _password;
 
   @override
   Widget build(BuildContext context) {
     AuthProvider auth = Provider.of<AuthProvider>(context);
-
     var loading = Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -64,27 +62,44 @@ class _LoginState extends State<Login> {
 
       if (form.validate()) {
         form.save();
-
+        logger.d("Do Login Pressed user:$_username pass:$_password");
         final Future<Map<String, dynamic>> successfulMessage =
             auth.login(_username, _password);
         //Callback to message recieved after login auth
         successfulMessage.then((response) {
-          if (response['status']) {
+          if (response['status'] == 0) {
+            //Login Correct
             Student student = response['student'];
-            Provider.of<UserProvider>(context, listen: false)
-                .setUser(student.user);
+            Provider.of<StudentProvider>(context, listen: false)
+                .setStudentWithUser(student);
             Navigator.pushReplacementNamed(context, '/dashboard');
-           
+            logger.d("Logged In Succesfull!");
+          } else if (response['status'] == 1) {
+            //Not Validated
+            Student student = response['student'];
+            Provider.of<StudentProvider>(context, listen: false)
+                .setStudentWithUser(student);
+            Navigator.pushReplacementNamed(context, '/validate');
+            logger.d("Logged In Not Validated!");
+          } else if (response['status'] == 2) {
+            //Let's Get Started not completed
+            Student student = response['student'];
+            Provider.of<StudentProvider>(context, listen: false)
+                .setStudentWithUser(student);
+            Navigator.pushReplacementNamed(context, '/getStarted');
+            logger.d("Logged In Let's Get Started not completed!");
           } else {
+            logger.d("Logged In Failed: " + response['message'].toString());
+
             Flushbar(
               title: "Failed Login",
-              message: response['message']['message'].toString(),
+              message: response['message'].toString(),
               duration: Duration(seconds: 3),
             ).show(context);
           }
         });
       } else {
-        print("form is invalid");
+        logger.w("form is invalid");
       }
     };
 
@@ -127,6 +142,7 @@ class _LoginState extends State<Login> {
                   TextFieldContainer(
                     child: TextFormField(
                       autofocus: false,
+                      obscureText: true,
                       validator: (value) =>
                           value.isEmpty ? "Please enter password" : null,
                       onSaved: (value) => _password = value,
@@ -146,8 +162,7 @@ class _LoginState extends State<Login> {
                       : RoundedButton(
                           text: "LOGIN",
                           press: () {
-                          doLogin();
-                          
+                            doLogin();
                           }),
                   SizedBox(height: size.height * 0.03),
                   AlreadyHaveAnAccountCheck(

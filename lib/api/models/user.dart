@@ -19,4 +19,16 @@ class User {
     data['token'] = this.token;
     return data;
   }
+
+  @override
+  String toString() {
+    return "id: " +
+        (id == null ? "NULL" : id) +
+        "email:" +
+        (email == null ? "NULL" : email) +
+        " password: " +
+        (password == null ? "NULL" : password) +
+        " token:" +
+        (token == null ? "NULL" : token);
+  }
 }

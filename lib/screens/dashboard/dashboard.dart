@@ -1,49 +1,75 @@
-import 'package:provider/provider.dart';
+import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:meet_your_mates/screens/Profile/profile.dart';
 //Services
-import 'package:meet_your_mates/api/services/user_service.dart';
+
 //Utilities
 
 //Screens
 import 'package:meet_your_mates/screens/Profile/profile.dart';
 //Models
-import 'package:meet_your_mates/api/models/user.dart';
 
-class DashBoard extends StatefulWidget{
+class DashBoard extends StatefulWidget {
   @override
   _DashBoardState createState() => _DashBoardState();
 }
 
 class _DashBoardState extends State<DashBoard> {
+  int _currentIndex = 0;
+  PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    User user = Provider.of<UserProvider>(context).user;
-
     return Scaffold(
-      appBar: AppBar(
-        title: Text("DASHBOARD PAGE"),
-        elevation: 0.1,
+      appBar: AppBar(title: Text("Meet Your Mates")),
+      body: SizedBox.expand(
+        child: PageView(
+          controller: _pageController,
+          onPageChanged: (index) {
+            setState(() => _currentIndex = index);
+          },
+          children: <Widget>[
+            Container(
+              color: Colors.blueGrey,
+            ),
+            Container(
+              color: Colors.red,
+            ),
+            Container(
+              color: Colors.green,
+            ),
+            Container(
+              color: Colors.grey[100],
+              child: SizedBox.expand(
+                child: Profile(),
+              ),
+            )
+          ],
+        ),
       ),
-      body: Column(
-        children: [
-          SizedBox(
-            height: 100,
-          ),
-          Center(child: Text(user.email)),
-          SizedBox(height: 100),
-          RaisedButton(
-            onPressed: () {},
-            child: Text("Logout"),
-            color: Colors.lightBlueAccent,
-          ),
-          SizedBox(height: 100),
-          RaisedButton(
-            onPressed: () {
-              Navigator.push(context,new MaterialPageRoute(builder: (context) => new Profile()));
-            },
-            child: Text("Profile"),
-            color: Colors.lightBlueAccent,
-          )
+      bottomNavigationBar: BottomNavyBar(
+        selectedIndex: _currentIndex,
+        onItemSelected: (index) {
+          setState(() => _currentIndex = index);
+          _pageController.jumpToPage(index);
+        },
+        items: <BottomNavyBarItem>[
+          BottomNavyBarItem(title: Text('Home'), icon: Icon(Icons.home)),
+          BottomNavyBarItem(title: Text('Search'), icon: Icon(Icons.search)),
+          BottomNavyBarItem(title: Text('Chat'), icon: Icon(Icons.chat_bubble)),
+          BottomNavyBarItem(title: Text('Profile'), icon: Icon(Icons.person)),
         ],
       ),
     );
