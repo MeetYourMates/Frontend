@@ -4,7 +4,6 @@ import 'package:async/async.dart';
 import 'dart:async';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
-import '../../../choices.dart' as choices;
 import 'package:meet_your_mates/api/models/universities.dart';
 import 'package:meet_your_mates/api/services/start_service.dart';
 import 'package:meet_your_mates/components/direct_options.dart';
@@ -377,9 +376,7 @@ class _BodyState extends State<Body> {
                                   opacity: chosenDegree ? 1 : 0.35,
                                   child: MultipleOptions(
                                     title: "Subjects",
-                                    elements: _subjsList != null
-                                        ? _subjsList
-                                        : choices.subjects,
+                                    elements: _subjsList,
                                     onSelected: (value) => {_subjects = value},
                                   ),
                                 ),

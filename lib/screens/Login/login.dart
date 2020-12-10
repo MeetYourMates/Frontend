@@ -51,7 +51,7 @@ class _LoginState extends State<Login> {
                   TextStyle(color: kPrimaryColor, fontWeight: FontWeight.w500)),
           onPressed: () {
             //Future
-//            Navigator.pushReplacementNamed(context, '/reset-password');
+            Navigator.pushReplacementNamed(context, '/passwordRecovery');
           },
         )
       ],

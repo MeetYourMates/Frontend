@@ -4,6 +4,8 @@ import 'package:meet_your_mates/api/services/start_service.dart';
 import 'package:meet_your_mates/screens/GetStarted/getstarted.dart';
 //Screens
 import 'package:meet_your_mates/screens/Login/login.dart';
+import 'package:meet_your_mates/screens/PasswordRecovery/changePassword.dart';
+import 'package:meet_your_mates/screens/PasswordRecovery/passwordRecovery.dart';
 import 'package:meet_your_mates/screens/Register/register.dart';
 import 'package:meet_your_mates/screens/Dashboard/dashboard.dart';
 import 'package:meet_your_mates/screens/Validate/validate.dart';
@@ -143,6 +145,8 @@ class MyApp extends StatelessWidget {
           '/register': (context) => Register(),
           '/validate': (context) => Validate(),
           '/getStarted': (context) => GetStarted(),
+          '/passwordRecovery': (context) => PasswordRecovery(),
+          '/changePassword': (context) => ChangePassword(),
         });
   }
 }
