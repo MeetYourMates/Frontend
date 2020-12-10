@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
 
+import 'package:meet_your_mates/screens/SearchMates/components/body.dart';
 import './studentList.dart';
 
 void main() => runApp(SearchMates());
 
-class SearchMates extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    return _SearchMatesState();
-  }
-}
-
-class _SearchMatesState extends State<SearchMates> {
+class SearchMates extends StatelessWidget {
   final queryResult = [
     {
       'ratings': [],
@@ -43,15 +37,12 @@ class _SearchMatesState extends State<SearchMates> {
     }
   ];
 
-  @override
+  SearchMates({
+    Key key,
+  }) : super(key: key);
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Conoce tus compañeros!'),
-        ),
-        body: StudentList(queryResult),
-      ),
+    return Scaffold(
+      body: Body(),
     );
   }
 }

@@ -62,6 +62,12 @@ class MyApp extends StatelessWidget {
                     default:
                       if (snapshot.hasError)
                         return Text('Error: ${snapshot.error}');
+
+                      /****CAMBIAR ANTES DE LANZAR****/
+                      else {
+                        return SearchMates();
+                      }
+                    /*  
                       else if ((snapshot.data.email == null ||
                           snapshot.data.password == null))
                         return Login();
@@ -87,7 +93,7 @@ class MyApp extends StatelessWidget {
                             }
                           },
                         );
-                      }
+                      }*/
                   }
                 }),
         routes: {
