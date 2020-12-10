@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 
-import 'package:meet_your_mates/screens/GetStarted/components/statefulwrapper.dart';
+import 'package:meet_your_mates/screens/SearchMates/components/statefulwrapper.dart';
+import 'package:meet_your_mates/screens/SearchMates/studentList.dart';
 import 'background.dart';
 import 'package:flutter/foundation.dart';
 
@@ -17,9 +18,8 @@ class _BodyState extends State<Body> {
 
   @override
   Widget build(BuildContext context) {
-    //Local Temperory Variable
-    List<String> temp = new List<String>();
     Size size = MediaQuery.of(context).size;
+
     return StatefulWrapper(
       onInit: () {},
       child: SafeArea(
@@ -30,6 +30,11 @@ class _BodyState extends State<Body> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   SizedBox(height: size.height * 0.03),
+                  Text(
+                    "Here are your class mates!",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                  ),
+                  StudentList(),
                   SizedBox(height: size.height * 0.03),
                 ],
               ),
