@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:async/async.dart';
+import 'dart:async';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
 import '../../../choices.dart' as choices;
@@ -97,11 +98,12 @@ class _BodyState extends State<Body> {
   @override
   Widget build(BuildContext context) {
     StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
-    StartProvider start = Provider.of<StartProvider>(context, listen: true);
+    StartProvider _start = Provider.of<StartProvider>(context, listen: true);
     Future _fetchUniversities() async {
       return _memoizerUniversities.runOnce(() async {
         logger.d("_memoizerUniversities Executed");
-        Map<String, dynamic> result = await start.getStartedData();
+        Map<String, dynamic> result =
+            await _start.getStartedData(_studentProvider.student.user.token);
         return result;
       });
     }
@@ -124,7 +126,7 @@ class _BodyState extends State<Body> {
 
     var loadchoicesSubjects = (String degreeId) {
       final Future<Map<String, dynamic>> successfulMessage =
-          start.getSubjectData(degreeId);
+          _start.getSubjectData(degreeId);
       //Callback to message recieved after login auth
       successfulMessage.then((response) {
         if (response['status']) {
@@ -148,7 +150,7 @@ class _BodyState extends State<Body> {
       //and we loose syncronicity between the result and the code execution
       for (int i = 0; i < _subjects.length; i++) {
         Map<String, dynamic> response =
-            await start.start(_subjects[i], _studentProvider.student.id);
+            await _start.start(_subjects[i], _studentProvider.student.id);
         enrollStatus = enrollStatus || response['status'];
         logger.d("Subjects Do Start stateBool: " + enrollStatus.toString());
         logger.d("Enrolling in Selected Subject $i");
@@ -386,7 +388,7 @@ class _BodyState extends State<Body> {
                             child: Container(),
                           ),
                           SizedBox(height: size.height * 0.03),
-                          start.enrolledStatus == Status.GettingEnrolled
+                          _start.enrolledStatus == Status.GettingEnrolled
                               ? loading
                               : RoundedButton(
                                   text: "START",

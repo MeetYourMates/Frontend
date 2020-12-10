@@ -65,6 +65,7 @@ class AuthProvider with ChangeNotifier {
         Map responseData = jsonDecode(response.body);
         authenticatedStudent = Student.fromJson(responseData);
         userTmp.id = authenticatedStudent.user.id;
+        userTmp.token = authenticatedStudent.user.token;
         authenticatedStudent.user = userTmp;
         UserPreferences().saveUser(userTmp);
         logger.d("User in Shared Preferences: " + userTmp.toString());
@@ -87,6 +88,7 @@ class AuthProvider with ChangeNotifier {
         Map responseData = jsonDecode(response.body);
         authenticatedStudent = Student.fromJson(responseData);
         userTmp.id = authenticatedStudent.user.id;
+        userTmp.token = authenticatedStudent.user.token;
         authenticatedStudent.user = userTmp;
         UserPreferences().saveUser(userTmp);
         logger.d("User in Shared Preferences: " + userTmp.toString());
@@ -108,6 +110,7 @@ class AuthProvider with ChangeNotifier {
         Map responseData = jsonDecode(response.body);
         authenticatedStudent = Student.fromJson(responseData);
         userTmp.id = authenticatedStudent.user.id;
+        userTmp.token = authenticatedStudent.user.token;
         authenticatedStudent.user = userTmp;
         UserPreferences().saveUser(userTmp);
         logger.d("User in Shared Preferences: " + userTmp.toString());
