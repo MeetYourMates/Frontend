@@ -47,10 +47,11 @@ class StudentList extends StatelessWidget {
                   'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
           return Card(
             child: ListTile(
-              leading: Image.network(_imageUrl),
-              title: Text(item['name']),
-              subtitle: Text(item['degree']),
-            ),
+                leading: Image.network(_imageUrl),
+                title: Text(item['name']),
+                subtitle: Text(item['degree']),
+                trailing: Icon(Icons.arrow_forward),
+                onTap: () {/* REDIRECCIONAR A PERFIL SELECCIONADO */}),
           );
         }).toList()
       ],

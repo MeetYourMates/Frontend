@@ -27,15 +27,25 @@ class _BodyState extends State<Body> {
           body: Background(
             child: SingleChildScrollView(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  SizedBox(height: size.height * 0.03),
-                  Text(
-                    "Here are your class mates!",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                  Align(
+                    alignment: Alignment.topCenter,
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(height: size.height * 0.05),
+                        Text(
+                          "Here are your class mates!",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 24),
+                        ),
+                        StudentList(),
+                        SizedBox(height: size.height * 0.03),
+                      ],
+                    ),
                   ),
-                  StudentList(),
-                  SizedBox(height: size.height * 0.03),
                 ],
               ),
             ),
