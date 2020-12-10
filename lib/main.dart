@@ -38,31 +38,43 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  //Future<User> getUserData() => UserPreferences().getUser();
-  //Future<int> autoLogin(email, password) async =>
-  //    StudentProvider().autoLogin(email, password);
+  //*******************************KRUNAL**************************************/
   @override
   Widget build(BuildContext context) {
-    //Accessing the same Student Provider as the MultiProvider, Not instantiating any new
+    /// Accessing the same Student Provider from the MultiProvider
     StudentProvider _studentProvider =
         Provider.of<StudentProvider>(context, listen: false);
+
+    /// [connectivity] to ensure network connectivity check on start of application
     var connectivityResult = (Connectivity().checkConnectivity());
+
+    /// [_fetchLogin] Run Once and memorize the recieved data from the serverç
+    /// to no execute multiple quieries even when the application rebuilds completely
+    /// but when restarts it is executed again
     Future _fetchLogin(String email, String password) async {
-      return _memoizerLogin.runOnce(() async {
-        print("AutoLogin Executed");
-        int status = await _studentProvider.autoLogin(email, password);
-        return status;
-      });
+      return _memoizerLogin.runOnce(
+        () async {
+          print("AutoLogin Executed");
+          int status = await _studentProvider.autoLogin(email, password);
+          return status;
+        },
+      );
     }
 
+    /// [_fetchPreferences] Run Once and memorize the recieved data from the serverç
+    /// to no execute multiple quieries even when the application rebuilds completely
+    /// but when restarts it is executed again
     Future _fetchPreferences() async {
-      return _memoizerPreferences.runOnce(() async {
-        print("AutoLogin Executed");
-        User status = await UserPreferences().getUser();
-        return status;
-      });
+      return _memoizerPreferences.runOnce(
+        () async {
+          print("AutoLogin Executed");
+          User status = await UserPreferences().getUser();
+          return status;
+        },
+      );
     }
 
+    /// [MaterialApp] The main UI build of the application
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Meet Your Mates',
@@ -72,7 +84,13 @@ class MyApp extends StatelessWidget {
         ),
         // ignore: unrelated_type_equality_checks
         home: (connectivityResult == ConnectivityResult.none)
-            ? Center(child: Text("No Network Connection"))
+            ? Center(
+                child: Text("No Network Connection"),
+              )
+
+            /// We use [FutureBuilder] to get the data in a future to be exact
+            /// we recieve the data from [UserPreferences] and untill
+            /// than we show something else to user.
             : FutureBuilder<dynamic>(
                 future: _fetchPreferences(),
                 builder: (context, snapshot) {
@@ -87,7 +105,9 @@ class MyApp extends StatelessWidget {
                           snapshot.data.password == null))
                         return Login();
                       else {
-                        //Create another future builder to check if the user is still valid!
+                        /// We use another [FutureBuilder] to get the data in a future to be exact
+                        /// we ask server [_fetchlogin] if the user is still valid
+                        /// untill than we show something else to user.
                         return FutureBuilder<dynamic>(
                           future: _fetchLogin(
                               snapshot.data.email, snapshot.data.password),
@@ -96,7 +116,8 @@ class MyApp extends StatelessWidget {
                               case ConnectionState.none:
                               case ConnectionState.waiting:
                                 return Center(
-                                    child: CircularProgressIndicator());
+                                  child: CircularProgressIndicator(),
+                                );
                               default:
                                 if (snapshot2.hasError) {
                                   return Text('Error: ${snapshot2.error}');

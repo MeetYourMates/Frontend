@@ -30,6 +30,7 @@ class StudentProvider with ChangeNotifier {
     }
   }
 
+//*******************************KRUNAL**************************************/
   Future<int> autoLogin(String email, String password) async {
     logger.d("Trying AutoLogging!");
     int res = -1;
@@ -94,4 +95,5 @@ class StudentProvider with ChangeNotifier {
     }
     return res;
   }
+  //*******************************KRUNAL**************************************/
 }

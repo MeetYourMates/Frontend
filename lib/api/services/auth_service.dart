@@ -33,7 +33,7 @@ class AuthProvider with ChangeNotifier {
   Status get validatedStatus => _validatedStatus;
   var logger = Logger();
   // ignore: todo
-  //Login Service without proper error handling TODO: FUTURE REPAIR
+  //*******************************KRUNAL**************************************/
   Future<Map<String, dynamic>> login(String email, String password) async {
     var result;
     int res = -1;
@@ -140,6 +140,7 @@ class AuthProvider with ChangeNotifier {
     return result;
   }
 
+//*******************************KRUNAL**************************************/
   Future<Map<String, dynamic>> register(String email, String password) async {
     var result;
 

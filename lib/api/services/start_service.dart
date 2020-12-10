@@ -23,7 +23,7 @@ class StartProvider with ChangeNotifier {
   Status _enrolledStatus = Status.NotEnrolled;
   Status get enrolledStatus => _enrolledStatus;
   var logger = Logger(level: Level.warning);
-  //Login Service without proper error handling T
+  //*******************************KRUNAL**************************************/
   Future<Map<String, dynamic>> getStartedData(String token) async {
     var result;
     Response response;
@@ -75,6 +75,7 @@ class StartProvider with ChangeNotifier {
     return result;
   }
 
+//*******************************KRUNAL**************************************/
   Future<Map<String, dynamic>> getSubjectData(String degreeId) async {
     var result;
     Response response;
