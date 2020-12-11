@@ -1,7 +1,7 @@
 import 'package:meet_your_mates/api/models/insignia.dart';
 import 'package:meet_your_mates/api/models/trophy.dart';
 import 'package:meet_your_mates/api/models/user.dart';
-import 'package:meet_your_mates/screens/Trophies/trophies.dart';
+import 'package:meet_your_mates/api/models/rating.dart';
 
 class Student {
   String id;
@@ -12,6 +12,8 @@ class Student {
   List<Trophy> trophies;
   List<Insignia> insignias;
   User user;
+  String photo;
+  List<Rating> ratings;
 
   Student(
       {this.id,
@@ -21,7 +23,9 @@ class Student {
       this.user,
       this.insignias,
       this.trophies,
-      this.picture});
+      this.picture,
+      this.photo,
+      this.ratings});
 
   factory Student.fromJson(Map<String, dynamic> responseData) {
     return Student(
@@ -30,7 +34,15 @@ class Student {
         university: responseData['university'],
         degree: responseData['degree'],
         user: User.fromJson(responseData['user']),
-        picture: responseData['picture']);
+        picture: responseData['picture'],
+        ratings: List<Rating>.from(
+            responseData["ratings"].map((x) => Rating.fromJson(x))),
+        trophies: List<Trophy>.from(
+            responseData["trophies"].map((x) => Trophy.fromJson(x))),
+        insignias: List<Insignia>.from(
+            responseData["insignias"].map((x) => Insignia.fromJson(x)))
+        );
+
     //trophies: (responseData['trophies']),
     //insignias: (responseData['insignias']));
   }
@@ -42,8 +54,10 @@ class Student {
     data['degree'] = this.degree;
     data['user'] = this.user;
     data['picture'] = this.picture;
-    //data['trophies'] = this.trophies;
-    //data['insignias'] = this.insignias;
+    data['photo'] = this.photo;
+    data['ratings'] = this.ratings;
+    data['trophies'] = this.trophies;
+    data['insignias'] = this.insignias;
     return data;
   }
 }

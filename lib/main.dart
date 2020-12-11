@@ -13,6 +13,7 @@ import 'package:meet_your_mates/screens/Profile/edit_profile.dart';
 import 'package:meet_your_mates/api/services/auth_service.dart';
 import 'package:meet_your_mates/api/services/user_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
+import 'package:meet_your_mates/api/services/image_service.dart';
 //Utilities
 import 'package:provider/provider.dart';
 import 'package:connectivity/connectivity.dart';
@@ -33,6 +34,8 @@ void main() {
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => StudentProvider()),
         ChangeNotifierProvider(create: (_) => StartProvider()),
+        ChangeNotifierProvider(create: (_) => ImagesProvider()),
+        
       ],
       child: MyApp(),
     ),

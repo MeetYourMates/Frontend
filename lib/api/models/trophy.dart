@@ -1,6 +1,6 @@
 class Trophy {
   String title;
-  double difficulty;
+  int difficulty;
   String professor;
   String dateTime;
   String logo;

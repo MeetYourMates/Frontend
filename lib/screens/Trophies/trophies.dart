@@ -5,12 +5,13 @@ import 'package:flutter/material.dart';
 //Utilities
 
 //Constants
-
+import 'package:provider/provider.dart';
+import 'package:logger/logger.dart';
 //Screens
 import 'package:meet_your_mates/screens/Trophies/background.dart';
 
 //Models
-
+import 'package:meet_your_mates/api/services/student_service.dart';
 //Components
 
 class Trophies extends StatefulWidget {
@@ -23,6 +24,7 @@ class _TrophiesState extends State<Trophies> {
 
   @override
   Widget build(BuildContext context) {
+    
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -49,34 +51,15 @@ class TrophyList extends StatefulWidget {
 }
 
 class _TrophyListState extends State<TrophyList> {
-  List<Trophy> trophies;
-
-  void initState() {
-    trophies = [
-      new Trophy(
-          title: "Non-sleeper",
-          difficulty: 4,
-          professor: "Toni",
-          dateTime: "02/12/2020",
-          logo: 'assets/icons/trophy.png'),
-      new Trophy(
-          title: "Blog writter",
-          difficulty: 2,
-          professor: "Antonia",
-          dateTime: "15/11/2020",
-          logo: 'assets/icons/trophy.png'),
-      new Trophy(
-          title: "Scrum Master",
-          difficulty: 5,
-          professor: "Toni",
-          dateTime: "25/06/2020",
-          logo: 'assets/icons/trophy.png'),
-    ];
-    super.initState();
-  }
-
+  var logger = Logger();
+ 
   @override
   Widget build(BuildContext context) {
+    StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
+    List<Trophy> trophies = _studentProvider.student.trophies;
+
+    
+
     return ListView.builder(
       physics: NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) => TrophyCard(
@@ -95,7 +78,7 @@ class _TrophyListState extends State<TrophyList> {
 class TrophyCard extends StatelessWidget {
   final String title;
   final String date;
-  final double difficulty;
+  final int difficulty;
   final String logo;
   final String professor;
 

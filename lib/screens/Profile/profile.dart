@@ -4,10 +4,10 @@ import 'package:meet_your_mates/screens/Insignias/background.dart';
 import 'package:meet_your_mates/screens/Insignias/insignias.dart';
 import 'package:meet_your_mates/screens/Profile/edit_profile.dart';
 import 'package:meet_your_mates/screens/Trophies/trophies.dart';
-import 'package:meet_your_mates/screens/Login/login.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:provider/provider.dart';
+import 'package:logger/logger.dart';
 
 class Profile extends StatefulWidget {
   @override
@@ -16,25 +16,32 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   final formKey = new GlobalKey<FormState>();
+  var logger = Logger();
 
   _ProfileState();
 
   @override
   Widget build(BuildContext context) {
     StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
+    double meanRating = 0;
+    for (int i = 0; i < _studentProvider.student.ratings.length; i++) {
+      meanRating = (meanRating + _studentProvider.student.ratings[i].stars);
+    }
+
+    meanRating = meanRating / (_studentProvider.student.ratings.length+1);
 
     return Scaffold(
       body: Background(
         child: Column(
           children: <Widget>[
             Expanded(
-              flex: 2,
+              flex: 3,
               child: Header(
                 icon: _studentProvider.student.picture,
               ),
             ),
-             Expanded(
-              flex:0,
+            Expanded(
+              flex: 1,
               child: editButton(context: context),
             ),
             Expanded(
@@ -46,9 +53,8 @@ class _ProfileState extends State<Profile> {
             ),
             Expanded(
               flex: 0,
-              child: Rating(rating: 3),
+              child: RatingStars(rating: meanRating),
             ),
-           
             Expanded(
               flex: 0,
               child: ListView.builder(
@@ -133,7 +139,6 @@ class Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(bottom: 20),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
@@ -162,12 +167,12 @@ class UserPhoto extends StatelessWidget {
       decoration: BoxDecoration(
         image: DecorationImage(
           image: NetworkImage(this.imageProfile),
-          fit: BoxFit.cover,
+          fit: BoxFit.fill,
         ),
         shape: BoxShape.circle,
         border: Border.all(
-          color: Colors.white,
-          width: 5,
+          color: Colors.grey,
+          width: 3,
         ),
       ),
       margin: EdgeInsets.only(bottom: 10),
@@ -373,9 +378,9 @@ class LogOutCard extends StatelessWidget {
   }
 }
 
-class Rating extends StatelessWidget {
+class RatingStars extends StatelessWidget {
   final double rating;
-  const Rating({
+  const RatingStars({
     Key key,
     @required this.rating,
   }) : super(key: key);
