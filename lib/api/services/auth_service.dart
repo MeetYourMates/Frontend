@@ -36,9 +36,8 @@ class AuthProvider with ChangeNotifier {
   Status get registeredInStatus => _registeredInStatus;
   Status get validatedStatus => _validatedStatus;
   Status get recoveryStatus => _recoveryStatus;
-  var logger = Logger();
-  // ignore: todo
   //*******************************KRUNAL**************************************/
+  var logger = Logger(level: Level.warning);
   Future<Map<String, dynamic>> login(String email, String password) async {
     var result;
     int res = -1;
@@ -172,7 +171,8 @@ class AuthProvider with ChangeNotifier {
     logger.d("change Password: email: $email");
     _recoveryStatus = Status.Sending;
     notifyListeners();
-    String _body = '{"code":$code,"email":$email,"password":$pass}';
+    String _body = '{"code":"$code","email":"$email","password":"$pass"}';
+    logger.i("_body: " + _body);
     Response response = await post(
       AppUrl.changePassword,
       body: _body,

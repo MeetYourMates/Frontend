@@ -90,6 +90,22 @@ class _PasswordRecoveryState extends State<PasswordRecovery> {
       }
     }
 
+    final alreadyHaveCodeLabel = Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        FlatButton(
+          padding: EdgeInsets.all(0.0),
+          child: Text("Already Have Code?",
+              style:
+                  TextStyle(color: kPrimaryColor, fontWeight: FontWeight.w500)),
+          onPressed: () {
+            //Future
+            Navigator.pushReplacementNamed(context, '/changePassword');
+          },
+        )
+      ],
+    );
     return SafeArea(
       child: Scaffold(
         body: Background(
@@ -124,6 +140,7 @@ class _PasswordRecoveryState extends State<PasswordRecovery> {
                       ),
                     ),
                   ),
+                  alreadyHaveCodeLabel,
                   auth.loggedInStatus == Status.Sending
                       ? loading
                       : RoundedButton(

@@ -12,7 +12,7 @@ class StudentProvider with ChangeNotifier {
   Student _student = new Student();
 
   Student get student => _student;
-  var logger = Logger();
+  var logger = Logger(level: Level.warning);
   void setStudent(Student student) {
     if (student != null) {
       User usr = new User();

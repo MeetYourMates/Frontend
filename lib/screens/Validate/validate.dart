@@ -120,8 +120,7 @@ class _ValidateState extends State<Validate> {
                             (response) => {
                               if (response['status'])
                                 {
-                                  Navigator.pushReplacementNamed(
-                                      context, '/login')
+                                  checkValidation(),
                                 }
                             },
                           );

@@ -22,8 +22,9 @@ enum Status {
 class StartProvider with ChangeNotifier {
   Status _enrolledStatus = Status.NotEnrolled;
   Status get enrolledStatus => _enrolledStatus;
-  var logger = Logger(level: Level.warning);
   //*******************************KRUNAL**************************************/
+  var logger = Logger(level: Level.warning);
+
   Future<Map<String, dynamic>> getStartedData(String token) async {
     var result;
     Response response;
