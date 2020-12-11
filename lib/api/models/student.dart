@@ -8,6 +8,7 @@ class Student {
   String name;
   String university;
   String degree;
+  String picture;
   List<Trophy> trophies;
   List<Insignia> insignias;
   User user;
@@ -19,16 +20,17 @@ class Student {
       this.degree,
       this.user,
       this.insignias,
-      this.trophies});
+      this.trophies,
+      this.picture});
 
   factory Student.fromJson(Map<String, dynamic> responseData) {
     return Student(
-      id: responseData['_id'],
-      name: responseData['name'],
-      university: responseData['university'],
-      degree: responseData['degree'],
-      user: User.fromJson(responseData['user']),
-    );
+        id: responseData['_id'],
+        name: responseData['name'],
+        university: responseData['university'],
+        degree: responseData['degree'],
+        user: User.fromJson(responseData['user']),
+        picture: responseData['picture']);
     //trophies: (responseData['trophies']),
     //insignias: (responseData['insignias']));
   }
@@ -39,6 +41,7 @@ class Student {
     data['university'] = this.university;
     data['degree'] = this.degree;
     data['user'] = this.user;
+    data['picture'] = this.picture;
     //data['trophies'] = this.trophies;
     //data['insignias'] = this.insignias;
     return data;

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:meet_your_mates/api/util/shared_preference.dart';
 import 'package:meet_your_mates/screens/Insignias/background.dart';
 import 'package:meet_your_mates/screens/Insignias/insignias.dart';
+import 'package:meet_your_mates/screens/Profile/edit_profile.dart';
 import 'package:meet_your_mates/screens/Trophies/trophies.dart';
 import 'package:meet_your_mates/screens/Login/login.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
@@ -29,22 +30,27 @@ class _ProfileState extends State<Profile> {
             Expanded(
               flex: 2,
               child: Header(
-                icon: 'assets/images/profileExample.jpg',
+                icon: _studentProvider.student.picture,
               ),
             ),
+             Expanded(
+              flex:0,
+              child: editButton(context: context),
+            ),
             Expanded(
-              flex: 1,
+              flex: 0,
               child: StackContainer(
                 username: _studentProvider.student.name,
                 email: _studentProvider.student.user.email,
               ),
             ),
             Expanded(
-              flex: 1,
+              flex: 0,
               child: Rating(rating: 3),
             ),
+           
             Expanded(
-              flex: 1,
+              flex: 0,
               child: ListView.builder(
                 physics: NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) => InsigniaCard(),
@@ -53,7 +59,7 @@ class _ProfileState extends State<Profile> {
               ),
             ),
             Expanded(
-              flex: 1,
+              flex: 0,
               child: ListView.builder(
                 physics: NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) => TrophiesCard(),
@@ -62,7 +68,7 @@ class _ProfileState extends State<Profile> {
               ),
             ),
             Expanded(
-              flex: 1,
+              flex: 2,
               child: ListView.builder(
                 physics: NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) => LogOutCard(),
@@ -132,7 +138,7 @@ class Header extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           UserPhoto(
-            assetImage: this.icon,
+            imageProfile: this.icon,
           ),
         ],
       ),
@@ -141,11 +147,11 @@ class Header extends StatelessWidget {
 }
 
 class UserPhoto extends StatelessWidget {
-  final String assetImage;
+  final String imageProfile;
 
   const UserPhoto({
     Key key,
-    @required this.assetImage,
+    @required this.imageProfile,
   }) : super(key: key);
 
   @override
@@ -155,7 +161,7 @@ class UserPhoto extends StatelessWidget {
       height: 120,
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: AssetImage(this.assetImage),
+          image: NetworkImage(this.imageProfile),
           fit: BoxFit.cover,
         ),
         shape: BoxShape.circle,
@@ -338,8 +344,7 @@ class LogOutCard extends StatelessWidget {
               IconButton(
                 onPressed: () {
                   UserPreferences().removeUser();
-                  Navigator.push(context,
-                      new MaterialPageRoute(builder: (context) => new Login()));
+                  Navigator.pushReplacementNamed(context, '/login');
                 },
                 icon: Icon(
                   Icons.logout,
@@ -401,4 +406,35 @@ class Rating extends StatelessWidget {
       ),
     );
   }
+}
+
+Container editButton({BuildContext context}) {
+  return Container(
+    padding: EdgeInsets.only(top: 2.0),
+    child: FlatButton(
+      onPressed: () {
+        Navigator.push(context,
+            new MaterialPageRoute(builder: (context) => new EditProfile()));
+      },
+      child: Container(
+        width: 250.0,
+        height: 27.0,
+        child: Text(
+          "Edit Profile",
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: Colors.blue,
+          border: Border.all(
+            color: Colors.blue,
+          ),
+          borderRadius: BorderRadius.circular(5.0),
+        ),
+      ),
+    ),
+  );
 }

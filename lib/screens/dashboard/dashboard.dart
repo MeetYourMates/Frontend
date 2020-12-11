@@ -6,7 +6,7 @@ import 'package:meet_your_mates/screens/Profile/profile.dart';
 //Utilities
 
 //Screens
-import 'package:meet_your_mates/screens/Profile/profile.dart';
+
 //Models
 
 class DashBoard extends StatefulWidget {
