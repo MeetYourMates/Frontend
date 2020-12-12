@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:async/async.dart';
 import 'package:meet_your_mates/api/services/start_service.dart';
@@ -24,7 +25,8 @@ import 'api/util/shared_preference.dart';
 
 final AsyncMemoizer _memoizerLogin = AsyncMemoizer();
 final AsyncMemoizer _memoizerPreferences = AsyncMemoizer();
-void main() {
+void main()async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(
     /// Providers are above [MyApp] instead of inside it, so that tests
     /// can use [MyApp] while mocking the providers
@@ -35,7 +37,6 @@ void main() {
         ChangeNotifierProvider(create: (_) => StudentProvider()),
         ChangeNotifierProvider(create: (_) => StartProvider()),
         ChangeNotifierProvider(create: (_) => ImagesProvider()),
-        
       ],
       child: MyApp(),
     ),
@@ -79,47 +80,47 @@ class MyApp extends StatelessWidget {
         home: (connectivityResult == ConnectivityResult.none)
             ? Center(child: Text("No Network Connection"))
             : FutureBuilder<dynamic>(
-                future: _fetchPreferences(),
-                builder: (context, snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.none:
-                    case ConnectionState.waiting:
-                      return Center(child: CircularProgressIndicator());
-                    default:
-                      if (snapshot.hasError)
-                        return Text('Error: ${snapshot.error}');
-                      else if ((snapshot.data == null ||
-                          snapshot.data.password == null))
-                        return Login();
-                      else {
-                        //Create another future builder to check if the user is still valid!
-                        return FutureBuilder<dynamic>(
-                          future: _fetchLogin(
-                              snapshot.data.email, snapshot.data.password),
-                          builder: (context, snapshot2) {
-                            switch (snapshot2.connectionState) {
-                              case ConnectionState.none:
-                              case ConnectionState.waiting:
-                                return Center(
-                                    child: CircularProgressIndicator());
-                              default:
-                                if (snapshot2.hasError) {
-                                  return Text('Error: ${snapshot2.error}');
-                                } else if (snapshot2.data == 0) {
-                                  return DashBoard();
-                                } else if (snapshot2.data == 1) {
-                                  return Validate();
-                                } else if (snapshot2.data == 2) {
-                                  return GetStarted();
-                                } else {
-                                  //Error in Autologgin --> Login probably -1
-                                  return Login();
-                                }
-                            }
-                          },
-                        );
-                      }
-                  }
+                    future: _fetchPreferences(),
+                    builder: (context, snapshot) {
+                    switch (snapshot.connectionState) {
+                      case ConnectionState.none:
+                      case ConnectionState.waiting:
+                        return Center(child: CircularProgressIndicator());
+                      default:
+                        if (snapshot.hasError)
+                          return Text('Error: ${snapshot.error}');
+                        else if ((snapshot.data == null ||
+                            snapshot.data.password == null))
+                          return Login();
+                        else {
+                          //Create another future builder to check if the user is still valid!
+                          return FutureBuilder<dynamic>(
+                            future: _fetchLogin(
+                                snapshot.data.email, snapshot.data.password),
+                            builder: (context, snapshot2) {
+                              switch (snapshot2.connectionState) {
+                                case ConnectionState.none:
+                                case ConnectionState.waiting:
+                                  return Center(
+                                      child: CircularProgressIndicator());
+                                default:
+                                  if (snapshot2.hasError) {
+                                    return Text('Error: ${snapshot2.error}');
+                                  } else if (snapshot2.data == 0) {
+                                    return DashBoard();
+                                  } else if (snapshot2.data == 1) {
+                                    return Validate();
+                                  } else if (snapshot2.data == 2) {
+                                    return GetStarted();
+                                  } else {
+                                    //Error in Autologgin --> Login probably -1
+                                    return Login();
+                                  }
+                              }
+                            },
+                          );
+                        }
+                    }
                 }),
         routes: {
           '/dashboard': (context) => DashBoard(),

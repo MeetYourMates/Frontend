@@ -1,9 +1,14 @@
+import 'package:firebase_core/firebase_core.dart' as firebaseCore;
+import 'package:firebase_auth/firebase_auth.dart' as firebaseAuth;
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:provider/provider.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
+
 //Services
 import 'package:meet_your_mates/api/services/auth_service.dart';
 //Utilities
@@ -103,6 +108,52 @@ class _LoginState extends State<Login> {
       }
     };
 
+/***************POL************************************************/
+
+    final firebaseAuth.FirebaseAuth _firebaseAuth =
+        firebaseAuth.FirebaseAuth.instance;
+    final GoogleSignIn _googleSignIn = new GoogleSignIn();
+
+    Future<firebaseAuth.FirebaseUser> _signIn(BuildContext context) async {
+      final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final firebaseAuth.AuthCredential credential =
+          firebaseAuth.GoogleAuthProvider.getCredential(
+              accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+
+      firebaseAuth.FirebaseUser userDetails =
+          await _firebaseAuth.signInWithCredential(credential);
+
+      ProviderDetails providerInfo =
+          new ProviderDetails(userDetails.providerId);
+      List<ProviderDetails> providerData = new List<ProviderDetails>();
+      providerData.add(providerInfo);
+
+      UserDetails details = new UserDetails(
+        userDetails.providerId,
+        userDetails.displayName,
+        userDetails.photoUrl,
+        userDetails.email,
+        providerData,
+      );
+      logger.d(userDetails.email);
+    }
+
+    Widget _iconGoogle() {
+      return Column(children: <Widget>[
+        GoogleSignInButton(
+          onPressed: () => _signIn(context)
+              .then((firebaseAuth.FirebaseUser user) => print(user))
+              .catchError((e) => print(e)),
+          darkMode: false, // default: false
+        ),
+      ]);
+    }
+
+/******************************************************************/
+
     Size size = MediaQuery.of(context).size;
     return SafeArea(
       child: Scaffold(
@@ -171,6 +222,7 @@ class _LoginState extends State<Login> {
                     },
                   ),
                   forgotLabel,
+                  _iconGoogle(),
                 ],
               ),
             ),
@@ -179,4 +231,20 @@ class _LoginState extends State<Login> {
       ),
     );
   }
+}
+
+class UserDetails {
+  final String providerDetails;
+  final String userName;
+  final String photoUrl;
+  final String userEmail;
+  final List<ProviderDetails> providerData;
+
+  UserDetails(this.providerDetails, this.userName, this.photoUrl,
+      this.userEmail, this.providerData);
+}
+
+class ProviderDetails {
+  ProviderDetails(this.providerDetails);
+  final String providerDetails;
 }

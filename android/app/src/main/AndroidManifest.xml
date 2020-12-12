@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.meet_your_mates">
+   <uses-permission android:name="android.permission.INTERNET"/>
    <application
         android:label="meet_your_mates"
         android:usesCleartextTraffic="true"
