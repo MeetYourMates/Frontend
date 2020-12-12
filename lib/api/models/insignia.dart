@@ -1,6 +1,6 @@
 class Insignia {
   String hashtag;
-  double requirement;
+  int requirement;
   String dateTime;
   String logo;
   Insignia({this.hashtag, this.requirement, this.dateTime, this.logo});

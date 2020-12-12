@@ -8,7 +8,8 @@ import 'package:flutter/material.dart';
 
 //Screens
 import 'package:meet_your_mates/screens/Login/background.dart';
-
+import 'package:provider/provider.dart';
+import 'package:meet_your_mates/api/services/student_service.dart';
 //Models
 
 //Components
@@ -50,31 +51,14 @@ class InsigniaList extends StatefulWidget {
 }
 
 class _InsigniaListState extends State<InsigniaList> {
-  List<Insignia> insignias;
 
-  void initState() {
-    insignias = [
-      new Insignia(
-          hashtag: "Javascript",
-          requirement: 4,
-          dateTime: "02/12/2020",
-          logo: 'assets/icons/insignia.png'),
-      new Insignia(
-          hashtag: "Typescript",
-          requirement: 5,
-          dateTime: "12/09/2020",
-          logo: 'assets/icons/insignia.png'),
-      new Insignia(
-          hashtag: "C#",
-          requirement: 1,
-          dateTime: "17/02/2019",
-          logo: 'assets/icons/insignia.png'),
-    ];
-    super.initState();
-  }
+
 
   @override
   Widget build(BuildContext context) {
+
+    StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
+    List<Insignia> insignias = _studentProvider.student.insignias;
     return ListView.builder(
               physics: NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) => InsigniaCard(hashtag: insignias[index].hashtag, date: insignias[index].dateTime, requirement: insignias[index].requirement, logo: insignias[index].logo,),
@@ -87,7 +71,7 @@ class _InsigniaListState extends State<InsigniaList> {
 class InsigniaCard extends StatelessWidget {
   final String hashtag;
   final String date;
-  final double requirement;
+  final int requirement;
   final String logo;
 
   const InsigniaCard({

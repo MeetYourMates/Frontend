@@ -24,7 +24,6 @@ class _TrophiesState extends State<Trophies> {
 
   @override
   Widget build(BuildContext context) {
-    
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -52,19 +51,19 @@ class TrophyList extends StatefulWidget {
 
 class _TrophyListState extends State<TrophyList> {
   var logger = Logger();
- 
+
   @override
   Widget build(BuildContext context) {
     StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
     List<Trophy> trophies = _studentProvider.student.trophies;
 
-    
+
 
     return ListView.builder(
       physics: NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) => TrophyCard(
         title: trophies[index].title,
-        date: trophies[index].dateTime,
+        date: trophies[index].date,
         difficulty: trophies[index].difficulty,
         logo: trophies[index].logo,
         professor: trophies[index].professor,
