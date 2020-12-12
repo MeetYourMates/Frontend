@@ -112,7 +112,7 @@ class _ValidateState extends State<Validate> {
                   ),
                 ),
                 RoundedButton(
-                  text: "Send Code",
+                  text: "Validate",
                   press: () {
                     if (codeController.text != "") {
                       _validationCode = codeController.text;
