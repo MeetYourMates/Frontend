@@ -113,7 +113,7 @@ class _LoginState extends State<Login> {
         firebaseAuth.FirebaseAuth.instance;
     final GoogleSignIn _googleSignIn = new GoogleSignIn();
 
-    Future<UserDetails> _signIn(BuildContext context) async {
+    Future<firebaseAuth.FirebaseUser> _signIn(BuildContext context) async {
       final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
@@ -139,14 +139,14 @@ class _LoginState extends State<Login> {
       );
       logger.d(userDetails.email);
       //Added New
-      return details;
+      return userDetails;
     }
 
     Widget _iconGoogle() {
       return Column(children: <Widget>[
         GoogleSignInButton(
           onPressed: () => _signIn(context)
-              .then((UserDetails user) => logger.i([user]))
+              .then((firebaseAuth.FirebaseUser user) => logger.i(user))
               .catchError((e) => logger.e(e)),
           darkMode: false, // default: false
         ),
