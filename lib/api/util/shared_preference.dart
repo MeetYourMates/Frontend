@@ -11,7 +11,7 @@ class UserPreferences {
     prefs.setString("email", user.email);
     prefs.setString("token", user.token);
     prefs.setString("password", user.password);
-    return prefs.getBool("token") ?? false;
+    return prefs.getString("token") != null ? true : false;
   }
 
   Future<User> getUser() async {

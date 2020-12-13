@@ -22,16 +22,20 @@ enum Status {
 class StartProvider with ChangeNotifier {
   Status _enrolledStatus = Status.NotEnrolled;
   Status get enrolledStatus => _enrolledStatus;
+  //*******************************KRUNAL**************************************/
   var logger = Logger(level: Level.warning);
-  //Login Service without proper error handling T
-  Future<Map<String, dynamic>> getStartedData() async {
+
+  Future<Map<String, dynamic>> getStartedData(String token) async {
     var result;
     Response response;
     _enrolledStatus = Status.LoadingData;
     try {
       response = await get(
         AppUrl.universities,
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'authorization': 'bearer $token',
+          'Content-Type': 'application/json'
+        },
       );
     } catch (err) {
       _enrolledStatus = Status.DataFailed;
@@ -72,6 +76,7 @@ class StartProvider with ChangeNotifier {
     return result;
   }
 
+//*******************************KRUNAL**************************************/
   Future<Map<String, dynamic>> getSubjectData(String degreeId) async {
     var result;
     Response response;

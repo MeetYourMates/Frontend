@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
@@ -7,12 +6,13 @@ import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/models/user.dart';
 import 'package:meet_your_mates/api/util/app_url.dart';
+import 'package:meet_your_mates/api/util/shared_preference.dart';
 
 class StudentProvider with ChangeNotifier {
   Student _student = new Student();
 
   Student get student => _student;
-  var logger = Logger();
+  var logger = Logger(level: Level.warning);
   void setStudent(Student student) {
     if (student != null) {
       User usr = new User();
@@ -30,6 +30,7 @@ class StudentProvider with ChangeNotifier {
     }
   }
 
+//*******************************KRUNAL**************************************/
   Future<int> autoLogin(String email, String password) async {
     logger.d("Trying AutoLogging!");
     int res = -1;
@@ -49,6 +50,8 @@ class StudentProvider with ChangeNotifier {
           Map responseData = jsonDecode(response.body);
           _student = (Student.fromJson(responseData));
           userTmp.id = _student.user.id;
+          userTmp.token = _student.user.token;
+          UserPreferences().saveUser(userTmp);
           _student.user = userTmp;
           res = 0;
         } catch (err) {
@@ -61,6 +64,8 @@ class StudentProvider with ChangeNotifier {
           Map responseData = jsonDecode(response.body);
           _student = (Student.fromJson(responseData));
           userTmp.id = _student.user.id;
+          userTmp.token = _student.user.token;
+          UserPreferences().saveUser(userTmp);
           _student.user = userTmp;
           res = 1;
         } catch (err) {
@@ -73,6 +78,8 @@ class StudentProvider with ChangeNotifier {
           Map responseData = jsonDecode(response.body);
           _student = (Student.fromJson(responseData));
           userTmp.id = _student.user.id;
+          userTmp.token = _student.user.token;
+          UserPreferences().saveUser(userTmp);
           _student.user = userTmp;
           res = 2;
         } catch (err) {
@@ -83,11 +90,12 @@ class StudentProvider with ChangeNotifier {
       }
     } catch (err) {
       logger.e("Error AutoLogin: " + err.toString());
+      UserPreferences().removeUser();
       res = -1;
     }
     return res;
   }
-
+  //*******************************KRUNAL**************************************/
   //************************POL****************************/
 
   Future<int> upload(Student updated) async {
@@ -109,8 +117,6 @@ class StudentProvider with ChangeNotifier {
     }
     return res;
   }
-
-  
-
   //*******************************************************/
+
 }

@@ -21,20 +21,24 @@ enum Status {
   LoggedOut,
   Validating,
   NotValidated,
-  Validated
+  Validated,
+  Sending,
+  Sent,
+  Failed,
+  Completed
 }
 
 class AuthProvider with ChangeNotifier {
   Status _loggedInStatus = Status.NotLoggedIn;
   Status _registeredInStatus = Status.NotRegistered;
   Status _validatedStatus = Status.NotValidated;
-
+  Status _recoveryStatus = Status.Sending;
   Status get loggedInStatus => _loggedInStatus;
   Status get registeredInStatus => _registeredInStatus;
   Status get validatedStatus => _validatedStatus;
-  var logger = Logger();
-  // ignore: todo
-  //Login Service without proper error handling TODO: FUTURE REPAIR
+  Status get recoveryStatus => _recoveryStatus;
+  //*******************************KRUNAL**************************************/
+  var logger = Logger(level: Level.warning);
   Future<Map<String, dynamic>> login(String email, String password) async {
     var result;
     int res = -1;
@@ -66,6 +70,7 @@ class AuthProvider with ChangeNotifier {
         Map responseData = jsonDecode(response.body);
         authenticatedStudent = Student.fromJson(responseData);
         userTmp.id = authenticatedStudent.user.id;
+        userTmp.token = authenticatedStudent.user.token;
         authenticatedStudent.user = userTmp;
         UserPreferences().saveUser(userTmp);
         logger.d("User in Shared Preferences: " + userTmp.toString());
@@ -88,6 +93,7 @@ class AuthProvider with ChangeNotifier {
         Map responseData = jsonDecode(response.body);
         authenticatedStudent = Student.fromJson(responseData);
         userTmp.id = authenticatedStudent.user.id;
+        userTmp.token = authenticatedStudent.user.token;
         authenticatedStudent.user = userTmp;
         UserPreferences().saveUser(userTmp);
         logger.d("User in Shared Preferences: " + userTmp.toString());
@@ -109,6 +115,7 @@ class AuthProvider with ChangeNotifier {
         Map responseData = jsonDecode(response.body);
         authenticatedStudent = Student.fromJson(responseData);
         userTmp.id = authenticatedStudent.user.id;
+        userTmp.token = authenticatedStudent.user.token;
         authenticatedStudent.user = userTmp;
         UserPreferences().saveUser(userTmp);
         logger.d("User in Shared Preferences: " + userTmp.toString());
@@ -138,6 +145,56 @@ class AuthProvider with ChangeNotifier {
     return result;
   }
 
+  Future<Map<String, dynamic>> recoverPassword(String email) async {
+    var result;
+    logger.d("Recover Passwor: email: $email");
+    _recoveryStatus = Status.Sending;
+    notifyListeners();
+    Response response = await get(AppUrl.forgotPassword + email);
+    logger.d("Recover Password: response: $response");
+    if (response.statusCode == 201) {
+      _recoveryStatus = Status.Sent;
+      notifyListeners();
+      logger.d("Recover Password: status: $_recoveryStatus");
+      result = {'status': true, 'message': "Email Sent"};
+    } else {
+      _recoveryStatus = Status.Failed;
+      notifyListeners();
+      logger.d("Recover Password: status: $_recoveryStatus");
+      result = {'status': false, 'message': "Unvalid Email"};
+    }
+    return result;
+  }
+
+  Future<Map<String, dynamic>> changePassword(
+      String code, String email, String pass) async {
+    var result;
+    logger.d("change Password: email: $email");
+    _recoveryStatus = Status.Sending;
+    notifyListeners();
+    String _body = '{"code":"$code","email":"$email","password":"$pass"}';
+    logger.i("_body: " + _body);
+    Response response = await post(
+      AppUrl.changePassword,
+      body: _body,
+      headers: {'Content-Type': 'application/json'},
+    );
+    logger.d("change Password:: response: $response");
+    if (response.statusCode == 200) {
+      _recoveryStatus = Status.Completed;
+      notifyListeners();
+      logger.d("change Password:: status: $_recoveryStatus");
+      result = {'status': true, 'message': "Email Sent"};
+    } else {
+      _recoveryStatus = Status.Failed;
+      notifyListeners();
+      logger.d("change Password:: status: $_recoveryStatus");
+      result = {'status': false, 'message': "Unvalid Email"};
+    }
+    return result;
+  }
+
+//*******************************KRUNAL**************************************/
   Future<Map<String, dynamic>> register(String email, String password) async {
     var result;
 

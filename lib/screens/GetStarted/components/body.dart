@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:async/async.dart';
+import 'dart:async';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
-import '../../../choices.dart' as choices;
 import 'package:meet_your_mates/api/models/universities.dart';
 import 'package:meet_your_mates/api/services/start_service.dart';
 import 'package:meet_your_mates/components/direct_options.dart';
@@ -20,27 +20,40 @@ class Body extends StatefulWidget {
   _BodyState createState() => _BodyState();
 }
 
+//*******************************KRUNAL**************************************/
 class _BodyState extends State<Body> {
+  /// [logger] to logg all of the logs in console prettily!
   var logger = Logger(level: Level.warning);
+
+  /// [_memoizerUniversities] to recieve all of the university from server just one
+  /// all of the other runs it just gets data from local ram.
   final AsyncMemoizer _memoizerUniversities = AsyncMemoizer();
-  final formKey = new GlobalKey<FormState>();
   String _university = "", _faculty = "", _degree = "";
-  //Value Notifier with Initial Values
+
+  /// [ValueNotifie] Value Notifier with Initial Values which only rebuilds the
+  /// widgets it is used
   ValueNotifier<List<String>> universityNames =
       ValueNotifier(["Select your University:"]);
   ValueNotifier<List<String>> facultyNames =
       ValueNotifier(["Select your Faculty:"]);
   ValueNotifier<List<String>> degreeNames =
       ValueNotifier(["Select your Degree:"]);
+  ValueNotifier<List<Map<String, dynamic>>> _choicesSubjects = ValueNotifier([
+    {"id": "Test", "name": "test", "group": "test"}
+  ]);
+
+  /// [enable,choosenUni,choosenFaculty,choosenDegree] are used to hide and show
+  /// the widgets
   bool enabled = false;
   bool chosenUni = false;
   bool chosenFaculty = false;
   bool chosenDegree = false;
+
+  /// [universities] is used to store the universities Response Obtained
   Universities universities = new Universities();
-  ValueNotifier<List<Map<String, dynamic>>> _choicesSubjects = ValueNotifier([
-    {"id": "Test", "name": "test", "group": "test"}
-  ]);
   List<String> _subjects = [];
+
+  /// [validateAll] Validates if the corresponding variables have a valid value!
   validateAll() {
     if (_university != "Select your University:" &&
         _faculty != "Select your Faculty:" &&
@@ -54,6 +67,7 @@ class _BodyState extends State<Body> {
     }
   }
 
+  /// [_toggleUniversity] toggles university widget if valid value
   void _toggleUniversity() {
     setState(() {
       if (_university != "Select your University:" && _university != null) {
@@ -64,6 +78,7 @@ class _BodyState extends State<Body> {
     });
   }
 
+  /// [_toggleFaculty] toggles faculty widget if valid value
   void _toggleFaculty() {
     setState(() {
       if (_faculty != "Select your Faculty:" && _faculty != null) {
@@ -74,6 +89,7 @@ class _BodyState extends State<Body> {
     });
   }
 
+  /// [_toggleDegree] toggles degree widget if valid value
   void _toggleDegree() {
     setState(() {
       if (_degree != "Select your Degree:" && _degree != null) {
@@ -84,6 +100,7 @@ class _BodyState extends State<Body> {
     });
   }
 
+  /// [_toggleValidate] toggles subjtect widget if valid value
   void _toggleValidate() {
     setState(() {
       if (validateAll()) {
@@ -97,11 +114,12 @@ class _BodyState extends State<Body> {
   @override
   Widget build(BuildContext context) {
     StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
-    StartProvider start = Provider.of<StartProvider>(context, listen: true);
+    StartProvider _start = Provider.of<StartProvider>(context, listen: true);
     Future _fetchUniversities() async {
       return _memoizerUniversities.runOnce(() async {
         logger.d("_memoizerUniversities Executed");
-        Map<String, dynamic> result = await start.getStartedData();
+        Map<String, dynamic> result =
+            await _start.getStartedData(_studentProvider.student.user.token);
         return result;
       });
     }
@@ -124,7 +142,7 @@ class _BodyState extends State<Body> {
 
     var loadchoicesSubjects = (String degreeId) {
       final Future<Map<String, dynamic>> successfulMessage =
-          start.getSubjectData(degreeId);
+          _start.getSubjectData(degreeId);
       //Callback to message recieved after login auth
       successfulMessage.then((response) {
         if (response['status']) {
@@ -148,7 +166,7 @@ class _BodyState extends State<Body> {
       //and we loose syncronicity between the result and the code execution
       for (int i = 0; i < _subjects.length; i++) {
         Map<String, dynamic> response =
-            await start.start(_subjects[i], _studentProvider.student.id);
+            await _start.start(_subjects[i], _studentProvider.student.id);
         enrollStatus = enrollStatus || response['status'];
         logger.d("Subjects Do Start stateBool: " + enrollStatus.toString());
         logger.d("Enrolling in Selected Subject $i");
@@ -231,43 +249,36 @@ class _BodyState extends State<Body> {
                               // This builder will only get called when the _counter
                               // is updated.
                               return DirectOptions(
-                                  title: "University",
-                                  elements: _universityNames,
-                                  enable: true,
-                                  onSelected: (value) => {
-                                        _university = value,
-                                        logger
-                                            .d("University Changed: " + value),
-                                        _toggleUniversity(),
-                                        if (chosenUni)
-                                          {
-                                            //Clearing current degreeList and adding new Data
-                                            temp.clear(),
-                                            temp.addAll(universities
-                                                .getUniversityByName(
-                                                    _university)
-                                                .getFacultyNames()),
-                                            facultyNames.value.removeWhere(
-                                                (item) =>
-                                                    item !=
-                                                    "Select your University:"),
-                                            facultyNames.value.addAll(temp),
-                                            logger.d("Faculties Name List: " +
-                                                temp.join("/"))
-                                          }
-                                        else
-                                          {
-                                            //Changed back to not correct Option
-                                            facultyNames.value.removeWhere(
-                                                (item) =>
-                                                    item !=
-                                                    "Select your Faculty:"),
-                                            degreeNames.value.removeWhere(
-                                                (item) =>
-                                                    item !=
-                                                    "Select your Degree:"),
-                                          }
-                                      });
+                                title: "University",
+                                elements: _universityNames,
+                                enable: true,
+                                onSelected: (value) => {
+                                  _university = value,
+                                  logger.d("University Changed: " + value),
+                                  _toggleUniversity(),
+                                  if (chosenUni)
+                                    {
+                                      //Clearing current degreeList and adding new Data
+                                      temp.clear(),
+                                      temp.addAll(universities
+                                          .getUniversityByName(_university)
+                                          .getFacultyNames()),
+                                      facultyNames.value.removeWhere((item) =>
+                                          item != "Select your University:"),
+                                      facultyNames.value.addAll(temp),
+                                      logger.d("Faculties Name List: " +
+                                          temp.join("/"))
+                                    }
+                                  else
+                                    {
+                                      //Changed back to not correct Option
+                                      facultyNames.value.removeWhere((item) =>
+                                          item != "Select your Faculty:"),
+                                      degreeNames.value.removeWhere((item) =>
+                                          item != "Select your Degree:"),
+                                    }
+                                },
+                              );
                             },
                             valueListenable: universityNames,
                             child: Container(),
@@ -278,43 +289,37 @@ class _BodyState extends State<Body> {
                               // This builder will only get called when the _counter
                               // is updated.
                               return DirectOptions(
-                                  title: "Faculty",
-                                  elements: _facultNames,
-                                  enable: chosenUni,
-                                  onSelected: (value) => {
-                                        _faculty = value,
-                                        logger.d("Faculty Changed: " + value),
-                                        _toggleFaculty(),
-                                        if (chosenFaculty)
-                                          {
-                                            //Clearing current degreeList and adding new Data
-                                            temp.clear(),
-                                            temp.addAll(universities
-                                                .getUniversityByName(
-                                                    _university)
-                                                .getFacultyByName(_faculty)
-                                                .getDegreeNames()),
-                                            degreeNames.value.removeWhere(
-                                                (item) =>
-                                                    item !=
-                                                    "Select your Faculty:"),
-                                            degreeNames.value.addAll(temp),
-                                            logger.d("Degrees Name List: " +
-                                                temp.join("/"))
-                                          }
-                                        else
-                                          {
-                                            //Changed back to not correct Option
-                                            facultyNames.value.removeWhere(
-                                                (item) =>
-                                                    item !=
-                                                    "Select your Faculty:"),
-                                            degreeNames.value.removeWhere(
-                                                (item) =>
-                                                    item !=
-                                                    "Select your Degree:"),
-                                          }
-                                      });
+                                title: "Faculty",
+                                elements: _facultNames,
+                                enable: chosenUni,
+                                onSelected: (value) => {
+                                  _faculty = value,
+                                  logger.d("Faculty Changed: " + value),
+                                  _toggleFaculty(),
+                                  if (chosenFaculty)
+                                    {
+                                      //Clearing current degreeList and adding new Data
+                                      temp.clear(),
+                                      temp.addAll(universities
+                                          .getUniversityByName(_university)
+                                          .getFacultyByName(_faculty)
+                                          .getDegreeNames()),
+                                      degreeNames.value.removeWhere((item) =>
+                                          item != "Select your Faculty:"),
+                                      degreeNames.value.addAll(temp),
+                                      logger.d("Degrees Name List: " +
+                                          temp.join("/"))
+                                    }
+                                  else
+                                    {
+                                      //Changed back to not correct Option
+                                      facultyNames.value.removeWhere((item) =>
+                                          item != "Select your Faculty:"),
+                                      degreeNames.value.removeWhere((item) =>
+                                          item != "Select your Degree:"),
+                                    }
+                                },
+                              );
                             },
                             valueListenable: facultyNames,
                             child: Container(),
@@ -326,39 +331,35 @@ class _BodyState extends State<Body> {
                               // is updated.
                               var id;
                               return DirectOptions(
-                                  title: "Degree",
-                                  elements: _degreeNames,
-                                  enable: chosenFaculty,
-                                  onSelected: (value) => {
-                                        _degree = value,
-                                        _toggleDegree(),
-                                        if (chosenDegree)
-                                          {
-                                            //Here we call for choicesSubjects and show gettingEnrolled Status!
-                                            //Find the Degreeid from name
-                                            degreeNames.value[
-                                                _degreeNames.indexOf(_degree)],
-                                            id = universities
-                                                .getUniversityByName(
-                                                    _university)
-                                                .getFacultyByName(_faculty)
-                                                .getDegreeByName(_degree)
-                                                .id,
-                                            loadchoicesSubjects(id)
-                                          }
-                                        else
-                                          {
-                                            //Changed back to not correct Option
-                                            facultyNames.value.removeWhere(
-                                                (item) =>
-                                                    item !=
-                                                    "Select your Faculty:"),
-                                            degreeNames.value.removeWhere(
-                                                (item) =>
-                                                    item !=
-                                                    "Select your Degree:"),
-                                          }
-                                      });
+                                title: "Degree",
+                                elements: _degreeNames,
+                                enable: chosenFaculty,
+                                onSelected: (value) => {
+                                  _degree = value,
+                                  _toggleDegree(),
+                                  if (chosenDegree)
+                                    {
+                                      //Here we call for choicesSubjects and show gettingEnrolled Status!
+                                      //Find the Degreeid from name
+                                      degreeNames
+                                          .value[_degreeNames.indexOf(_degree)],
+                                      id = universities
+                                          .getUniversityByName(_university)
+                                          .getFacultyByName(_faculty)
+                                          .getDegreeByName(_degree)
+                                          .id,
+                                      loadchoicesSubjects(id)
+                                    }
+                                  else
+                                    {
+                                      //Changed back to not correct Option
+                                      facultyNames.value.removeWhere((item) =>
+                                          item != "Select your Faculty:"),
+                                      degreeNames.value.removeWhere((item) =>
+                                          item != "Select your Degree:"),
+                                    }
+                                },
+                              );
                             },
                             valueListenable: degreeNames,
                             child: Container(),
@@ -370,23 +371,22 @@ class _BodyState extends State<Body> {
                               // This builder will only get called when the _counter
                               // is updated.
                               return AbsorbPointer(
-                                  absorbing: !chosenDegree,
-                                  child: Opacity(
-                                      opacity: chosenDegree ? 1 : 0.35,
-                                      child: MultipleOptions(
-                                        title: "Subjects",
-                                        elements: _subjsList != null
-                                            ? _subjsList
-                                            : choices.subjects,
-                                        onSelected: (value) =>
-                                            {_subjects = value},
-                                      )));
+                                absorbing: !chosenDegree,
+                                child: Opacity(
+                                  opacity: chosenDegree ? 1 : 0.35,
+                                  child: MultipleOptions(
+                                    title: "Subjects",
+                                    elements: _subjsList,
+                                    onSelected: (value) => {_subjects = value},
+                                  ),
+                                ),
+                              );
                             },
                             valueListenable: _choicesSubjects,
                             child: Container(),
                           ),
                           SizedBox(height: size.height * 0.03),
-                          start.enrolledStatus == Status.GettingEnrolled
+                          _start.enrolledStatus == Status.GettingEnrolled
                               ? loading
                               : RoundedButton(
                                   text: "START",
@@ -401,4 +401,5 @@ class _BodyState extends State<Body> {
           }
         });
   }
+  //*******************************KRUNAL**************************************/
 }

@@ -6,7 +6,8 @@ class AppUrl {
 
   static const String login = baseURL + "/auth/signIn";
   static const String register = baseURL + "/auth/signUp";
-  static const String forgotPassword = baseURL + "auth/forgotPassword";
+  static const String forgotPassword = baseURL + "/auth/forgotPassword/";
+  static const String changePassword = baseURL + "/auth/changePassword";
   static const String validate = baseURL + "/auth/validate/";
   static const String universities = baseURL + "/university/all";
   static const String subjects = baseURL + "/degree/get/";

@@ -112,7 +112,7 @@ class _ValidateState extends State<Validate> {
                   ),
                 ),
                 RoundedButton(
-                  text: "Send Code",
+                  text: "Validate",
                   press: () {
                     if (codeController.text != "") {
                       _validationCode = codeController.text;
@@ -120,8 +120,7 @@ class _ValidateState extends State<Validate> {
                             (response) => {
                               if (response['status'])
                                 {
-                                  Navigator.pushReplacementNamed(
-                                      context, '/login')
+                                  checkValidation(),
                                 }
                             },
                           );

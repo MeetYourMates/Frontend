@@ -41,6 +41,7 @@ dependencies:
   shared_preferences: ^0.5.8
   provider: ^4.3.1
   another_flushbar: ^1.10.7
+  reactive_forms: ^7.6.1
   connectivity: ^2.0.2
   logger: ^0.9.4
   bottom_navy_bar: ^5.6.0
