@@ -11,4 +11,6 @@ class AppUrl {
   static const String universities = baseURL + "/university/all";
   static const String subjects = baseURL + "/degree/get/";
   static const String addsubjects = baseURL + "/course/addStudent";
+  static const String editProfile = baseURL + "/student/updateStudent";
+  static const String editProfilePhoto = baseURL + "/student/StudentPhoto";
 }

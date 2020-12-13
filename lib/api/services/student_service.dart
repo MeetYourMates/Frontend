@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
@@ -86,4 +87,30 @@ class StudentProvider with ChangeNotifier {
     }
     return res;
   }
+
+  //************************POL****************************/
+
+  Future<int> upload(Student updated) async {
+    int res = -1;
+    logger.d("Trying to update student:");
+    try {
+      Response response = await put(
+        AppUrl.editProfile,
+        body: json.encode(updated.toJson()),
+        headers: {'Content-Type': 'application/json'},
+      );
+      if (response.statusCode == 200) {
+        logger.d("Student updated:");
+        res = 0;
+      }
+    } catch (err) {
+      logger.e("Error updating Student: " + err.toString());
+      res = -1;
+    }
+    return res;
+  }
+
+  
+
+  //*******************************************************/
 }

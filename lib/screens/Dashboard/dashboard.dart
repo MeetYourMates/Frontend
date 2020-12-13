@@ -1,10 +1,11 @@
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
-import 'package:meet_your_mates/api/util/shared_preference.dart';
-import 'package:meet_your_mates/components/rounded_button.dart';
 import 'package:flutter/material.dart';
+import 'package:meet_your_mates/screens/Profile/profile.dart';
 //Services
 
 //Utilities
+
+//Screens
 
 //Models
 
@@ -50,14 +51,11 @@ class _DashBoardState extends State<DashBoard> {
               color: Colors.green,
             ),
             Container(
-                color: Colors.blue,
-                child: RoundedButton(
-                  text: "LOGOUT",
-                  press: () => {
-                    UserPreferences().removeUser(),
-                    Navigator.pushReplacementNamed(context, '/login')
-                  },
-                )),
+              color: Colors.grey[100],
+              child: SizedBox.expand(
+                child: Profile(),
+              ),
+            )
           ],
         ),
       ),
