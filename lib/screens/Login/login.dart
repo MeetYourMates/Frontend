@@ -1,4 +1,3 @@
-import 'package:firebase_core/firebase_core.dart' as firebaseCore;
 import 'package:firebase_auth/firebase_auth.dart' as firebaseAuth;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:logger/logger.dart';
@@ -114,7 +113,7 @@ class _LoginState extends State<Login> {
         firebaseAuth.FirebaseAuth.instance;
     final GoogleSignIn _googleSignIn = new GoogleSignIn();
 
-    Future<firebaseAuth.FirebaseUser> _signIn(BuildContext context) async {
+    Future<UserDetails> _signIn(BuildContext context) async {
       final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
@@ -139,14 +138,16 @@ class _LoginState extends State<Login> {
         providerData,
       );
       logger.d(userDetails.email);
+      //Added New
+      return details;
     }
 
     Widget _iconGoogle() {
       return Column(children: <Widget>[
         GoogleSignInButton(
           onPressed: () => _signIn(context)
-              .then((firebaseAuth.FirebaseUser user) => print(user))
-              .catchError((e) => print(e)),
+              .then((UserDetails user) => logger.i([user]))
+              .catchError((e) => logger.e(e)),
           darkMode: false, // default: false
         ),
       ]);

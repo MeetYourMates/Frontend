@@ -57,8 +57,6 @@ class _TrophyListState extends State<TrophyList> {
     StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
     List<Trophy> trophies = _studentProvider.student.trophies;
 
-
-
     return ListView.builder(
       physics: NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) => TrophyCard(
@@ -66,7 +64,7 @@ class _TrophyListState extends State<TrophyList> {
         date: trophies[index].date,
         difficulty: trophies[index].difficulty,
         logo: trophies[index].logo,
-        professor: trophies[index].professor,
+        professor: trophies[index].professorId,
       ),
       shrinkWrap: true,
       itemCount: trophies.length,

@@ -123,11 +123,16 @@ class _EditProfileState extends State<EditProfile> {
     StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
     ImagesProvider _imageProvider = Provider.of<ImagesProvider>(context);
     Future<void> _pickImage(ImageSource source) async {
-      File selected = await ImagePicker.pickImage(source: source);
-
-      setState(() {
-        _imageFile = selected;
-      });
+      final pickedFile = await ImagePicker().getImage(source: source);
+      setState(
+        () {
+          if (pickedFile != null) {
+            _imageFile = File(pickedFile.path);
+          } else {
+            print('No image selected.');
+          }
+        },
+      );
     }
 
     updateUser() {
@@ -152,8 +157,7 @@ class _EditProfileState extends State<EditProfile> {
         if (_imageFile != null) {
           updatedStu.photo = _imageFile.path;
           _imageProvider
-              .uploadPhoto(
-                  updatedStu.photo, updatedStu.id)
+              .uploadPhoto(updatedStu.photo, updatedStu.id)
               .then((res) => updatedStu.picture = res);
         }
         form.save();

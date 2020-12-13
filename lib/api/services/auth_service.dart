@@ -8,7 +8,6 @@ import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/models/user.dart';
 import 'package:meet_your_mates/api/util/app_url.dart';
 import 'package:meet_your_mates/api/util/shared_preference.dart';
-import 'package:firebase_auth/firebase_auth.dart' as firebase;
 
 enum Status {
   NotLoggedIn,
@@ -283,7 +282,7 @@ class AuthProvider with ChangeNotifier {
   }
 
   /*****************************************POL*****************************/
-  
+
   /*
   final firebase.FirebaseAuth _authGoogle = firebase.FirebaseAuth.instance;
   Future<bool> signInWithGoogle(String email, String password) async {
