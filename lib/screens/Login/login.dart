@@ -113,7 +113,7 @@ class _LoginState extends State<Login> {
         firebaseAuth.FirebaseAuth.instance;
     final GoogleSignIn _googleSignIn = new GoogleSignIn();
 
-    Future<firebaseAuth.FirebaseUser> _signIn(BuildContext context) async {
+    Future<UserDetails> _signIn(BuildContext context) async {
       final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
@@ -137,17 +137,45 @@ class _LoginState extends State<Login> {
         userDetails.email,
         providerData,
       );
-      logger.d(userDetails.email);
       //Added New
-      return userDetails;
+      return details;
     }
+
+    var signInGoogleCorrectly = (UserDetails userRegistered) {
+      auth
+          .register(
+        _username,
+        _password,
+      )
+          .then((response) {
+        if (response['status']) {
+          //If status is ok than we make the user login and continue with the process
+          Navigator.pushReplacementNamed(context, '/login');
+        } else {
+          Flushbar(
+            title: "Registration Failed",
+            message: response['message'].toString(),
+            duration: Duration(seconds: 10),
+          ).show(context);
+        }
+      });
+
+      
+    };
+
+    Future<dynamic> signOut() async {
+      await _googleSignIn.signOut();
+      return 0;
+    }
+
+    ;
 
     Widget _iconGoogle() {
       return Column(children: <Widget>[
         GoogleSignInButton(
           onPressed: () => _signIn(context)
-              .then((firebaseAuth.FirebaseUser user) => logger.i(user))
-              .catchError((e) => logger.e(e)),
+          .then((UserDetails user) => logger.i(user))
+          .catchError((e) => logger.e(e)),
           darkMode: false, // default: false
         ),
       ]);
