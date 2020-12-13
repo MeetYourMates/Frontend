@@ -27,7 +27,7 @@ class _DirectOptionsState extends State<DirectOptions> {
   //final List<String> elements;
   List<Widget> _buildItems() {
     //print(widget.elements);
-    List<Widget> returnWidgetSelectItems = new List<Widget>();
+    List<Widget> returnWidgetSelectItems = [];
     if (widget.elements.isNotEmpty) {
       widget.elements
           .forEach((val) => returnWidgetSelectItems.add(MySelectionItem(

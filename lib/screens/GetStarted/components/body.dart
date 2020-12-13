@@ -205,7 +205,7 @@ class _BodyState extends State<Body> {
     }
 
     //Local Temperory Variable
-    List<String> temp = new List<String>();
+    List<String> temp = [];
     Size size = MediaQuery.of(context).size;
     return FutureBuilder<dynamic>(
         future: _fetchUniversities(),

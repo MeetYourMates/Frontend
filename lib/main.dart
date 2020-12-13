@@ -18,7 +18,7 @@ import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/api/services/image_service.dart';
 //Utilities
 import 'package:provider/provider.dart';
-import 'package:connectivity/connectivity.dart';
+//import 'package:connectivity/connectivity.dart';
 import 'api/models/user.dart';
 import 'api/util/shared_preference.dart';
 
@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
         Provider.of<StudentProvider>(context, listen: false);
 
     /// [connectivity] to ensure network connectivity check on start of application
-    var connectivityResult = (Connectivity().checkConnectivity());
+    //var connectivityResult = (Connectivity().checkConnectivity());
 
     /// [_fetchLogin] Run Once and memorize the recieved data from the serverç
     /// to no execute multiple quieries even when the application rebuilds completely
@@ -90,15 +90,12 @@ class MyApp extends StatelessWidget {
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
         // ignore: unrelated_type_equality_checks
-        home: (connectivityResult == ConnectivityResult.none)
-            ? Center(
-                child: Text("No Network Connection"),
-              )
+        home:
 
             /// We use [FutureBuilder] to get the data in a future to be exact
             /// we recieve the data from [UserPreferences] and untill
             /// than we show something else to user.
-            : FutureBuilder<dynamic>(
+            FutureBuilder<dynamic>(
                 future: _fetchPreferences(),
                 builder: (context, snapshot) {
                   switch (snapshot.connectionState) {

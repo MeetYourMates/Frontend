@@ -106,7 +106,8 @@ class _LoginState extends State<Login> {
         logger.w("form is invalid");
       }
     };
-
+// TODO:  MAKE IT WORK FOR WEB TOO --> POL CODE!! FOR NOW COMMENTED!
+/*
 /***************POL************************************************/
 
     final firebaseAuth.FirebaseAuth _firebaseAuth =
@@ -127,7 +128,7 @@ class _LoginState extends State<Login> {
 
       ProviderDetails providerInfo =
           new ProviderDetails(userDetails.providerId);
-      List<ProviderDetails> providerData = new List<ProviderDetails>();
+      List<ProviderDetails> providerData = [];
       providerData.add(providerInfo);
 
       UserDetails details = new UserDetails(
@@ -159,8 +160,6 @@ class _LoginState extends State<Login> {
           ).show(context);
         }
       });
-
-      
     };
 
     Future<dynamic> signOut() async {
@@ -168,21 +167,19 @@ class _LoginState extends State<Login> {
       return 0;
     }
 
-    ;
-
     Widget _iconGoogle() {
       return Column(children: <Widget>[
         GoogleSignInButton(
           onPressed: () => _signIn(context)
-          .then((UserDetails user) => logger.i(user))
-          .catchError((e) => logger.e(e)),
+              .then((UserDetails user) => logger.i(user))
+              .catchError((e) => logger.e(e)),
           darkMode: false, // default: false
         ),
       ]);
     }
 
 /******************************************************************/
-
+*/
     Size size = MediaQuery.of(context).size;
     return SafeArea(
       child: Scaffold(
@@ -251,7 +248,7 @@ class _LoginState extends State<Login> {
                     },
                   ),
                   forgotLabel,
-                  _iconGoogle(),
+                  //_iconGoogle(),
                 ],
               ),
             ),
