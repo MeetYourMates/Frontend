@@ -30,59 +30,42 @@ class _ProfileState extends State<Profile> {
 
     meanRating = meanRating / (_studentProvider.student.ratings.length+1);
 
-    return Scaffold(
-      body: Background(
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              flex: 3,
-              child: Header(
-                icon: _studentProvider.student.picture,
-              ),
+    return SafeArea(
+      child: Scaffold(
+        body: Background(
+          child: SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                  Header(
+                    icon: _studentProvider.student.picture,
+                  ),
+                editButton(context: context),
+                StackContainer(
+                    username: _studentProvider.student.name,
+                    email: _studentProvider.student.user.email,
+                  ),
+                RatingStars(rating: meanRating),
+                ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) => InsigniaCard(),
+                    shrinkWrap: true,
+                    itemCount: 1,
+                  ),
+                ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) => TrophiesCard(),
+                    shrinkWrap: true,
+                    itemCount: 1,
+                  ),
+                ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) => LogOutCard(),
+                    shrinkWrap: true,
+                    itemCount: 1,
+                  ),
+              ],
             ),
-            Expanded(
-              flex: 1,
-              child: editButton(context: context),
-            ),
-            Expanded(
-              flex: 0,
-              child: StackContainer(
-                username: _studentProvider.student.name,
-                email: _studentProvider.student.user.email,
-              ),
-            ),
-            Expanded(
-              flex: 0,
-              child: RatingStars(rating: meanRating),
-            ),
-            Expanded(
-              flex: 0,
-              child: ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) => InsigniaCard(),
-                shrinkWrap: true,
-                itemCount: 1,
-              ),
-            ),
-            Expanded(
-              flex: 0,
-              child: ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) => TrophiesCard(),
-                shrinkWrap: true,
-                itemCount: 1,
-              ),
-            ),
-            Expanded(
-              flex: 2,
-              child: ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) => LogOutCard(),
-                shrinkWrap: true,
-                itemCount: 1,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
