@@ -6,7 +6,7 @@ String universityToJson(University data) => json.encode(data.toJson());
 class University {
   String id;
   String name;
-  List<Faculty> faculties = new List<Faculty>();
+  List<Faculty> faculties = [];
 
   University({
     this.id,

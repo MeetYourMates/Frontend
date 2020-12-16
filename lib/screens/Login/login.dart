@@ -1,9 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart' as firebaseAuth;
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:provider/provider.dart';
-import 'package:flushbar/flushbar.dart';
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
+
 //Services
 import 'package:meet_your_mates/api/services/auth_service.dart';
 //Utilities
@@ -32,7 +36,6 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     AuthProvider auth = Provider.of<AuthProvider>(context);
-
     var loading = Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -52,7 +55,7 @@ class _LoginState extends State<Login> {
                   TextStyle(color: kPrimaryColor, fontWeight: FontWeight.w500)),
           onPressed: () {
             //Future
-//            Navigator.pushReplacementNamed(context, '/reset-password');
+            Navigator.pushReplacementNamed(context, '/passwordRecovery');
           },
         )
       ],
@@ -68,16 +71,33 @@ class _LoginState extends State<Login> {
             auth.login(_username, _password);
         //Callback to message recieved after login auth
         successfulMessage.then((response) {
-          if (response['status']) {
+          if (response['status'] == 0) {
+            //Login Correct
             Student student = response['student'];
             Provider.of<StudentProvider>(context, listen: false)
-                .setStudent(student);
-            Navigator.pushReplacementNamed(context, '/getStarted');
+                .setStudentWithUser(student);
+            Navigator.pushReplacementNamed(context, '/dashboard');
             logger.d("Logged In Succesfull!");
+          } else if (response['status'] == 1) {
+            //Not Validated
+            Student student = response['student'];
+            Provider.of<StudentProvider>(context, listen: false)
+                .setStudentWithUser(student);
+            Navigator.pushReplacementNamed(context, '/validate');
+            logger.d("Logged In Not Validated!");
+          } else if (response['status'] == 2) {
+            //Let's Get Started not completed
+            Student student = response['student'];
+            Provider.of<StudentProvider>(context, listen: false)
+                .setStudentWithUser(student);
+            Navigator.pushReplacementNamed(context, '/getStarted');
+            logger.d("Logged In Let's Get Started not completed!");
           } else {
+            logger.d("Logged In Failed: " + response['message'].toString());
+
             Flushbar(
               title: "Failed Login",
-              message: response['message']['message'].toString(),
+              message: response['message'].toString(),
               duration: Duration(seconds: 3),
             ).show(context);
           }
@@ -86,7 +106,80 @@ class _LoginState extends State<Login> {
         logger.w("form is invalid");
       }
     };
+// TODO:  MAKE IT WORK FOR WEB TOO --> POL CODE!! FOR NOW COMMENTED!
+/*
+/***************POL************************************************/
 
+    final firebaseAuth.FirebaseAuth _firebaseAuth =
+        firebaseAuth.FirebaseAuth.instance;
+    final GoogleSignIn _googleSignIn = new GoogleSignIn();
+
+    Future<UserDetails> _signIn(BuildContext context) async {
+      final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final firebaseAuth.AuthCredential credential =
+          firebaseAuth.GoogleAuthProvider.getCredential(
+              accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+
+      firebaseAuth.FirebaseUser userDetails =
+          await _firebaseAuth.signInWithCredential(credential);
+
+      ProviderDetails providerInfo =
+          new ProviderDetails(userDetails.providerId);
+      List<ProviderDetails> providerData = [];
+      providerData.add(providerInfo);
+
+      UserDetails details = new UserDetails(
+        userDetails.providerId,
+        userDetails.displayName,
+        userDetails.photoUrl,
+        userDetails.email,
+        providerData,
+      );
+      //Added New
+      return details;
+    }
+
+    var signInGoogleCorrectly = (UserDetails userRegistered) {
+      auth
+          .register(
+        _username,
+        _password,
+      )
+          .then((response) {
+        if (response['status']) {
+          //If status is ok than we make the user login and continue with the process
+          Navigator.pushReplacementNamed(context, '/login');
+        } else {
+          Flushbar(
+            title: "Registration Failed",
+            message: response['message'].toString(),
+            duration: Duration(seconds: 10),
+          ).show(context);
+        }
+      });
+    };
+
+    Future<dynamic> signOut() async {
+      await _googleSignIn.signOut();
+      return 0;
+    }
+
+    Widget _iconGoogle() {
+      return Column(children: <Widget>[
+        GoogleSignInButton(
+          onPressed: () => _signIn(context)
+              .then((UserDetails user) => logger.i(user))
+              .catchError((e) => logger.e(e)),
+          darkMode: false, // default: false
+        ),
+      ]);
+    }
+
+/******************************************************************/
+*/
     Size size = MediaQuery.of(context).size;
     return SafeArea(
       child: Scaffold(
@@ -145,8 +238,9 @@ class _LoginState extends State<Login> {
                       ? loading
                       : RoundedButton(
                           text: "LOGIN",
-                          press: doLogin,
-                        ),
+                          press: () {
+                            doLogin();
+                          }),
                   SizedBox(height: size.height * 0.03),
                   AlreadyHaveAnAccountCheck(
                     press: () {
@@ -154,6 +248,7 @@ class _LoginState extends State<Login> {
                     },
                   ),
                   forgotLabel,
+                  //_iconGoogle(),
                 ],
               ),
             ),
@@ -162,4 +257,20 @@ class _LoginState extends State<Login> {
       ),
     );
   }
+}
+
+class UserDetails {
+  final String providerDetails;
+  final String userName;
+  final String photoUrl;
+  final String userEmail;
+  final List<ProviderDetails> providerData;
+
+  UserDetails(this.providerDetails, this.userName, this.photoUrl,
+      this.userEmail, this.providerData);
+}
+
+class ProviderDetails {
+  ProviderDetails(this.providerDetails);
+  final String providerDetails;
 }

@@ -3,18 +3,19 @@ import 'package:direct_select/direct_select.dart';
 import 'my_selection_item.dart';
 
 //Widget Implementation
-// ignore: must_be_immutable
 class DirectOptions extends StatefulWidget {
   final List<String> elements;
   final String title;
   final bool enable;
+  final int indexInitial;
   final Function(String) onSelected;
-  DirectOptions(
+  const DirectOptions(
       {Key key,
       this.title,
       this.elements,
       this.onSelected,
-      this.enable = false})
+      this.enable = false,
+      this.indexInitial})
       : super(key: key);
 
   @override
@@ -25,12 +26,17 @@ class _DirectOptionsState extends State<DirectOptions> {
   final ValueNotifier<int> _index = ValueNotifier(0);
   //final List<String> elements;
   List<Widget> _buildItems() {
-    print(widget.elements);
-    List<Widget> returnWidgetSelectItems = new List<Widget>();
-    widget.elements
-        .forEach((val) => returnWidgetSelectItems.add(MySelectionItem(
-              title: val,
-            )));
+    //print(widget.elements);
+    List<Widget> returnWidgetSelectItems = [];
+    if (widget.elements.isNotEmpty) {
+      widget.elements
+          .forEach((val) => returnWidgetSelectItems.add(MySelectionItem(
+                title: val,
+                isForList: true,
+              )));
+    } else {
+      returnWidgetSelectItems.add(MySelectionItem(title: "Option:"));
+    }
     return returnWidgetSelectItems;
   }
 
@@ -58,12 +64,17 @@ class _DirectOptionsState extends State<DirectOptions> {
                     builder: (BuildContext context, int indx, Widget child) {
                       // This builder will only get called when the _counter
                       // is updated.
+                      var doIndex = () {
+                        return indx < widget.elements.length ? indx : 0;
+                      };
                       return DirectSelect(
-                          itemExtent: 35.0,
-                          selectedIndex: indx,
+                          itemExtent: 40.0,
+                          itemMagnification: 1.55,
+                          selectedIndex: doIndex(),
+                          backgroundColor: Colors.grey[100],
                           child: MySelectionItem(
                             isForList: false,
-                            title: widget.elements[indx],
+                            title: widget.elements[doIndex()],
                           ),
                           onSelectedItemChanged: (index) {
                             setState(() {
@@ -76,7 +87,7 @@ class _DirectOptionsState extends State<DirectOptions> {
                               _index.value = index;
                             });
                           },
-                          mode: DirectSelectMode.tap,
+                          mode: DirectSelectMode.drag,
                           items: _buildItems());
                     },
                     valueListenable: _index,

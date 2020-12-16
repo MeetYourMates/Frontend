@@ -7,21 +7,34 @@ import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/models/user.dart';
 import 'package:meet_your_mates/api/util/app_url.dart';
+import 'package:meet_your_mates/api/util/shared_preference.dart';
 
 class StudentProvider with ChangeNotifier {
   Student _student = new Student();
 
   Student get student => _student;
-  var logger = Logger();
+  var logger = Logger(level: Level.warning);
   void setStudent(Student student) {
+    if (student != null) {
+      User usr = new User();
+      usr = _student.user;
+      _student = student;
+      _student.user = usr;
+      notifyListeners();
+    }
+  }
+
+  void setStudentWithUser(Student student) {
     if (student != null) {
       _student = student;
       notifyListeners();
     }
   }
 
-  Future<bool> autoLogin(String email, String password) async {
+//*******************************KRUNAL**************************************/
+  Future<int> autoLogin(String email, String password) async {
     logger.d("Trying AutoLogging!");
+    int res = -1;
     try {
       User userTmp = new User();
       userTmp.email = email;
@@ -34,26 +47,65 @@ class StudentProvider with ChangeNotifier {
       logger.d("AutoLogging Response:" + response.body);
       if (response.statusCode == 200) {
         //Logged In succesfully  from server
-        Map responseData = jsonDecode(response.body);
-        setStudent(Student.fromJson(responseData));
-        return true;
+        try {
+          Map responseData = jsonDecode(response.body);
+          _student = (Student.fromJson(responseData));
+          userTmp.id = _student.user.id;
+          userTmp.token = _student.user.token;
+          UserPreferences().saveUser(userTmp);
+          _student.user = userTmp;
+          res = 0;
+        } catch (err) {
+          logger.e("Error AutoLogin 200: " + err.toString());
+          res = -1;
+        }
+      } else if (response.statusCode == 203) {
+        //Not Validated
+        try {
+          Map responseData = jsonDecode(response.body);
+          _student = (Student.fromJson(responseData));
+          userTmp.id = _student.user.id;
+          userTmp.token = _student.user.token;
+          UserPreferences().saveUser(userTmp);
+          _student.user = userTmp;
+          res = 1;
+        } catch (err) {
+          logger.e("Error AutoLogin 203: " + err.toString());
+          res = -1;
+        }
+      } else if (response.statusCode == 206) {
+        //Let's Get Started not completed
+        try {
+          Map responseData = jsonDecode(response.body);
+          _student = (Student.fromJson(responseData));
+          userTmp.id = _student.user.id;
+          userTmp.token = _student.user.token;
+          UserPreferences().saveUser(userTmp);
+          _student.user = userTmp;
+          res = 2;
+        } catch (err) {
+          res = -1;
+        }
       } else {
-        return false;
+        res = -1;
       }
-    } catch (e) {
-      logger.e("Error AutoLogin: " + e.toString());
-      return false;
+    } catch (err) {
+      logger.e("Error AutoLogin: " + err.toString());
+      UserPreferences().removeUser();
+      res = -1;
     }
+    return res;
   }
+  //*********************************************************************/
 
-  //************************PEP****************************/
+  //************************POL****************************/
 
-  Future<int> getCourseStudents(String course) async {
+  Future<int> upload(Student updated) async {
     int res = -1;
-    logger.d("Retrieving course students");
+    logger.d("Trying to update student:");
     try {
-      Response response = await get(
-        AppUrl.getCourseStudents,
+      Response response = await put(
+        AppUrl.editProfile,
         body: json.encode(updated.toJson()),
         headers: {'Content-Type': 'application/json'},
       );
@@ -67,6 +119,6 @@ class StudentProvider with ChangeNotifier {
     }
     return res;
   }
-
   //*******************************************************/
+
 }

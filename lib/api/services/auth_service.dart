@@ -15,65 +15,185 @@ enum Status {
   LoggedIn,
   Registered,
   Authenticating,
+  NotCompleted,
   Registering,
   LoggedOut,
   Validating,
   NotValidated,
-  Validated
+  Validated,
+  Sending,
+  Sent,
+  Failed,
+  Completed
 }
 
 class AuthProvider with ChangeNotifier {
   Status _loggedInStatus = Status.NotLoggedIn;
   Status _registeredInStatus = Status.NotRegistered;
   Status _validatedStatus = Status.NotValidated;
-
+  Status _recoveryStatus = Status.Sending;
   Status get loggedInStatus => _loggedInStatus;
   Status get registeredInStatus => _registeredInStatus;
   Status get validatedStatus => _validatedStatus;
-  var logger = Logger();
-  // ignore: todo
-  //Login Service without proper error handling TODO: FUTURE REPAIR
+  Status get recoveryStatus => _recoveryStatus;
+  //*******************************KRUNAL**************************************/
+  var logger = Logger(level: Level.warning);
   Future<Map<String, dynamic>> login(String email, String password) async {
     var result;
-
+    int res = -1;
     User userTmp = new User();
     userTmp.email = email;
     userTmp.password = password;
     _loggedInStatus = Status.Authenticating;
     notifyListeners();
-
-    Response response = await post(
-      AppUrl.login,
-      body: json.encode(userTmp.toJson()),
-      headers: {'Content-Type': 'application/json'},
-    );
-
-    if (response.statusCode == 200) {
-      logger.d(response.body);
-      Map responseData = jsonDecode(response.body);
-      Student authenticatedStudent = Student.fromJson(responseData);
-      logger.d(authenticatedStudent);
-      UserPreferences().saveUser(userTmp);
-      logger.d("User in Shared Preferences: " + userTmp.toString());
-      _loggedInStatus = Status.LoggedIn;
-      notifyListeners();
-
-      result = {
-        'status': true,
-        'message': 'Successful',
-        'student': authenticatedStudent
+    Student authenticatedStudent = new Student();
+    Response response;
+    try {
+      response = await post(
+        AppUrl.login,
+        body: json.encode(userTmp.toJson()),
+        headers: {'Content-Type': 'application/json'},
+      );
+    } catch (err) {
+      //Cannot Even Send a request -->Probably No connection
+      res = -1;
+      return result = {
+        'status': res,
+        'message': "Cannot make Request, connect to Internet!"
       };
+    }
+    //NEW WAY
+    if (response.statusCode == 200) {
+      //Logged In succesfully  from server
+      try {
+        Map responseData = jsonDecode(response.body);
+        authenticatedStudent = Student.fromJson(responseData);
+        userTmp.id = authenticatedStudent.user.id;
+        userTmp.token = authenticatedStudent.user.token;
+        authenticatedStudent.user = userTmp;
+        UserPreferences().saveUser(userTmp);
+        logger.d("User in Shared Preferences: " + userTmp.toString());
+        _loggedInStatus = Status.LoggedIn;
+        notifyListeners();
+        res = 0;
+        result = {
+          'status': res,
+          'message': _loggedInStatus,
+          'student': authenticatedStudent
+        };
+      } catch (err) {
+        res = -1;
+        result = {'status': res, 'message': "Failed To Login!"};
+      }
+    } else if (response.statusCode == 203) {
+      //Not Validated
+      try {
+        //Not Validated Mean Student Doesn't Exist
+        Map responseData = jsonDecode(response.body);
+        authenticatedStudent = Student.fromJson(responseData);
+        userTmp.id = authenticatedStudent.user.id;
+        userTmp.token = authenticatedStudent.user.token;
+        authenticatedStudent.user = userTmp;
+        UserPreferences().saveUser(userTmp);
+        logger.d("User in Shared Preferences: " + userTmp.toString());
+        _loggedInStatus = Status.NotValidated;
+        notifyListeners();
+        res = 1;
+        result = {
+          'status': res,
+          'message': _loggedInStatus,
+          'student': authenticatedStudent
+        };
+      } catch (err) {
+        res = -1;
+        result = {'status': res, 'message': "Failed To Login!"};
+      }
+    } else if (response.statusCode == 206) {
+      //Let's Get Started not completed
+      try {
+        Map responseData = jsonDecode(response.body);
+        authenticatedStudent = Student.fromJson(responseData);
+        userTmp.id = authenticatedStudent.user.id;
+        userTmp.token = authenticatedStudent.user.token;
+        authenticatedStudent.user = userTmp;
+        UserPreferences().saveUser(userTmp);
+        logger.d("User in Shared Preferences: " + userTmp.toString());
+        _loggedInStatus = Status.NotCompleted;
+        notifyListeners();
+        res = 2;
+        result = {
+          'status': res,
+          'message': _loggedInStatus,
+          'student': authenticatedStudent
+        };
+      } catch (err) {
+        result = {
+          'status': res,
+          'message': "Failed To Login!--> Error: " + err.toString()
+        };
+        _loggedInStatus = Status.NotLoggedIn;
+        notifyListeners();
+        res = -1;
+      }
     } else {
+      res = -1;
       _loggedInStatus = Status.NotLoggedIn;
       notifyListeners();
-      result = {
-        'status': false,
-        'message': json.decode(response.body)['error']
-      };
+      result = {'status': res, 'message': json.decode(response.body)['error']};
     }
     return result;
   }
 
+  Future<Map<String, dynamic>> recoverPassword(String email) async {
+    var result;
+    logger.d("Recover Passwor: email: $email");
+    _recoveryStatus = Status.Sending;
+    notifyListeners();
+    Response response = await get(AppUrl.forgotPassword + email);
+    logger.d("Recover Password: response: $response");
+    if (response.statusCode == 201) {
+      _recoveryStatus = Status.Sent;
+      notifyListeners();
+      logger.d("Recover Password: status: $_recoveryStatus");
+      result = {'status': true, 'message': "Email Sent"};
+    } else {
+      _recoveryStatus = Status.Failed;
+      notifyListeners();
+      logger.d("Recover Password: status: $_recoveryStatus");
+      result = {'status': false, 'message': "Unvalid Email"};
+    }
+    return result;
+  }
+
+  Future<Map<String, dynamic>> changePassword(
+      String code, String email, String pass) async {
+    var result;
+    logger.d("change Password: email: $email");
+    _recoveryStatus = Status.Sending;
+    notifyListeners();
+    String _body = '{"code":"$code","email":"$email","password":"$pass"}';
+    logger.i("_body: " + _body);
+    Response response = await post(
+      AppUrl.changePassword,
+      body: _body,
+      headers: {'Content-Type': 'application/json'},
+    );
+    logger.d("change Password:: response: $response");
+    if (response.statusCode == 200) {
+      _recoveryStatus = Status.Completed;
+      notifyListeners();
+      logger.d("change Password:: status: $_recoveryStatus");
+      result = {'status': true, 'message': "Email Sent"};
+    } else {
+      _recoveryStatus = Status.Failed;
+      notifyListeners();
+      logger.d("change Password:: status: $_recoveryStatus");
+      result = {'status': false, 'message': "Unvalid Email"};
+    }
+    return result;
+  }
+
+//*******************************KRUNAL**************************************/
   Future<Map<String, dynamic>> register(String email, String password) async {
     var result;
 
@@ -84,25 +204,28 @@ class AuthProvider with ChangeNotifier {
 
     _registeredInStatus = Status.Registering;
     notifyListeners();
+    try {
+      Response response = await post(AppUrl.register,
+          body: json.encode(registerData),
+          headers: {'Content-Type': 'application/json'});
 
-    Response response = await post(AppUrl.register,
-        body: json.encode(registerData),
-        headers: {'Content-Type': 'application/json'});
-
-    if (response.statusCode == 201) {
-      User newUser = new User(id: null, email: email, password: password);
-      UserPreferences().saveUser(newUser);
-      _registeredInStatus = Status.Registered;
-      notifyListeners();
-      result = {'status': true, 'message': "User registered"};
-    } else if (response.statusCode == 409) {
-      _registeredInStatus = Status.NotRegistered;
-      notifyListeners();
-      result = {'status': false, 'message': "user already exists"};
-    } else {
-      _registeredInStatus = Status.NotRegistered;
-      notifyListeners();
-      result = {'status': false, 'message': "Error"};
+      if (response.statusCode == 201) {
+        User newUser = new User(id: null, email: email, password: password);
+        UserPreferences().saveUser(newUser);
+        _registeredInStatus = Status.Registered;
+        notifyListeners();
+        result = {'status': true, 'message': "User registered"};
+      } else if (response.statusCode == 409) {
+        _registeredInStatus = Status.NotRegistered;
+        notifyListeners();
+        result = {'status': false, 'message': "user already exists"};
+      } else {
+        _registeredInStatus = Status.NotRegistered;
+        notifyListeners();
+        result = {'status': false, 'message': "Error"};
+      }
+    } catch (err) {
+      result = {'status': false, 'message': "Error Couln't Register!"};
     }
     return result;
   }
@@ -157,4 +280,26 @@ class AuthProvider with ChangeNotifier {
     print("the error is $error.detail");
     return {'status': false, 'message': 'Unsuccessful Request', 'data': error};
   }
+
+  /*****************************************POL*****************************/
+
+  /*
+  final firebase.FirebaseAuth _authGoogle = firebase.FirebaseAuth.instance;
+  Future<bool> signInWithGoogle(String email, String password) async {
+    try {
+      firebase.UserCredential resultUsr = await _authGoogle
+          .signInWithEmailAndPassword(email: email, password: password);
+
+      if (resultUsr != null) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (err) {
+      logger.e(err);
+      return false;
+    }
+  }
+  */
+  /*************************************************************************/
 }
