@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:http/http.dart';
 
 import 'package:meet_your_mates/screens/SearchMates/components/statefulwrapper.dart';
 import 'package:meet_your_mates/screens/SearchMates/studentList.dart';
@@ -7,8 +8,8 @@ import 'background.dart';
 import 'package:flutter/foundation.dart';
 
 class Body extends StatefulWidget {
-  const Body({Key key}) : super(key: key);
-
+  final List queryResult;
+  const Body({Key key, this.queryResult}) : super(key: key);
   @override
   _BodyState createState() => _BodyState();
 }
@@ -41,7 +42,7 @@ class _BodyState extends State<Body> {
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 24),
                         ),
-                        StudentList(),
+                        StudentList(widget.queryResult),
                         SizedBox(height: size.height * 0.03),
                       ],
                     ),

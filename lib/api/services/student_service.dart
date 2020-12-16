@@ -121,4 +121,23 @@ class StudentProvider with ChangeNotifier {
   }
   //*******************************************************/
 
+  //************************PEP****************************/
+  Future<List> getCourseStudents() async {
+    logger.d("Trying to get course students:");
+    try {
+      Response response = await get(
+        AppUrl.getCourseStudents + '/44554d4d59434f5552534531',
+        headers: {'Content-Type': 'application/json'},
+      );
+      if (response.statusCode == 200) {
+        logger.d("Student retrieved:");
+        return json.decode(response.body) as List;
+      }
+    } catch (err) {
+      logger.e("Error getting student: " + err.toString());
+      return null;
+    }
+  }
+  //*******************************************************/
+
 }

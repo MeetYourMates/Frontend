@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 
 class StudentList extends StatelessWidget {
-  StudentList();
   String _imageUrl;
-  final queryResult = [
+  final queryResultDummy = [
     {
       'ratings': [],
       'trophies': [],
@@ -12,9 +12,9 @@ class StudentList extends StatelessWidget {
       'courses': ['44554d4d59434f5552534531', '44554d4d5953424a43543033'],
       '_id': '44554d4d595354444e543031',
       'user': '44554d4d5955534552303031',
-      'name': 'Mauricio',
+      'name': 'Student01',
       'university': '',
-      'degree': 'Telematica',
+      'degree': 'Degree01',
       'picture': 'https://randomuser.me/api/portraits/men/75.jpg',
       'rating': null
     },
@@ -26,7 +26,7 @@ class StudentList extends StatelessWidget {
       'courses': ['44554d4d59434f5552534531', '44554d4d5953424a43543032'],
       '_id': '44554d4d595354444e543032',
       'user': '44554d4d5955534552303032',
-      'name': 'Filomena',
+      'name': 'Degree02',
       'university': '',
       'degree': 'Aeros',
       'picture': 'https://randomuser.me/api/portraits/women/91.jpg',
@@ -34,13 +34,16 @@ class StudentList extends StatelessWidget {
     }
   ];
 
+  final List queryResult;
+  StudentList(this.queryResult);
+
   @override
   Widget build(BuildContext context) {
     return ListView(
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
       children: [
-        ...(queryResult as List<Map<String, Object>>).map((item) {
+        ...(queryResult).map((item) {
           item['picture'] != ''
               ? _imageUrl = item['picture']
               : _imageUrl =
@@ -56,5 +59,22 @@ class StudentList extends StatelessWidget {
         }).toList()
       ],
     );
+
+/*
+    return ListView.builder(
+                itemCount: queryResult.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return ListTile(
+                    contentPadding: EdgeInsets.all(10.0),
+                    title: new Text(queryResult[index]['title']),
+                    trailing: new Image.network(
+                      queryResult[index]['thumbnailUrl'],
+                      fit: BoxFit.cover,
+                      height: 40.0,
+                      width: 40.0,
+                    ),
+                  );
+                });
+    */
   }
 }
