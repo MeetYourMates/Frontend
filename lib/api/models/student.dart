@@ -6,6 +6,9 @@ class Student {
   String university;
   String degree;
   User user;
+  String picture;
+
+  //Falta implementar Rating, Trophies, insignias, chats y COURSES
 
   Student({
     this.id,
@@ -31,6 +34,7 @@ class Student {
     data['university'] = this.university;
     data['degree'] = this.degree;
     data['user'] = this.user;
+
     return data;
   }
 }

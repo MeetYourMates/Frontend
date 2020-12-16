@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
@@ -44,4 +45,28 @@ class StudentProvider with ChangeNotifier {
       return false;
     }
   }
+
+  //************************PEP****************************/
+
+  Future<int> getCourseStudents(String course) async {
+    int res = -1;
+    logger.d("Retrieving course students");
+    try {
+      Response response = await get(
+        AppUrl.getCourseStudents,
+        body: json.encode(updated.toJson()),
+        headers: {'Content-Type': 'application/json'},
+      );
+      if (response.statusCode == 200) {
+        logger.d("Student updated:");
+        res = 0;
+      }
+    } catch (err) {
+      logger.e("Error updating Student: " + err.toString());
+      res = -1;
+    }
+    return res;
+  }
+
+  //*******************************************************/
 }
