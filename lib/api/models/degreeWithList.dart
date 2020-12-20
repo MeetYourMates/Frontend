@@ -3,7 +3,7 @@ import 'package:meet_your_mates/api/models/subject.dart';
 class DegreeWithList {
   String id;
   String name;
-  List<Subject> subjects = new List<Subject>();
+  List<Subject> subjects = <Subject>[];
   DegreeWithList({this.id, this.name, this.subjects});
 
   factory DegreeWithList.fromJson(Map<String, dynamic> json) => DegreeWithList(

@@ -3,7 +3,7 @@ import 'package:meet_your_mates/api/models/degree.dart';
 class Faculty {
   String id;
   String name;
-  List<Degree> degrees = new List<Degree>();
+  List<Degree> degrees = <Degree>[];
 
   Faculty({
     this.id,

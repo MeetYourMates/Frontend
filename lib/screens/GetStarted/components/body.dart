@@ -1,17 +1,19 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
+
 import 'package:another_flushbar/flushbar.dart';
 import 'package:async/async.dart';
-import 'dart:async';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/api/models/universities.dart';
 import 'package:meet_your_mates/api/services/start_service.dart';
+import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/components/direct_options.dart';
 import 'package:meet_your_mates/components/multiple_options.dart';
 import 'package:meet_your_mates/components/rounded_button.dart';
 import 'package:provider/provider.dart';
+
 import 'background.dart';
-import 'package:flutter/foundation.dart';
 
 class Body extends StatefulWidget {
   const Body({Key key}) : super(key: key);
@@ -205,7 +207,7 @@ class _BodyState extends State<Body> {
     }
 
     //Local Temperory Variable
-    List<String> temp = new List<String>();
+    List<String> temp = <String>[];
     Size size = MediaQuery.of(context).size;
     return FutureBuilder<dynamic>(
         future: _fetchUniversities(),
