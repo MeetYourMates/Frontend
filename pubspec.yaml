@@ -46,10 +46,10 @@ dependencies:
   #sticky_headers: ^0.1.8+1
   auto_size_text: ^2.1.0
   smooth_star_rating: ^1.1.1
-  image_picker: ^0.6.0+17
+  file_picker: ^2.1.4
   #image_cropper: ^1.0.2
   cloudinary_client: ^0.0.9
-  flutter_auth_buttons: ^0.10.0
+  auth_buttons: ^0.0.4
   firebase_core: ^0.3.1+1
   firebase_auth: ^0.8.3
   google_sign_in: ^4.0.1+3

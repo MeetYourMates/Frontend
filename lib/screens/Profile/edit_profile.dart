@@ -4,10 +4,10 @@ import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/screens/dashboard/dashboard.dart';
 import 'package:provider/provider.dart';
-import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/services/image_service.dart';
+import 'package:file_picker/file_picker.dart';
 
 class EditProfile extends StatefulWidget {
   final String currentstudentId;
@@ -122,18 +122,15 @@ class _EditProfileState extends State<EditProfile> {
   Widget build(BuildContext context) {
     StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
     ImagesProvider _imageProvider = Provider.of<ImagesProvider>(context);
-    Future<void> _pickImage(ImageSource source) async {
-      final pickedFile = await ImagePicker().getImage(source: source);
-      setState(
-        () {
-          if (pickedFile != null) {
-            _imageFile = File(pickedFile.path);
-          } else {
-            print('No image selected.');
-          }
-        },
-      );
-    }
+ 
+    void _openFileExplorer() async {
+    FilePickerResult result = await FilePicker.platform.pickFiles();
+      if(result != null) {
+       _imageFile = File(result.files.single.path);
+      } else {
+        // User canceled the picker
+      }
+  }
 
     updateUser() {
       final form = _formKey.currentState;
@@ -207,7 +204,7 @@ class _EditProfileState extends State<EditProfile> {
                     ),
                     child: GestureDetector(
                       onTap: () {
-                        _pickImage(ImageSource.camera);
+                        _openFileExplorer();
                       },
                       child: CircleAvatar(
                         radius: 50.0,
