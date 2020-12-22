@@ -43,7 +43,7 @@ class StudentList extends StatelessWidget {
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
       children: [
-        ...(queryResult).map((item) {
+        ...(queryResultDummy).map((item) {
           item['picture'] != ''
               ? _imageUrl = item['picture']
               : _imageUrl =
@@ -60,21 +60,21 @@ class StudentList extends StatelessWidget {
       ],
     );
 
-/*
+    /*
     return ListView.builder(
-                itemCount: queryResult.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
-                    contentPadding: EdgeInsets.all(10.0),
-                    title: new Text(queryResult[index]['title']),
-                    trailing: new Image.network(
-                      queryResult[index]['thumbnailUrl'],
-                      fit: BoxFit.cover,
-                      height: 40.0,
-                      width: 40.0,
-                    ),
-                  );
-                });
-    */
+        itemCount: queryResult.length,
+        itemBuilder: (BuildContext context, int index) {
+          return ListTile(
+            contentPadding: EdgeInsets.all(10.0),
+            title: new Text(queryResult[index]['title']),
+            trailing: new Image.network(
+              queryResult[index]['thumbnailUrl'],
+              fit: BoxFit.cover,
+              height: 40.0,
+              width: 40.0,
+            ),
+          );
+        });
+        */
   }
 }
