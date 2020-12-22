@@ -7,6 +7,10 @@ import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/models/user.dart';
 import 'package:meet_your_mates/api/util/app_url.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebaseAuth;
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:meet_your_mates/api/models/userDetails.dart';
+import 'package:meet_your_mates/api/models/providerDetails.dart';
 import 'package:meet_your_mates/api/util/shared_preference.dart';
 
 enum Status {
@@ -20,22 +24,18 @@ enum Status {
   LoggedOut,
   Validating,
   NotValidated,
-  Validated,
-  Sending,
-  Sent,
-  Failed,
-  Completed
+  Validated
 }
 
 class AuthProvider with ChangeNotifier {
   Status _loggedInStatus = Status.NotLoggedIn;
   Status _registeredInStatus = Status.NotRegistered;
   Status _validatedStatus = Status.NotValidated;
-  Status _recoveryStatus = Status.Sending;
+
   Status get loggedInStatus => _loggedInStatus;
   Status get registeredInStatus => _registeredInStatus;
   Status get validatedStatus => _validatedStatus;
-  Status get recoveryStatus => _recoveryStatus;
+  bool signedInWithGoogle = false;
   //*******************************KRUNAL**************************************/
   var logger = Logger(level: Level.warning);
   Future<Map<String, dynamic>> login(String email, String password) async {
@@ -69,7 +69,6 @@ class AuthProvider with ChangeNotifier {
         Map responseData = jsonDecode(response.body);
         authenticatedStudent = Student.fromJson(responseData);
         userTmp.id = authenticatedStudent.user.id;
-        userTmp.token = authenticatedStudent.user.token;
         authenticatedStudent.user = userTmp;
         UserPreferences().saveUser(userTmp);
         logger.d("User in Shared Preferences: " + userTmp.toString());
@@ -92,7 +91,6 @@ class AuthProvider with ChangeNotifier {
         Map responseData = jsonDecode(response.body);
         authenticatedStudent = Student.fromJson(responseData);
         userTmp.id = authenticatedStudent.user.id;
-        userTmp.token = authenticatedStudent.user.token;
         authenticatedStudent.user = userTmp;
         UserPreferences().saveUser(userTmp);
         logger.d("User in Shared Preferences: " + userTmp.toString());
@@ -114,7 +112,6 @@ class AuthProvider with ChangeNotifier {
         Map responseData = jsonDecode(response.body);
         authenticatedStudent = Student.fromJson(responseData);
         userTmp.id = authenticatedStudent.user.id;
-        userTmp.token = authenticatedStudent.user.token;
         authenticatedStudent.user = userTmp;
         UserPreferences().saveUser(userTmp);
         logger.d("User in Shared Preferences: " + userTmp.toString());
@@ -144,56 +141,6 @@ class AuthProvider with ChangeNotifier {
     return result;
   }
 
-  Future<Map<String, dynamic>> recoverPassword(String email) async {
-    var result;
-    logger.d("Recover Passwor: email: $email");
-    _recoveryStatus = Status.Sending;
-    notifyListeners();
-    Response response = await get(AppUrl.forgotPassword + email);
-    logger.d("Recover Password: response: $response");
-    if (response.statusCode == 201) {
-      _recoveryStatus = Status.Sent;
-      notifyListeners();
-      logger.d("Recover Password: status: $_recoveryStatus");
-      result = {'status': true, 'message': "Email Sent"};
-    } else {
-      _recoveryStatus = Status.Failed;
-      notifyListeners();
-      logger.d("Recover Password: status: $_recoveryStatus");
-      result = {'status': false, 'message': "Unvalid Email"};
-    }
-    return result;
-  }
-
-  Future<Map<String, dynamic>> changePassword(
-      String code, String email, String pass) async {
-    var result;
-    logger.d("change Password: email: $email");
-    _recoveryStatus = Status.Sending;
-    notifyListeners();
-    String _body = '{"code":"$code","email":"$email","password":"$pass"}';
-    logger.i("_body: " + _body);
-    Response response = await post(
-      AppUrl.changePassword,
-      body: _body,
-      headers: {'Content-Type': 'application/json'},
-    );
-    logger.d("change Password:: response: $response");
-    if (response.statusCode == 200) {
-      _recoveryStatus = Status.Completed;
-      notifyListeners();
-      logger.d("change Password:: status: $_recoveryStatus");
-      result = {'status': true, 'message': "Email Sent"};
-    } else {
-      _recoveryStatus = Status.Failed;
-      notifyListeners();
-      logger.d("change Password:: status: $_recoveryStatus");
-      result = {'status': false, 'message': "Unvalid Email"};
-    }
-    return result;
-  }
-
-//*******************************KRUNAL**************************************/
   Future<Map<String, dynamic>> register(String email, String password) async {
     var result;
 
@@ -281,25 +228,84 @@ class AuthProvider with ChangeNotifier {
     return {'status': false, 'message': 'Unsuccessful Request', 'data': error};
   }
 
-  /*****************************************POL*****************************/
+  ///*****************************************POL*****************************/
 
-  /*
-  final firebase.FirebaseAuth _authGoogle = firebase.FirebaseAuth.instance;
-  Future<bool> signInWithGoogle(String email, String password) async {
+  final firebaseAuth.FirebaseAuth _firebaseAuth =
+      firebaseAuth.FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = new GoogleSignIn();
+
+  Future<UserDetails> signInGoogle() async {
     try {
-      firebase.UserCredential resultUsr = await _authGoogle
-          .signInWithEmailAndPassword(email: email, password: password);
+      final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
-      if (resultUsr != null) {
-        return true;
-      } else {
-        return false;
-      }
+      final firebaseAuth.AuthCredential credential =
+          firebaseAuth.GoogleAuthProvider.getCredential(
+              accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+
+      firebaseAuth.FirebaseUser userDetails =
+          await _firebaseAuth.signInWithCredential(credential);
+
+      ProviderDetails providerInfo =
+          new ProviderDetails(userDetails.providerId);
+      List<ProviderDetails> providerData = [];
+      providerData.add(providerInfo);
+
+      UserDetails details = new UserDetails(
+        userDetails.providerId,
+        userDetails.displayName,
+        userDetails.photoUrl,
+        userDetails.email,
+        providerData,
+      );
+      //Added New
+      signedInWithGoogle = true;
+      return details;
     } catch (err) {
-      logger.e(err);
-      return false;
+      return null;
     }
   }
-  */
+
+  Future<dynamic> signOutGoogle() async {
+    await _googleSignIn.signOut();
+    return 0;
+  }
+
+  Future<Map<String, dynamic>> registerWithGoogle(
+      Student registeredGoogle) async {
+    var result;
+    _registeredInStatus = Status.Registering;
+    notifyListeners();
+    Response response;
+    
+    try {
+      response = await post(
+        AppUrl.registerWithGoogle,
+        body: json.encode(registeredGoogle.toJson()),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 201) {
+        User newUser = new User(id: null, email: registeredGoogle.user.email, password: registeredGoogle.user.password);
+        UserPreferences().saveUser(newUser);
+        _registeredInStatus = Status.Registered;
+        notifyListeners();
+        result = {'status': true, 'message': "User registered"};
+      } else if (response.statusCode == 409) {
+        _registeredInStatus = Status.NotRegistered;
+        notifyListeners();
+        result = {'status': false, 'message': "user already exists"};
+      } else {
+        _registeredInStatus = Status.NotRegistered;
+        notifyListeners();
+        result = {'status': false, 'message': "Error"};
+      }
+    } catch (err) {
+      result = {'status': false, 'message': "Error Couln't Register!"};
+    }
+    return result;
+  }
+
   /*************************************************************************/
 }
