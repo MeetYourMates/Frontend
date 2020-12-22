@@ -9,6 +9,8 @@ import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:provider/provider.dart';
 import 'package:logger/logger.dart';
 
+import '../../api/services/auth_service.dart';
+
 class Profile extends StatefulWidget {
   @override
   _ProfileState createState() => _ProfileState();
@@ -23,12 +25,13 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
+    AuthProvider _authProvider = Provider.of<AuthProvider>(context);
     double meanRating = 0;
     for (int i = 0; i < _studentProvider.student.ratings.length; i++) {
       meanRating = (meanRating + _studentProvider.student.ratings[i].stars);
     }
 
-    meanRating = meanRating / (_studentProvider.student.ratings.length+1);
+    meanRating = meanRating / (_studentProvider.student.ratings.length + 1);
 
     return SafeArea(
       child: Scaffold(
@@ -36,33 +39,33 @@ class _ProfileState extends State<Profile> {
           child: SingleChildScrollView(
             child: Column(
               children: <Widget>[
-                  Header(
-                    icon: _studentProvider.student.picture,
-                  ),
+                Header(
+                  icon: _studentProvider.student.picture,
+                ),
                 editButton(context: context),
                 StackContainer(
-                    username: _studentProvider.student.name,
-                    email: _studentProvider.student.user.email,
-                  ),
+                  username: _studentProvider.student.name,
+                  email: _studentProvider.student.user.email,
+                ),
                 RatingStars(rating: meanRating),
                 ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) => InsigniaCard(),
-                    shrinkWrap: true,
-                    itemCount: 1,
-                  ),
+                  physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) => InsigniaCard(),
+                  shrinkWrap: true,
+                  itemCount: 1,
+                ),
                 ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) => TrophiesCard(),
-                    shrinkWrap: true,
-                    itemCount: 1,
-                  ),
+                  physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) => TrophiesCard(),
+                  shrinkWrap: true,
+                  itemCount: 1,
+                ),
                 ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) => LogOutCard(),
-                    shrinkWrap: true,
-                    itemCount: 1,
-                  ),
+                  physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) => LogOutCard(authProvider:_authProvider),
+                  shrinkWrap: true,
+                  itemCount: 1,
+                ),
               ],
             ),
           ),
@@ -312,8 +315,10 @@ class TrophiesCard extends StatelessWidget {
 }
 
 class LogOutCard extends StatelessWidget {
+  final AuthProvider authProvider;
   const LogOutCard({
-    Key key,
+    Key key, 
+    this.authProvider,
   }) : super(key: key);
 
   @override
@@ -332,6 +337,7 @@ class LogOutCard extends StatelessWidget {
               IconButton(
                 onPressed: () {
                   UserPreferences().removeUser();
+                  authProvider.signOutGoogle();
                   Navigator.pushReplacementNamed(context, '/login');
                 },
                 icon: Icon(

@@ -9,7 +9,7 @@ class Trophy {
     return Trophy(
         title: responseData['title'],
         difficulty: responseData['difficulty'],
-        professorId: responseData["professor"],
+        professorId: responseData["professorName"],
         date: responseData['date'],
         logo: responseData['logo']);
   }
@@ -17,7 +17,7 @@ class Trophy {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['title'] = this.title;
     data['difficulty'] = this.difficulty;
-    data['professor'] = this.professorId;
+    data['professorName'] = this.professorId;
     data['date'] = this.date;
     data['logo'] = this.logo;
     return data;
