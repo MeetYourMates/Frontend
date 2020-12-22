@@ -20,60 +20,112 @@ class _BodyState extends State<Body> {
   var logger = Logger();
 
   List _queryResult = [];
+  StudentProvider _studentProvider;
+
+  Future<void> _getStudents() async {
+    final List queryResult = await _studentProvider.getCourseStudents();
+    setState(
+      () {
+        debugPrint("Executed search");
+        if (queryResult != null) {
+          debugPrint("Students found");
+          _queryResult.addAll(queryResult);
+        } else {
+          print('Error retrieving students');
+        }
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _studentProvider = Provider.of<StudentProvider>(context, listen: false);
+
+      _getStudents();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
-
-    Future<void> _getStudents() async {
-      final List queryResult = await _studentProvider.getCourseStudents();
-      setState(
-        () {
-          debugPrint("Executed search");
-          if (queryResult != null) {
-            debugPrint("Students found");
-            _queryResult.addAll(queryResult);
-          } else {
-            print('Error retrieving students');
-          }
-        },
-      );
-    }
-
-    _getStudents();
 
     return StatefulWrapper(
       onInit: () {},
-      child: SafeArea(
-        child: Scaffold(
-          body: Background(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Align(
-                    alignment: Alignment.topCenter,
-                    child: Column(
-                      children: <Widget>[
-                        SizedBox(height: size.height * 0.05),
-                        Text(
-                          "Here are your class mates!",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 24),
+      child: FutureBuilder<String>(
+        //future: /* queryResult */,
+        builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+          List<Widget> children;
+          if (snapshot.hasData) {
+            children = <Widget>[
+              Icon(
+                Icons.check_circle_outline,
+                color: Colors.green,
+                size: 60,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: Text('Result: ${snapshot.data}'),
+              )
+            ];
+          } else if (snapshot.hasError) {
+            children = <Widget>[
+              Icon(
+                Icons.error_outline,
+                color: Colors.red,
+                size: 60,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: Text('Error: ${snapshot.error}'),
+              )
+            ];
+          } else {
+            children = <Widget>[
+              SizedBox(
+                child: CircularProgressIndicator(),
+                width: 60,
+                height: 60,
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 16),
+                child: Text('Awaiting result...'),
+              )
+            ];
+          }
+          return SafeArea(
+            child: Scaffold(
+              body: Background(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: Column(
+                          children: <Widget>[
+                            SizedBox(height: size.height * 0.05),
+                            Text(
+                              "Here are your class mates!",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 24),
+                            ),
+                            StudentList(_queryResult),
+                            SizedBox(height: size.height * 0.03),
+                          ],
                         ),
-                        StudentList(_queryResult),
-                        SizedBox(height: size.height * 0.03),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

@@ -15,21 +15,7 @@ class StudentList extends StatelessWidget {
       'name': 'Student01',
       'university': '',
       'degree': 'Degree01',
-      'picture': 'https://randomuser.me/api/portraits/men/75.jpg',
-      'rating': null
-    },
-    {
-      'ratings': [],
-      'trophies': [],
-      'insignias': [],
-      'chats': [],
-      'courses': ['44554d4d59434f5552534531', '44554d4d5953424a43543032'],
-      '_id': '44554d4d595354444e543032',
-      'user': '44554d4d5955534552303032',
-      'name': 'Degree02',
-      'university': '',
-      'degree': 'Aeros',
-      'picture': 'https://randomuser.me/api/portraits/women/91.jpg',
+      'picture': '',
       'rating': null
     }
   ];
