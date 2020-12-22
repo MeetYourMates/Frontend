@@ -19,7 +19,8 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   var logger = Logger();
 
-  List _queryResult = [];
+  Future<List<dynamic>> _futureQueryResult;
+  List<dynamic> _queryResult = [];
   StudentProvider _studentProvider;
 
   Future<void> _getStudents() async {
@@ -54,9 +55,9 @@ class _BodyState extends State<Body> {
 
     return StatefulWrapper(
       onInit: () {},
-      child: FutureBuilder<String>(
-        //future: /* queryResult */,
-        builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+      child: FutureBuilder<List>(
+        future: _futureQueryResult,
+        builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
           List<Widget> children;
           if (snapshot.hasData) {
             children = <Widget>[

@@ -3,25 +3,11 @@ import 'package:http/http.dart';
 
 class StudentList extends StatelessWidget {
   String _imageUrl;
-  final queryResultDummy = [
-    {
-      'ratings': [],
-      'trophies': [],
-      'insignias': [],
-      'chats': [],
-      'courses': ['44554d4d59434f5552534531', '44554d4d5953424a43543033'],
-      '_id': '44554d4d595354444e543031',
-      'user': '44554d4d5955534552303031',
-      'name': 'Student01',
-      'university': '',
-      'degree': 'Degree01',
-      'picture': '',
-      'rating': null
-    }
-  ];
 
-  final List queryResult;
-  StudentList(this.queryResult);
+  final List _queryResult = [];
+  StudentList(queryResult) {
+    this._queryResult.addAll(queryResult);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +15,7 @@ class StudentList extends StatelessWidget {
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
       children: [
-        ...(queryResultDummy).map((item) {
+        ...(_queryResult).map((item) {
           item['picture'] != ''
               ? _imageUrl = item['picture']
               : _imageUrl =
@@ -45,22 +31,5 @@ class StudentList extends StatelessWidget {
         }).toList()
       ],
     );
-
-    /*
-    return ListView.builder(
-        itemCount: queryResult.length,
-        itemBuilder: (BuildContext context, int index) {
-          return ListTile(
-            contentPadding: EdgeInsets.all(10.0),
-            title: new Text(queryResult[index]['title']),
-            trailing: new Image.network(
-              queryResult[index]['thumbnailUrl'],
-              fit: BoxFit.cover,
-              height: 40.0,
-              width: 40.0,
-            ),
-          );
-        });
-        */
   }
 }
