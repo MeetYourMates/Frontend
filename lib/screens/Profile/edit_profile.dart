@@ -154,7 +154,7 @@ class _EditProfileState extends State<EditProfile> {
         if (_imageFile != null) {
           updatedStu.photo = _imageFile.path;
           _imageProvider
-              .uploadPhoto(updatedStu.photo, updatedStu.id)
+              .uploadPhoto(_imageFile.path, updatedStu.id)
               .then((res) => updatedStu.picture = res);
         }
         form.save();

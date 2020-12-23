@@ -1,26 +1,24 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:auth_buttons/auth_buttons.dart';
+import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/models/user.dart';
-import 'package:meet_your_mates/api/services/student_service.dart';
-import 'package:provider/provider.dart';
-import 'package:another_flushbar/flushbar.dart';
-import 'package:flutter/material.dart';
-//Services
-import 'package:meet_your_mates/api/services/auth_service.dart';
-//Utilities
-
-//Constants
-import 'package:meet_your_mates/constants.dart';
-//Screens
-import 'package:meet_your_mates/screens/Login/background.dart';
-import 'package:meet_your_mates/api/util/validators.dart';
 //Models
 import 'package:meet_your_mates/api/models/userDetails.dart';
+//Services
+import 'package:meet_your_mates/api/services/auth_service.dart';
+import 'package:meet_your_mates/api/services/student_service.dart';
+import 'package:meet_your_mates/api/util/validators.dart';
 //Components
 import 'package:meet_your_mates/components/already_have_an_account_acheck.dart';
 import 'package:meet_your_mates/components/rounded_button.dart';
 import 'package:meet_your_mates/components/text_field_container.dart';
+//Constants
+import 'package:meet_your_mates/constants.dart';
+//Screens
+import 'package:meet_your_mates/screens/Login/background.dart';
+import 'package:provider/provider.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -54,7 +52,7 @@ class _LoginState extends State<Login> {
                   TextStyle(color: kPrimaryColor, fontWeight: FontWeight.w500)),
           onPressed: () {
             //Future
-//            Navigator.pushReplacementNamed(context, '/reset-password');
+            Navigator.pushReplacementNamed(context, '/passwordRecovery');
           },
         )
       ],
@@ -111,6 +109,7 @@ class _LoginState extends State<Login> {
     var signInGoogleCorrectly = (UserDetails userRegistered) {
       Student regGoogle = new Student();
       User userTemp = new User();
+      logger.w("UserEmail 112: " + userRegistered.userEmail);
       userTemp.email = userRegistered.userEmail;
       userTemp.password = userRegistered.userEmail;
       regGoogle.user = userTemp;
@@ -124,6 +123,7 @@ class _LoginState extends State<Login> {
               auth.login(userRegistered.userEmail, userRegistered.userEmail);
           //Callback to message recieved after login auth
           successfulMessage.then((response2) {
+            logger.w("UserEmail 125: " + userRegistered.userEmail);
             if (response2['status'] == 0) {
               //Login Correct
               Student student = response2['student'];
@@ -149,6 +149,7 @@ class _LoginState extends State<Login> {
             }
           });
         } else if ((response['status'] == false)) {
+          logger.w("UserEmail 150: " + userRegistered.userEmail);
           final Future<Map<String, dynamic>> successfulMessage =
               auth.login(userRegistered.userEmail, userRegistered.userEmail);
           //Callback to message recieved after login auth
@@ -256,10 +257,7 @@ class _LoginState extends State<Login> {
                   ),
                   auth.loggedInStatus == Status.Authenticating
                       ? loading
-                      : RoundedButton(
-                          text: "LOGIN",
-                          press: doLogin
-                        ),
+                      : RoundedButton(text: "LOGIN", press: doLogin),
                   SizedBox(height: size.height * 0.03),
                   AlreadyHaveAnAccountCheck(
                     press: () {

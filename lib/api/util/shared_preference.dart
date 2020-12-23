@@ -1,7 +1,8 @@
+import 'dart:async';
+
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:async';
 
 class UserPreferences {
   var logger = Logger(level: Level.warning);

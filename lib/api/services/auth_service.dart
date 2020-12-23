@@ -1,16 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart' as firebaseAuth;
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/models/user.dart';
-import 'package:meet_your_mates/api/util/app_url.dart';
-import 'package:firebase_auth/firebase_auth.dart' as firebaseAuth;
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:meet_your_mates/api/models/userDetails.dart';
-import 'package:meet_your_mates/api/models/providerDetails.dart';
+import 'package:meet_your_mates/api/util/app_url.dart';
 import 'package:meet_your_mates/api/util/shared_preference.dart';
 
 enum Status {
@@ -24,20 +23,25 @@ enum Status {
   LoggedOut,
   Validating,
   NotValidated,
-  Validated
+  Validated,
+  Sending,
+  Sent,
+  Failed,
+  Completed
 }
 
 class AuthProvider with ChangeNotifier {
   Status _loggedInStatus = Status.NotLoggedIn;
   Status _registeredInStatus = Status.NotRegistered;
   Status _validatedStatus = Status.NotValidated;
-
+  Status _recoveryStatus = Status.Sending;
+  Status get recoveryStatus => _recoveryStatus;
   Status get loggedInStatus => _loggedInStatus;
   Status get registeredInStatus => _registeredInStatus;
   Status get validatedStatus => _validatedStatus;
   bool signedInWithGoogle = false;
   //*******************************KRUNAL**************************************/
-  var logger = Logger(level: Level.warning);
+  var logger = Logger(level: Level.info);
   Future<Map<String, dynamic>> login(String email, String password) async {
     var result;
     int res = -1;
@@ -69,6 +73,7 @@ class AuthProvider with ChangeNotifier {
         Map responseData = jsonDecode(response.body);
         authenticatedStudent = Student.fromJson(responseData);
         userTmp.id = authenticatedStudent.user.id;
+        userTmp.token = authenticatedStudent.user.token;
         authenticatedStudent.user = userTmp;
         UserPreferences().saveUser(userTmp);
         logger.d("User in Shared Preferences: " + userTmp.toString());
@@ -91,6 +96,7 @@ class AuthProvider with ChangeNotifier {
         Map responseData = jsonDecode(response.body);
         authenticatedStudent = Student.fromJson(responseData);
         userTmp.id = authenticatedStudent.user.id;
+        userTmp.token = authenticatedStudent.user.token;
         authenticatedStudent.user = userTmp;
         UserPreferences().saveUser(userTmp);
         logger.d("User in Shared Preferences: " + userTmp.toString());
@@ -112,6 +118,7 @@ class AuthProvider with ChangeNotifier {
         Map responseData = jsonDecode(response.body);
         authenticatedStudent = Student.fromJson(responseData);
         userTmp.id = authenticatedStudent.user.id;
+        userTmp.token = authenticatedStudent.user.token;
         authenticatedStudent.user = userTmp;
         UserPreferences().saveUser(userTmp);
         logger.d("User in Shared Preferences: " + userTmp.toString());
@@ -141,6 +148,56 @@ class AuthProvider with ChangeNotifier {
     return result;
   }
 
+  Future<Map<String, dynamic>> recoverPassword(String email) async {
+    var result;
+    logger.d("Recover Passwor: email: $email");
+    _recoveryStatus = Status.Sending;
+    notifyListeners();
+    Response response = await get(AppUrl.forgotPassword + email);
+    logger.d("Recover Password: response: $response");
+    if (response.statusCode == 201) {
+      _recoveryStatus = Status.Sent;
+      notifyListeners();
+      logger.d("Recover Password: status: $_recoveryStatus");
+      result = {'status': true, 'message': "Email Sent"};
+    } else {
+      _recoveryStatus = Status.Failed;
+      notifyListeners();
+      logger.d("Recover Password: status: $_recoveryStatus");
+      result = {'status': false, 'message': "Unvalid Email"};
+    }
+    return result;
+  }
+
+  Future<Map<String, dynamic>> changePassword(
+      String code, String email, String pass) async {
+    var result;
+    logger.d("change Password: email: $email");
+    _recoveryStatus = Status.Sending;
+    notifyListeners();
+    String _body = '{"code":"$code","email":"$email","password":"$pass"}';
+    logger.i("_body: " + _body);
+    Response response = await post(
+      AppUrl.changePassword,
+      body: _body,
+      headers: {'Content-Type': 'application/json'},
+    );
+    logger.d("change Password:: response: $response");
+    if (response.statusCode == 200) {
+      _recoveryStatus = Status.Completed;
+      notifyListeners();
+      logger.d("change Password:: status: $_recoveryStatus");
+      result = {'status': true, 'message': "Email Sent"};
+    } else {
+      _recoveryStatus = Status.Failed;
+      notifyListeners();
+      logger.d("change Password:: status: $_recoveryStatus");
+      result = {'status': false, 'message': "Unvalid Email"};
+    }
+    return result;
+  }
+
+  //*******************************ANTONIO************************************/
   Future<Map<String, dynamic>> register(String email, String password) async {
     var result;
 
@@ -241,28 +298,21 @@ class AuthProvider with ChangeNotifier {
           await googleUser.authentication;
 
       final firebaseAuth.AuthCredential credential =
-          firebaseAuth.GoogleAuthProvider.getCredential(
+          firebaseAuth.GoogleAuthProvider.credential(
               accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
-
-      firebaseAuth.FirebaseUser userDetails =
+      firebaseAuth.UserCredential userDetails =
           await _firebaseAuth.signInWithCredential(credential);
-
-      ProviderDetails providerInfo =
-          new ProviderDetails(userDetails.providerId);
-      List<ProviderDetails> providerData = [];
-      providerData.add(providerInfo);
-
+      print("UserEmail 305: " + userDetails.user.email);
       UserDetails details = new UserDetails(
-        userDetails.providerId,
-        userDetails.displayName,
-        userDetails.photoUrl,
-        userDetails.email,
-        providerData,
-      );
+          userDetails.user.uid,
+          userDetails.user.displayName,
+          userDetails.user.photoURL,
+          userDetails.user.email);
       //Added New
       signedInWithGoogle = true;
       return details;
     } catch (err) {
+      logger.e(err);
       return null;
     }
   }
@@ -278,7 +328,7 @@ class AuthProvider with ChangeNotifier {
     _registeredInStatus = Status.Registering;
     notifyListeners();
     Response response;
-    
+
     try {
       response = await post(
         AppUrl.registerWithGoogle,
@@ -287,7 +337,10 @@ class AuthProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 201) {
-        User newUser = new User(id: null, email: registeredGoogle.user.email, password: registeredGoogle.user.password);
+        User newUser = new User(
+            id: null,
+            email: registeredGoogle.user.email,
+            password: registeredGoogle.user.password);
         UserPreferences().saveUser(newUser);
         _registeredInStatus = Status.Registered;
         notifyListeners();

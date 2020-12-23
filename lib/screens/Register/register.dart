@@ -1,24 +1,21 @@
-import 'package:provider/provider.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 //Services
 import 'package:meet_your_mates/api/services/auth_service.dart';
-//Utilities
-
-//Constants
-import '../../constants.dart';
-//Screens
-import 'package:meet_your_mates/screens/Register/background.dart';
 //import 'package:meet_your_mates/api/util/shared_preference.dart';
 import 'package:meet_your_mates/api/util/validators.dart';
-//Models
-
 //Components
 import 'package:meet_your_mates/components/already_have_an_account_acheck.dart';
 import 'package:meet_your_mates/components/or_divider.dart';
 import 'package:meet_your_mates/components/rounded_button.dart';
 import 'package:meet_your_mates/components/social_icon.dart';
 import 'package:meet_your_mates/components/text_field_container.dart';
+//Screens
+import 'package:meet_your_mates/screens/Register/background.dart';
+import 'package:provider/provider.dart';
+
+//Constants
+import '../../constants.dart';
 
 class Register extends StatefulWidget {
   @override

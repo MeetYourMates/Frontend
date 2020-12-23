@@ -35,7 +35,7 @@ class StreamSocketProvider with ChangeNotifier {
   void createSocketConnection(String token) {
     try {
       // Configure socket transports must be sepecified
-      socket = IO.io(AppUrl.baseURL + '/socket.io', <String, dynamic>{
+      socket = IO.io(AppUrl.baseURL, <String, dynamic>{
         'transports': ['websocket'],
         'autoConnect': false,
       });

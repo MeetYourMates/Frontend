@@ -1,4 +1,5 @@
 import 'package:async/async.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 //Services
 import 'package:meet_your_mates/api/services/auth_service.dart';
@@ -11,6 +12,8 @@ import 'package:meet_your_mates/screens/Dashboard/dashboard.dart';
 import 'package:meet_your_mates/screens/GetStarted/getstarted.dart';
 //Screens
 import 'package:meet_your_mates/screens/Login/login.dart';
+import 'package:meet_your_mates/screens/PasswordRecovery/changePassword.dart';
+import 'package:meet_your_mates/screens/PasswordRecovery/passwordRecovery.dart';
 import 'package:meet_your_mates/screens/Profile/edit_profile.dart';
 import 'package:meet_your_mates/screens/Profile/profile.dart';
 import 'package:meet_your_mates/screens/Register/register.dart';
@@ -27,8 +30,9 @@ import 'api/util/shared_preference.dart';
 final AsyncMemoizer _memoizerLogin = AsyncMemoizer();
 final AsyncMemoizer _memoizerPreferences = AsyncMemoizer();
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   // ignore: unused_local_variable
   //SocketService socketService = new StrSocketService();
   runApp(
@@ -149,6 +153,8 @@ class MyApp extends StatelessWidget {
           '/validate': (context) => Validate(),
           '/getStarted': (context) => GetStarted(),
           '/searchMates': (context) => SearchMates(),
+          '/passwordRecovery': (context) => PasswordRecovery(),
+          '/changePassword': (context) => ChangePassword(),
           '/profile': (context) => Profile(),
           '/editProfile': (context) => EditProfile(),
         });
