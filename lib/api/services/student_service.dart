@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
@@ -6,13 +7,11 @@ import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/models/user.dart';
 import 'package:meet_your_mates/api/util/app_url.dart';
-import 'package:meet_your_mates/api/util/shared_preference.dart';
 
 class StudentProvider with ChangeNotifier {
   Student _student = new Student();
-
   Student get student => _student;
-  var logger = Logger(level: Level.warning);
+  var logger = Logger();
   void setStudent(Student student) {
     if (student != null) {
       User usr = new User();
@@ -30,7 +29,6 @@ class StudentProvider with ChangeNotifier {
     }
   }
 
-//*******************************KRUNAL**************************************/
   Future<int> autoLogin(String email, String password) async {
     logger.d("Trying AutoLogging!");
     int res = -1;
@@ -50,8 +48,6 @@ class StudentProvider with ChangeNotifier {
           Map responseData = jsonDecode(response.body);
           _student = (Student.fromJson(responseData));
           userTmp.id = _student.user.id;
-          userTmp.token = _student.user.token;
-          UserPreferences().saveUser(userTmp);
           _student.user = userTmp;
           res = 0;
         } catch (err) {
@@ -64,8 +60,6 @@ class StudentProvider with ChangeNotifier {
           Map responseData = jsonDecode(response.body);
           _student = (Student.fromJson(responseData));
           userTmp.id = _student.user.id;
-          userTmp.token = _student.user.token;
-          UserPreferences().saveUser(userTmp);
           _student.user = userTmp;
           res = 1;
         } catch (err) {
@@ -78,8 +72,6 @@ class StudentProvider with ChangeNotifier {
           Map responseData = jsonDecode(response.body);
           _student = (Student.fromJson(responseData));
           userTmp.id = _student.user.id;
-          userTmp.token = _student.user.token;
-          UserPreferences().saveUser(userTmp);
           _student.user = userTmp;
           res = 2;
         } catch (err) {
@@ -90,10 +82,53 @@ class StudentProvider with ChangeNotifier {
       }
     } catch (err) {
       logger.e("Error AutoLogin: " + err.toString());
-      UserPreferences().removeUser();
       res = -1;
     }
     return res;
   }
-  //*******************************KRUNAL**************************************/
+  //*********************************************************************/
+
+  //************************POL****************************/
+
+  Future<int> upload(Student updated) async {
+    int res = -1;
+    logger.d("Trying to update student:");
+    try {
+      Response response = await put(
+        AppUrl.editProfile,
+        body: json.encode(updated.toJson()),
+        headers: {'Content-Type': 'application/json'},
+      );
+      if (response.statusCode == 200) {
+        logger.d("Student updated:");
+        res = 0;
+      }
+    } catch (err) {
+      logger.e("Error updating Student: " + err.toString());
+      res = -1;
+    }
+    return res;
+  }
+
+//*******************************************************/
+
+  //************************PEP****************************/
+  Future<List> getCourseStudents() async {
+    logger.d("Trying to get course students:");
+    try {
+      Response response = await get(
+        AppUrl.getCourseStudents + '/414551543030303032303230',
+        headers: {'Content-Type': 'application/json'},
+      );
+      if (response.statusCode == 200) {
+        logger.d("Student retrieved:");
+        return json.decode(response.body) as List;
+      }
+    } catch (err) {
+      logger.e("Error getting student: " + err.toString());
+      return null;
+    }
+  }
+  //*******************************************************/
+
 }

@@ -2,6 +2,7 @@ import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 //Services
 import 'package:meet_your_mates/api/services/auth_service.dart';
+import 'package:meet_your_mates/api/services/image_service.dart';
 import 'package:meet_your_mates/api/services/start_service.dart';
 import 'package:meet_your_mates/api/services/stream_socket_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
@@ -10,9 +11,10 @@ import 'package:meet_your_mates/screens/Dashboard/dashboard.dart';
 import 'package:meet_your_mates/screens/GetStarted/getstarted.dart';
 //Screens
 import 'package:meet_your_mates/screens/Login/login.dart';
-import 'package:meet_your_mates/screens/PasswordRecovery/changePassword.dart';
-import 'package:meet_your_mates/screens/PasswordRecovery/passwordRecovery.dart';
+import 'package:meet_your_mates/screens/Profile/edit_profile.dart';
+import 'package:meet_your_mates/screens/Profile/profile.dart';
 import 'package:meet_your_mates/screens/Register/register.dart';
+import 'package:meet_your_mates/screens/SearchMates/searchMates.dart';
 import 'package:meet_your_mates/screens/Validate/validate.dart';
 //Utilities
 import 'package:provider/provider.dart';
@@ -24,7 +26,9 @@ import 'api/util/shared_preference.dart';
 
 final AsyncMemoizer _memoizerLogin = AsyncMemoizer();
 final AsyncMemoizer _memoizerPreferences = AsyncMemoizer();
+
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   // ignore: unused_local_variable
   //SocketService socketService = new StrSocketService();
   runApp(
@@ -36,6 +40,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => StudentProvider()),
         ChangeNotifierProvider(create: (_) => StartProvider()),
+        ChangeNotifierProvider(create: (_) => ImagesProvider()),
         ChangeNotifierProvider(create: (_) => StreamSocketProvider()),
       ],
       child: MyApp(),
@@ -148,8 +153,9 @@ class MyApp extends StatelessWidget {
           '/register': (context) => Register(),
           '/validate': (context) => Validate(),
           '/getStarted': (context) => GetStarted(),
-          '/passwordRecovery': (context) => PasswordRecovery(),
-          '/changePassword': (context) => ChangePassword(),
+          '/searchMates': (context) => SearchMates(),
+          '/profile': (context) => Profile(),
+          '/editProfile': (context) => EditProfile(),
         });
   }
 }

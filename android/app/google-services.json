@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "486960102534",
+    "project_id": "meetyourmatesin",
+    "storage_bucket": "meetyourmatesin.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:486960102534:android:93a3b2206d847bb74ae507",
+        "android_client_info": {
+          "package_name": "com.example.meet_your_mates"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "486960102534-37qt1uo7qafp2gufbb06tkhdnh30h1ld.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.meet_your_mates",
+            "certificate_hash": "91ccab3ac69f63071c29aecd143ebd2fe0f64d0a"
+          }
+        },
+        {
+          "client_id": "486960102534-prcol7e09vs65cdej3slslcctrhktnqd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUdDT5cFgIAiMD2t-7Ao1EzCknUKWr8MI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "486960102534-prcol7e09vs65cdej3slslcctrhktnqd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

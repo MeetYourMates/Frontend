@@ -1,9 +1,16 @@
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:meet_your_mates/api/util/shared_preference.dart';
-import 'package:meet_your_mates/components/rounded_button.dart';
 import 'package:meet_your_mates/constants.dart';
 import 'package:meet_your_mates/screens/Chat/chatSummaryList.dart';
+import 'package:meet_your_mates/screens/Profile/profile.dart';
+import 'package:meet_your_mates/screens/SearchMates/searchMates.dart';
+//Services
+
+//Utilities
+
+//Screens
+
+//Models
 
 class DashBoard extends StatefulWidget {
   @override
@@ -61,24 +68,28 @@ class _DashBoardState extends State<DashBoard> {
           },
           children: <Widget>[
             Container(
+              //Home
               color: Colors.blueGrey,
+              child: SizedBox.expand(
+                child: SearchMates(),
+              ),
             ),
             Container(
+              //Search
               color: Colors.red,
             ),
             Container(
+              //Chat
               color: Colors.green,
               child: ChatSummaryList(),
             ),
             Container(
-                color: Colors.blue,
-                child: RoundedButton(
-                  text: "LOGOUT",
-                  press: () => {
-                    UserPreferences().removeUser(),
-                    Navigator.pushReplacementNamed(context, '/login')
-                  },
-                )),
+              //Profile
+              color: Colors.grey[100],
+              child: SizedBox.expand(
+                child: Profile(),
+              ),
+            )
           ],
         ),
       ),
