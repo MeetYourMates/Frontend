@@ -1,12 +1,19 @@
-import 'package:flutter/material.dart';
 import 'package:async/async.dart';
+import 'package:flutter/material.dart';
+//Services
+import 'package:meet_your_mates/api/services/auth_service.dart';
+import 'package:meet_your_mates/api/services/image_service.dart';
 import 'package:meet_your_mates/api/services/start_service.dart';
+import 'package:meet_your_mates/api/services/stream_socket_service.dart';
+import 'package:meet_your_mates/api/services/student_service.dart';
+import 'package:meet_your_mates/api/services/user_service.dart';
+import 'package:meet_your_mates/screens/Dashboard/dashboard.dart';
 import 'package:meet_your_mates/screens/GetStarted/getstarted.dart';
 //Screens
 import 'package:meet_your_mates/screens/Login/login.dart';
-
+import 'package:meet_your_mates/screens/Profile/edit_profile.dart';
+import 'package:meet_your_mates/screens/Profile/profile.dart';
 import 'package:meet_your_mates/screens/Register/register.dart';
-import 'package:meet_your_mates/screens/Dashboard/dashboard.dart';
 import 'package:meet_your_mates/screens/Validate/validate.dart';
 import 'package:meet_your_mates/screens/SearchMates/searchMates.dart';
 import 'package:meet_your_mates/screens/Profile/profile.dart';
@@ -18,7 +25,7 @@ import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/api/services/image_service.dart';
 //Utilities
 import 'package:provider/provider.dart';
-//import 'package:connectivity/connectivity.dart';
+
 import 'api/models/user.dart';
 import 'api/util/shared_preference.dart';
 
@@ -26,8 +33,11 @@ import 'api/util/shared_preference.dart';
 
 final AsyncMemoizer _memoizerLogin = AsyncMemoizer();
 final AsyncMemoizer _memoizerPreferences = AsyncMemoizer();
-void main() async {
+
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  // ignore: unused_local_variable
+  //SocketService socketService = new StrSocketService();
   runApp(
     /// Providers are above [MyApp] instead of inside it, so that tests
     /// can use [MyApp] while mocking the providers
@@ -38,6 +48,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => StudentProvider()),
         ChangeNotifierProvider(create: (_) => StartProvider()),
         ChangeNotifierProvider(create: (_) => ImagesProvider()),
+        ChangeNotifierProvider(create: (_) => StreamSocketProvider()),
       ],
       child: MyApp(),
     ),
@@ -126,6 +137,13 @@ class MyApp extends StatelessWidget {
                                 if (snapshot2.hasError) {
                                   return Text('Error: ${snapshot2.error}');
                                 } else if (snapshot2.data == 0) {
+                                  //Means everything correct
+                                  //Connect to Socket
+                                  Provider.of<StreamSocketProvider>(context,
+                                          listen: false)
+                                      .createSocketConnection(
+                                          _studentProvider.student.user.token);
+                                  //Redirect to DashBoard
                                   return DashBoard();
                                 } else if (snapshot2.data == 1) {
                                   return Validate();

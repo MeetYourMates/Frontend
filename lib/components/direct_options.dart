@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:direct_select/direct_select.dart';
+import 'package:flutter/material.dart';
+
 import 'my_selection_item.dart';
 
 //Widget Implementation
@@ -27,7 +28,7 @@ class _DirectOptionsState extends State<DirectOptions> {
   //final List<String> elements;
   List<Widget> _buildItems() {
     //print(widget.elements);
-    List<Widget> returnWidgetSelectItems = [];
+    List<Widget> returnWidgetSelectItems = <Widget>[];
     if (widget.elements.isNotEmpty) {
       widget.elements
           .forEach((val) => returnWidgetSelectItems.add(MySelectionItem(
