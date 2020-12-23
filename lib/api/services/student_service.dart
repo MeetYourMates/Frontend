@@ -1,5 +1,5 @@
-import 'dart:convert';
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
@@ -124,6 +124,7 @@ class StudentProvider with ChangeNotifier {
         logger.d("Student retrieved:");
         return json.decode(response.body) as List;
       }
+      return null;
     } catch (err) {
       logger.e("Error getting student: " + err.toString());
       return null;

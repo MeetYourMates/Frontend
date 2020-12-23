@@ -2,7 +2,7 @@ import 'package:meet_your_mates/api/models/chat_user.dart';
 import 'package:meet_your_mates/api/models/message.dart';
 
 class Users {
-  List<ChatUser> usersList = <ChatUser>[];
+  List<ChatUser> usersList = [];
   String myId = "";
   Users({this.usersList});
   Future<bool> addMessage(Map<String, dynamic> responseData) async {
@@ -20,6 +20,6 @@ class Users {
     return false;
   }
 
-  factory Users.fromDynamicList(List<dynamic> dynamicList) =>
-      Users(usersList: dynamicList.map((i) => ChatUser.fromJson(i)).toList());
+  factory Users.fromDynamicList(List<dynamic> dynamicList) => new Users(
+      usersList: dynamicList.map((i) => ChatUser.fromJson(i)).toList());
 }

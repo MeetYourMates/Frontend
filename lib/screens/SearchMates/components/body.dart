@@ -1,14 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:http/http.dart';
-
+import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/screens/SearchMates/components/statefulwrapper.dart';
 import 'package:meet_your_mates/screens/SearchMates/studentList.dart';
 import 'package:provider/provider.dart';
+
 import 'background.dart';
-import 'package:flutter/foundation.dart';
-import 'package:meet_your_mates/api/util/shared_preference.dart';
-import 'package:meet_your_mates/api/services/student_service.dart';
 
 class Body extends StatefulWidget {
   const Body({Key key}) : super(key: key);
@@ -58,6 +56,7 @@ class _BodyState extends State<Body> {
       child: FutureBuilder<List>(
         future: _futureQueryResult,
         builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
+          // ignore: unused_local_variable
           List<Widget> children;
           if (snapshot.hasData) {
             children = <Widget>[

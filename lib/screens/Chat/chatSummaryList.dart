@@ -42,7 +42,8 @@ class _ChatSummaryListState extends State<ChatSummaryList> {
         body: Background(
           child: Container(
             child: ListView.builder(
-              itemCount: usersList.usersList.length,
+              itemCount:
+                  usersList.usersList != null ? usersList.usersList.length : 0,
               itemBuilder: (context, index) {
                 return ChatSummaryView(
                   messageDate: '18:13',

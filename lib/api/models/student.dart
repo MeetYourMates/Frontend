@@ -1,7 +1,7 @@
 import 'package:meet_your_mates/api/models/insignia.dart';
+import 'package:meet_your_mates/api/models/rating.dart';
 import 'package:meet_your_mates/api/models/trophy.dart';
 import 'package:meet_your_mates/api/models/user.dart';
-import 'package:meet_your_mates/api/models/rating.dart';
 
 class Student {
   String id;
@@ -11,7 +11,7 @@ class Student {
   String picture;
   List<Trophy> trophies;
   List<Insignia> insignias;
-  User user;
+  User user = new User();
   String photo;
   List<Rating> ratings;
 

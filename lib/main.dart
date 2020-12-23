@@ -126,11 +126,6 @@ class MyApp extends StatelessWidget {
                               return Text('Error: ${snapshot2.error}');
                             } else if (snapshot2.data == 0) {
                               //Means everything correct
-                              //Connect to Socket
-                              Provider.of<StreamSocketProvider>(context,
-                                      listen: false)
-                                  .createSocketConnection(
-                                      _studentProvider.student.user.token);
                               //Redirect to DashBoard
                               return DashBoard();
                             } else if (snapshot2.data == 1) {

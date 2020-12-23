@@ -123,7 +123,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     }
 
-    ;
     return Scaffold(
       appBar: ChatDetailPageAppBar(
         name: chatUser.email,

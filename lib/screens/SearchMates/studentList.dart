@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 
 class StudentList extends StatelessWidget {
-  String _imageUrl;
-
   final List _queryResult = [];
   StudentList(queryResult) {
     this._queryResult.addAll(queryResult);
@@ -11,6 +8,7 @@ class StudentList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String _imageUrl;
     return ListView(
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
@@ -22,9 +20,11 @@ class StudentList extends StatelessWidget {
                   'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
           return Card(
             child: ListTile(
-                leading: Image.network(_imageUrl),
-                title: Text(item['name']),
-                subtitle: Text(item['degree']),
+                leading:
+                    Image.network(_imageUrl != null ? _imageUrl : "No Image"),
+                title: Text(item['name'] != null ? item['name'] : "No name"),
+                subtitle:
+                    Text(item['degree'] != null ? item['degree'] : "No Degree"),
                 trailing: Icon(Icons.arrow_forward),
                 onTap: () {/* REDIRECCIONAR A PERFIL SELECCIONADO */}),
           );
