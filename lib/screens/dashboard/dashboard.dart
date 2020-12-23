@@ -42,7 +42,7 @@ class _DashBoardState extends State<DashBoard> {
     super.dispose();
   }
 
-  /// =======================================================================================================================
+  /// ==================  =====================================================================================================
   ///                                                    DASHBOARD
   ///=======================================================================================================================**/
   @override
@@ -50,13 +50,15 @@ class _DashBoardState extends State<DashBoard> {
     StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
     //StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
     //SocketService socketService = new SocketService();
+    Future<void> openSocketConnection() async {
+      Provider.of<StreamSocketProvider>(context, listen: true)
+          .createSocketConnection(_studentProvider.student.user.token);
+    }
+
     return StatefulWrapper(
       onInit: () {
-        //! Warning
         //Connect to Socket
-        print("Connecting.." + _studentProvider.student.user.token);
-        Provider.of<StreamSocketProvider>(context, listen: true)
-            .createSocketConnection(_studentProvider.student.user.token);
+        openSocketConnection();
       },
       child: Scaffold(
         appBar: PreferredSize(

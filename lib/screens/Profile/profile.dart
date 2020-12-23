@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
+import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/api/util/shared_preference.dart';
 import 'package:meet_your_mates/screens/Insignias/background.dart';
 import 'package:meet_your_mates/screens/Insignias/insignias.dart';
 import 'package:meet_your_mates/screens/Profile/edit_profile.dart';
 import 'package:meet_your_mates/screens/Trophies/trophies.dart';
-import 'package:smooth_star_rating/smooth_star_rating.dart';
-import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:provider/provider.dart';
-import 'package:logger/logger.dart';
+import 'package:smooth_star_rating/smooth_star_rating.dart';
 
 import '../../api/services/auth_service.dart';
 
@@ -62,7 +62,8 @@ class _ProfileState extends State<Profile> {
                 ),
                 ListView.builder(
                   physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) => LogOutCard(authProvider:_authProvider),
+                  itemBuilder: (context, index) =>
+                      LogOutCard(authProvider: _authProvider),
                   shrinkWrap: true,
                   itemCount: 1,
                 ),
@@ -129,7 +130,7 @@ class Header extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           UserPhoto(
-            imageProfile: this.icon,
+            imageProfile: icon,
           ),
         ],
       ),
@@ -317,7 +318,7 @@ class TrophiesCard extends StatelessWidget {
 class LogOutCard extends StatelessWidget {
   final AuthProvider authProvider;
   const LogOutCard({
-    Key key, 
+    Key key,
     this.authProvider,
   }) : super(key: key);
 

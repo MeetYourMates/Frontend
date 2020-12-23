@@ -129,7 +129,6 @@ class MyApp extends StatelessWidget {
                             if (snapshot2.hasError) {
                               return Text('Error: ${snapshot2.error}');
                             } else if (snapshot2.data == 0) {
-                              //Means everything correct
                               //Redirect to DashBoard
                               return DashBoard();
                             } else if (snapshot2.data == 1) {

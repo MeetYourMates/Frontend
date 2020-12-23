@@ -13,14 +13,14 @@ class ImagesProvider with ChangeNotifier {
     try {
       logger.d("Trying to update student photo:");
 
-      CloudinaryPublic client =
-          new CloudinaryPublic('mym', 'mymPicture', cache: false);
+      CloudinaryPublic client = new CloudinaryPublic(
+          'meetyourmatesapi', 'egdrzzsw_meetyourmates_unsigned');
       CloudinaryResponse response = await client.uploadFile(
           CloudinaryFile.fromFile(_imagePath,
               resourceType: CloudinaryResourceType.Image));
       res = response.url;
     } catch (err) {
-      logger.e("Error AutoLogin 203: " + err.toString());
+      logger.e(err.toString());
       res = null;
     }
     return res;
