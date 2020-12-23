@@ -48,10 +48,8 @@ class StudentProvider with ChangeNotifier {
         try {
           Map responseData = jsonDecode(response.body);
           _student = (Student.fromJson(responseData));
-          userTmp.id = _student.user.id;
-          userTmp.token = _student.user.token;
-          UserPreferences().saveUser(userTmp);
-          _student.user = userTmp;
+          _student.user.password = password;
+          UserPreferences().saveUser(_student.user);
           res = 0;
         } catch (err) {
           logger.e("Error AutoLogin 200: " + err.toString());
@@ -62,10 +60,8 @@ class StudentProvider with ChangeNotifier {
         try {
           Map responseData = jsonDecode(response.body);
           _student = (Student.fromJson(responseData));
-          userTmp.id = _student.user.id;
-          userTmp.token = _student.user.token;
-          UserPreferences().saveUser(userTmp);
-          _student.user = userTmp;
+          _student.user.password = password;
+          UserPreferences().saveUser(_student.user);
           res = 1;
         } catch (err) {
           logger.e("Error AutoLogin 203: " + err.toString());
@@ -76,10 +72,8 @@ class StudentProvider with ChangeNotifier {
         try {
           Map responseData = jsonDecode(response.body);
           _student = (Student.fromJson(responseData));
-          userTmp.id = _student.user.id;
-          userTmp.token = _student.user.token;
-          UserPreferences().saveUser(userTmp);
-          _student.user = userTmp;
+          _student.user.password = password;
+          UserPreferences().saveUser(_student.user);
           res = 2;
         } catch (err) {
           res = -1;
@@ -109,6 +103,7 @@ class StudentProvider with ChangeNotifier {
       );
       if (response.statusCode == 200) {
         logger.d("Student updated:");
+        notifyListeners();
         res = 0;
       }
     } catch (err) {
@@ -121,7 +116,7 @@ class StudentProvider with ChangeNotifier {
 //*******************************************************/
 
   //************************PEP****************************/
-  Future<List> getCourseStudents() async {
+  Future<List<Student>> getCourseStudents() async {
     logger.d("Trying to get course students:");
     try {
       Response response = await get(
@@ -130,7 +125,12 @@ class StudentProvider with ChangeNotifier {
       );
       if (response.statusCode == 200) {
         logger.d("Student retrieved:");
-        return json.decode(response.body) as List;
+        //Convert from json List of Map to List of Student
+        var decodedList = (json.decode(response.body) as List<dynamic>);
+        List<Student> students =
+            decodedList.map((i) => Student.fromJson(i)).toList();
+        //Send back List of Students
+        return students;
       }
       return null;
     } catch (err) {

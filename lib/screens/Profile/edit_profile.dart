@@ -137,7 +137,7 @@ class _EditProfileState extends State<EditProfile> {
       Student updatedStu = _studentProvider.student;
       if (form.validate()) {
         if (displayNameController.text.length != 0) {
-          updatedStu.name = displayNameController.text;
+          updatedStu.user.name = displayNameController.text;
         }
         if (emailController.text.length != 0) {
           updatedStu.user.email = emailController.text;
@@ -145,24 +145,25 @@ class _EditProfileState extends State<EditProfile> {
         if ((passController.text == passConfController.text) &&
             (passController.text.length != 0) &&
             (passConfController.text.length != 0)) {
-          updatedStu..user.password = passController.text;
+          updatedStu.user.password = passController.text;
         } else if ((passController.text != passConfController.text) &&
             (passController.text.length != 0) &&
             (passConfController.text.length != 0)) {
           logger.w("Password not match");
         }
         if (_imageFile != null) {
-          updatedStu.photo = _imageFile.path;
-          _imageProvider
-              .uploadPhoto(_imageFile.path, updatedStu.id)
-              .then((res) => updatedStu.picture = res);
+          _imageProvider.uploadPhoto(_imageFile.path, updatedStu.id).then(
+                (res) => {
+                  updatedStu.user.picture = res,
+                  _studentProvider.upload(updatedStu).then(
+                    (response) {
+                      logger.d("Sucesfully");
+                    },
+                  ),
+                },
+              );
         }
         form.save();
-        final Future<int> succesfulMessage =
-            _studentProvider.upload(updatedStu);
-        succesfulMessage.then((response) {
-          logger.d("Sucesfully");
-        });
       } else {
         logger.e("form is invalid");
       }
@@ -208,7 +209,7 @@ class _EditProfileState extends State<EditProfile> {
                       child: CircleAvatar(
                         radius: 50.0,
                         backgroundImage:
-                            NetworkImage(_studentProvider.student.picture),
+                            NetworkImage(_studentProvider.student.user.picture),
                       ),
                     ),
                   ),

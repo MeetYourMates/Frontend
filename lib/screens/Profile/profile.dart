@@ -25,7 +25,8 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
-    AuthProvider _authProvider = Provider.of<AuthProvider>(context);
+    AuthProvider _authProvider =
+        Provider.of<AuthProvider>(context, listen: false);
     double meanRating = 0;
     for (int i = 0; i < _studentProvider.student.ratings.length; i++) {
       meanRating = (meanRating + _studentProvider.student.ratings[i].stars);
@@ -40,11 +41,11 @@ class _ProfileState extends State<Profile> {
             child: Column(
               children: <Widget>[
                 Header(
-                  icon: _studentProvider.student.picture,
+                  icon: _studentProvider.student.user.picture,
                 ),
                 editButton(context: context),
                 StackContainer(
-                  username: _studentProvider.student.name,
+                  username: _studentProvider.student.user.name,
                   email: _studentProvider.student.user.email,
                 ),
                 RatingStars(rating: meanRating),

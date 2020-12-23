@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/screens/SearchMates/components/statefulwrapper.dart';
 import 'package:meet_your_mates/screens/SearchMates/studentList.dart';
@@ -18,11 +19,12 @@ class _BodyState extends State<Body> {
   var logger = Logger();
 
   Future<List<dynamic>> _futureQueryResult;
-  List<dynamic> _queryResult = [];
+  List<Student> _queryResult = [];
   StudentProvider _studentProvider;
 
   Future<void> _getStudents() async {
-    final List queryResult = await _studentProvider.getCourseStudents();
+    final List<Student> queryResult =
+        await _studentProvider.getCourseStudents();
     setState(
       () {
         debugPrint("Executed search");
@@ -53,9 +55,9 @@ class _BodyState extends State<Body> {
 
     return StatefulWrapper(
       onInit: () {},
-      child: FutureBuilder<List>(
+      child: FutureBuilder<List<Student>>(
         future: _futureQueryResult,
-        builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
+        builder: (BuildContext context, AsyncSnapshot<List<Student>> snapshot) {
           // ignore: unused_local_variable
           List<Widget> children;
           if (snapshot.hasData) {

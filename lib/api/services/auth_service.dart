@@ -45,14 +45,12 @@ class AuthProvider with ChangeNotifier {
   Future<Map<String, dynamic>> login(String email, String password) async {
     var result;
     int res = -1;
-    User userTmp = new User();
-    userTmp.email = email;
-    userTmp.password = password;
     _loggedInStatus = Status.Authenticating;
     notifyListeners();
     Student authenticatedStudent = new Student();
     Response response;
     try {
+      User userTmp = new User(email: email, password: password);
       response = await post(
         AppUrl.login,
         body: json.encode(userTmp.toJson()),
@@ -72,11 +70,10 @@ class AuthProvider with ChangeNotifier {
       try {
         Map responseData = jsonDecode(response.body);
         authenticatedStudent = Student.fromJson(responseData);
-        userTmp.id = authenticatedStudent.user.id;
-        userTmp.token = authenticatedStudent.user.token;
-        authenticatedStudent.user = userTmp;
-        UserPreferences().saveUser(userTmp);
-        logger.d("User in Shared Preferences: " + userTmp.toString());
+        authenticatedStudent.user.password = password;
+        UserPreferences().saveUser(authenticatedStudent.user);
+        logger.d("User in Shared Preferences: " +
+            authenticatedStudent.user.toString());
         _loggedInStatus = Status.LoggedIn;
         notifyListeners();
         res = 0;
@@ -95,11 +92,10 @@ class AuthProvider with ChangeNotifier {
         //Not Validated Mean Student Doesn't Exist
         Map responseData = jsonDecode(response.body);
         authenticatedStudent = Student.fromJson(responseData);
-        userTmp.id = authenticatedStudent.user.id;
-        userTmp.token = authenticatedStudent.user.token;
-        authenticatedStudent.user = userTmp;
-        UserPreferences().saveUser(userTmp);
-        logger.d("User in Shared Preferences: " + userTmp.toString());
+        authenticatedStudent.user.password = password;
+        UserPreferences().saveUser(authenticatedStudent.user);
+        logger.d("User in Shared Preferences: " +
+            authenticatedStudent.user.toString());
         _loggedInStatus = Status.NotValidated;
         notifyListeners();
         res = 1;
@@ -117,11 +113,10 @@ class AuthProvider with ChangeNotifier {
       try {
         Map responseData = jsonDecode(response.body);
         authenticatedStudent = Student.fromJson(responseData);
-        userTmp.id = authenticatedStudent.user.id;
-        userTmp.token = authenticatedStudent.user.token;
-        authenticatedStudent.user = userTmp;
-        UserPreferences().saveUser(userTmp);
-        logger.d("User in Shared Preferences: " + userTmp.toString());
+        authenticatedStudent.user.password = password;
+        UserPreferences().saveUser(authenticatedStudent.user);
+        logger.d("User in Shared Preferences: " +
+            authenticatedStudent.user.toString());
         _loggedInStatus = Status.NotCompleted;
         notifyListeners();
         res = 2;
@@ -286,13 +281,12 @@ class AuthProvider with ChangeNotifier {
   }
 
   ///*****************************************POL*****************************/
-
-  final firebaseAuth.FirebaseAuth _firebaseAuth =
-      firebaseAuth.FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = new GoogleSignIn();
 
   Future<UserDetails> signInGoogle() async {
     try {
+      final firebaseAuth.FirebaseAuth _firebaseAuth =
+          firebaseAuth.FirebaseAuth.instance;
       final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;

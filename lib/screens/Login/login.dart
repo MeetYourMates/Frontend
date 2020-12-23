@@ -108,13 +108,13 @@ class _LoginState extends State<Login> {
 
     var signInGoogleCorrectly = (UserDetails userRegistered) {
       Student regGoogle = new Student();
-      User userTemp = new User();
+      User userTemp = new User(
+          email: userRegistered.userEmail,
+          password: userRegistered.uid,
+          name: userRegistered.userName,
+          picture: userRegistered.photoUrl);
       logger.w("UserEmail 112: " + userRegistered.userEmail);
-      userTemp.email = userRegistered.userEmail;
-      userTemp.password = userRegistered.userEmail;
       regGoogle.user = userTemp;
-      regGoogle.name = userRegistered.userName;
-      regGoogle.picture = userRegistered.photoUrl;
 
       auth.registerWithGoogle(regGoogle).then((response) {
         if (response['status'] == true) {
