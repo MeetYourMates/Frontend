@@ -180,8 +180,7 @@ class _EditProfileState extends State<EditProfile> {
         ),
         actions: <Widget>[
           IconButton(
-            onPressed: () => Navigator.push(context,
-                new MaterialPageRoute(builder: (context) => new DashBoard())),
+            onPressed: () => Navigator.pop(context),
             icon: Icon(
               Icons.done,
               size: 30.0,
