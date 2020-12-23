@@ -117,7 +117,7 @@ class StudentProvider with ChangeNotifier {
     logger.d("Trying to get course students:");
     try {
       Response response = await get(
-        AppUrl.getCourseStudents + '/44554d4d59434f5552534531',
+        AppUrl.getCourseStudents + '/414551543030303032303230',
         headers: {'Content-Type': 'application/json'},
       );
       if (response.statusCode == 200) {
