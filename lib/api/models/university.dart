@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:meet_your_mates/api/models/faculty.dart';
 
 String universityToJson(University data) => json.encode(data.toJson());
@@ -6,7 +7,7 @@ String universityToJson(University data) => json.encode(data.toJson());
 class University {
   String id;
   String name;
-  List<Faculty> faculties = [];
+  List<Faculty> faculties = <Faculty>[];
 
   University({
     this.id,

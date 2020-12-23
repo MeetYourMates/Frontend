@@ -100,7 +100,7 @@ class StartProvider with ChangeNotifier {
         //logger.d("Recieved Response Subj: " + jsonDecode(response.body));
         Map responseData = jsonDecode(response.body);
         DegreeWithList degree = DegreeWithList.fromJson(responseData);
-        List<Map<String, dynamic>> subjs = [];
+        List<Map<String, dynamic>> subjs = <Map<String, dynamic>>[];
         _enrolledStatus = Status.DataLoaded;
         notifyListeners();
         //We have to convert to json {"id":"objId","name":"nameSubs"}
