@@ -39,7 +39,6 @@ dependencies:
   provider: ^4.3.2+3
   another_flushbar: ^1.10.7
   reactive_forms: ^7.6.1
-  #connectivity: ^2.0.2
   logger: ^0.9.4
   bottom_navy_bar: ^5.6.0
   #theme_patrol: ^0.0.1

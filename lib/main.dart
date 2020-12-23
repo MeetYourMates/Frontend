@@ -56,7 +56,6 @@ class MyApp extends StatelessWidget {
         Provider.of<StudentProvider>(context, listen: false);
 
     /// [connectivity] to ensure network connectivity check on start of application
-    //var connectivityResult = (Connectivity().checkConnectivity());
 
     /// [_fetchLogin] Run Once and memorize the recieved data from the serverç
     /// to no execute multiple quieries even when the application rebuilds completely
