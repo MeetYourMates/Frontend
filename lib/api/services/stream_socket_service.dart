@@ -1,7 +1,8 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:meet_your_mates/api/models/message.dart';
+import 'package:meet_your_mates/api/models/users.dart';
 import 'package:meet_your_mates/api/util/app_url.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
@@ -12,23 +13,25 @@ class StreamSocketProvider with ChangeNotifier {
   IO.Socket socket;
   //StreamSocket streamUsers = StreamSocket();
   //StreamSocket streamMessages = StreamSocket();
+  Users users = new Users();
 
-  StreamController<String> streamUsers = StreamController<String>.broadcast();
-  StreamController<String> streamMessages =
-      StreamController<String>.broadcast();
+  /*StreamController<String> streamUsers = StreamController<String>.broadcast();
   void disposeStreamUsers() {
     streamUsers.close();
   }
+  
+  StreamController<String> streamMessages =
+      StreamController<String>.broadcast();
 
   void disposeStreamMessage() {
     streamMessages.close();
   }
-
+  */
   /// ================================================================================================
   /// *                         Socket IO Server Connection
   ///================================================================================================**/
-  get getStreamUsers => {streamUsers.stream};
-  get getStreammessages => {streamMessages.stream};
+  //get getStreamUsers => {streamUsers.stream};
+  //get getStreammessages => {streamMessages.stream};
   void createSocketConnection(String token) {
     try {
       // Configure socket transports must be sepecified
@@ -51,13 +54,13 @@ class StreamSocketProvider with ChangeNotifier {
           'online_users',
           (data) => {
                 print(data),
-                handleOnlineUsersListen(data.toString()),
+                //handleOnlineusersen(data.toString()),
+                handleOnlineusersen(data),
               });
       socket.on(
           'chat_message',
           (data) => {
-                print(data),
-                handleMessage(data.toString()),
+                handleMessage(data),
               });
       socket.on('disconnect', (_) => print('disconnect'));
     } catch (e) {
@@ -88,10 +91,13 @@ class StreamSocketProvider with ChangeNotifier {
   }
 
   // Listen to OnlineUsers updates of connected usersfrom server
-  handleOnlineUsersListen(String data) async {
+  handleOnlineusersen(List<dynamic> data) async {
     //streamUsers.addResponse(data);
-    print("online_users: " + data);
-    streamUsers.sink.add(data);
+    print("online_users: " + data.toString());
+    //streamUsers.sink.add(data);
+    users.usersList = Users.fromDynamicList(data).usersList;
+    print("Decoded Json: " + users.usersList.toString());
+    notifyListeners();
   }
 
   // Send update of user's typing status
@@ -108,22 +114,31 @@ class StreamSocketProvider with ChangeNotifier {
   }
 
   // Send a Message to the server
-  sendMessage(String senderId, String recipientId, String message) {
-    socket.emit(
-      "chat_message",
-      {
-        "senderId": senderId,
-        "recipientId": recipientId,
-        "text": message, // Message to be sent
-        "timestamp": DateTime.now().millisecondsSinceEpoch,
-      },
-    );
+  Future<void> sendMessage(String senderId, String recipientId, String message,
+      int recipientIndex) async {
+    Message tmp = new Message(
+        senderId: senderId,
+        recipientId: recipientId,
+        text: message,
+        timestamp: DateTime.now().millisecondsSinceEpoch);
+    emitChatMessage(tmp);
+    users.usersList[recipientIndex].messagesList.add(tmp);
+    notifyListeners();
+  }
+
+  //Asyncronhous Emit!
+  Future<void> emitChatMessage(Message tmp) async {
+    socket.emit("chat_message", tmp.toJson());
   }
 
   // Listen to all message events from connected users
-  void handleMessage(String data) {
+  void handleMessage(Map<String, dynamic> data) {
     //streamMessages.addResponse(data);
-    print("Messages: " + data);
-    streamMessages.sink.add(data);
+    print("Messages: " + data.toString());
+    //streamMessages.sink.add(data);
+    //If Message New Added to User, Notify Listeners
+    users
+        .addMessage(data)
+        .then((wasAdded) => {if (wasAdded) notifyListeners()});
   }
 }
