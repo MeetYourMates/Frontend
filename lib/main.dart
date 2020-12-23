@@ -1,5 +1,4 @@
 import 'package:async/async.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 //Services
 import 'package:meet_your_mates/api/services/auth_service.dart';
@@ -52,9 +51,6 @@ class MyApp extends StatelessWidget {
     StudentProvider _studentProvider =
         Provider.of<StudentProvider>(context, listen: false);
 
-    /// [connectivity] to ensure network connectivity check on start of application
-    var connectivityResult = (Connectivity().checkConnectivity());
-
     /// [_fetchLogin] Run Once and memorize the recieved data from the serverç
     /// to no execute multiple quieries even when the application rebuilds completely
     /// but when restarts it is executed again
@@ -89,68 +85,63 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        // ignore: unrelated_type_equality_checks
-        home: (connectivityResult == ConnectivityResult.none)
-            ? Center(
-                child: Text("No Network Connection"),
-              )
 
-            /// We use [FutureBuilder] to get the data in a future to be exact
-            /// we recieve the data from [UserPreferences] and untill
-            /// than we show something else to user.
-            : FutureBuilder<dynamic>(
-                future: _fetchPreferences(),
-                builder: (context, snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.none:
-                    case ConnectionState.waiting:
-                      return Center(child: CircularProgressIndicator());
-                    default:
-                      if (snapshot.hasError)
-                        return Text('Error: ${snapshot.error}');
-                      else if ((snapshot.data == null ||
-                          snapshot.data.password == null))
-                        return Login();
-                      else {
-                        /// We use another [FutureBuilder] to get the data in a future to be exact
-                        /// we ask server [_fetchlogin] if the user is still valid
-                        /// untill than we show something else to user.
-                        return FutureBuilder<dynamic>(
-                          future: _fetchLogin(
-                              snapshot.data.email, snapshot.data.password),
-                          builder: (context, snapshot2) {
-                            switch (snapshot2.connectionState) {
-                              case ConnectionState.none:
-                              case ConnectionState.waiting:
-                                return Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              default:
-                                if (snapshot2.hasError) {
-                                  return Text('Error: ${snapshot2.error}');
-                                } else if (snapshot2.data == 0) {
-                                  //Means everything correct
-                                  //Connect to Socket
-                                  Provider.of<StreamSocketProvider>(context,
-                                          listen: false)
-                                      .createSocketConnection(
-                                          _studentProvider.student.user.token);
-                                  //Redirect to DashBoard
-                                  return DashBoard();
-                                } else if (snapshot2.data == 1) {
-                                  return Validate();
-                                } else if (snapshot2.data == 2) {
-                                  return GetStarted();
-                                } else {
-                                  //Error in Autologgin --> Login probably -1
-                                  return Login();
-                                }
+        /// We use [FutureBuilder] to get the data in a future to be exact
+        /// we recieve the data from [UserPreferences] and untill
+        /// than we show something else to user.
+        home: FutureBuilder<dynamic>(
+            future: _fetchPreferences(),
+            builder: (context, snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.none:
+                case ConnectionState.waiting:
+                  return Center(child: CircularProgressIndicator());
+                default:
+                  if (snapshot.hasError)
+                    return Text('Error: ${snapshot.error}');
+                  else if ((snapshot.data == null ||
+                      snapshot.data.password == null))
+                    return Login();
+                  else {
+                    /// We use another [FutureBuilder] to get the data in a future to be exact
+                    /// we ask server [_fetchlogin] if the user is still valid
+                    /// untill than we show something else to user.
+                    return FutureBuilder<dynamic>(
+                      future: _fetchLogin(
+                          snapshot.data.email, snapshot.data.password),
+                      builder: (context, snapshot2) {
+                        switch (snapshot2.connectionState) {
+                          case ConnectionState.none:
+                          case ConnectionState.waiting:
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          default:
+                            if (snapshot2.hasError) {
+                              return Text('Error: ${snapshot2.error}');
+                            } else if (snapshot2.data == 0) {
+                              //Means everything correct
+                              //Connect to Socket
+                              Provider.of<StreamSocketProvider>(context,
+                                      listen: false)
+                                  .createSocketConnection(
+                                      _studentProvider.student.user.token);
+                              //Redirect to DashBoard
+                              return DashBoard();
+                            } else if (snapshot2.data == 1) {
+                              return Validate();
+                            } else if (snapshot2.data == 2) {
+                              return GetStarted();
+                            } else {
+                              //Error in Autologgin --> Login probably -1
+                              return Login();
                             }
-                          },
-                        );
-                      }
+                        }
+                      },
+                    );
                   }
-                }),
+              }
+            }),
         routes: {
           '/dashboard': (context) => DashBoard(),
           '/login': (context) => Login(),
