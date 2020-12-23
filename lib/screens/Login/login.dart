@@ -1,26 +1,23 @@
-import 'package:auth_buttons/auth_buttons.dart';
+import 'package:another_flushbar/flushbar.dart';
+import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/models/user.dart';
-import 'package:meet_your_mates/api/services/student_service.dart';
-import 'package:provider/provider.dart';
-import 'package:another_flushbar/flushbar.dart';
-import 'package:flutter/material.dart';
-//Services
-import 'package:meet_your_mates/api/services/auth_service.dart';
-//Utilities
-
-//Constants
-import 'package:meet_your_mates/constants.dart';
-//Screens
-import 'package:meet_your_mates/screens/Login/background.dart';
-import 'package:meet_your_mates/api/util/validators.dart';
 //Models
 import 'package:meet_your_mates/api/models/userDetails.dart';
+//Services
+import 'package:meet_your_mates/api/services/auth_service.dart';
+import 'package:meet_your_mates/api/services/student_service.dart';
+import 'package:meet_your_mates/api/util/validators.dart';
 //Components
 import 'package:meet_your_mates/components/already_have_an_account_acheck.dart';
 import 'package:meet_your_mates/components/rounded_button.dart';
 import 'package:meet_your_mates/components/text_field_container.dart';
+//Constants
+import 'package:meet_your_mates/constants.dart';
+//Screens
+import 'package:meet_your_mates/screens/Login/background.dart';
+import 'package:provider/provider.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -256,10 +253,7 @@ class _LoginState extends State<Login> {
                   ),
                   auth.loggedInStatus == Status.Authenticating
                       ? loading
-                      : RoundedButton(
-                          text: "LOGIN",
-                          press: doLogin
-                        ),
+                      : RoundedButton(text: "LOGIN", press: doLogin),
                   SizedBox(height: size.height * 0.03),
                   AlreadyHaveAnAccountCheck(
                     press: () {
