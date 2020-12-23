@@ -40,8 +40,7 @@ class Student {
         trophies: List<Trophy>.from(
             responseData["trophies"].map((x) => Trophy.fromJson(x))),
         insignias: List<Insignia>.from(
-            responseData["insignias"].map((x) => Insignia.fromJson(x)))
-        );
+            responseData["insignias"].map((x) => Insignia.fromJson(x))));
 
     //trophies: (responseData['trophies']),
     //insignias: (responseData['insignias']));
