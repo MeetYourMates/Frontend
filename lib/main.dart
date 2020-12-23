@@ -8,6 +8,7 @@ import 'package:meet_your_mates/screens/Login/login.dart';
 import 'package:meet_your_mates/screens/Register/register.dart';
 import 'package:meet_your_mates/screens/Dashboard/dashboard.dart';
 import 'package:meet_your_mates/screens/Validate/validate.dart';
+import 'package:meet_your_mates/screens/SearchMates/searchMates.dart';
 import 'package:meet_your_mates/screens/Profile/profile.dart';
 import 'package:meet_your_mates/screens/Profile/edit_profile.dart';
 //Services
@@ -146,6 +147,7 @@ class MyApp extends StatelessWidget {
           '/register': (context) => Register(),
           '/validate': (context) => Validate(),
           '/getStarted': (context) => GetStarted(),
+          '/searchMates': (context) => SearchMates(),
           '/profile': (context) => Profile(),
           '/editProfile': (context) => EditProfile(),
         });
