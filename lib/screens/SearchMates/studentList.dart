@@ -18,8 +18,9 @@ class StudentList extends StatelessWidget {
         User tmpUser = _queryResult[index].user;
         return Card(
           child: ListTile(
-              leading: Image.network(
-                  tmpUser.picture != null ? tmpUser.picture : "No Image"),
+              leading: tmpUser.picture != null
+                  ? Image.network(tmpUser.picture)
+                  : Text("No Picture"),
               title: Text(tmpUser.name != null ? tmpUser.name : "No name"),
               subtitle: Text(_queryResult[index].degree != null
                   ? _queryResult[index].degree

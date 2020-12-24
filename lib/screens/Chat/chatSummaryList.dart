@@ -52,10 +52,11 @@ class _ChatSummaryListState extends State<ChatSummaryList> {
                   mostRecentMessage: currUsr.messagesList.isNotEmpty
                       ? currUsr.messagesList.last.text
                       : "",
-                  name: currUsr.name,
+                  name: currUsr.name != null ? currUsr.name : "No Name",
                   unreadMessagesCount: 1,
                   viewIndex: index,
-                  avatar: currUsr.picture,
+                  avatar:
+                      currUsr.picture != null ? currUsr.picture : "No picture",
                 );
               },
             ),

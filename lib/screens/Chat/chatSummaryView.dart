@@ -45,14 +45,14 @@ class ChatSummaryView extends StatelessWidget {
                   size: 64.0,
                 ),
           title: Text(
-            name,
+            name != null ? name : "No Name",
             style: TextStyle(
               fontSize: 18.0,
               color: Colors.black,
             ),
           ),
           subtitle: Text(
-            mostRecentMessage,
+            mostRecentMessage != null ? mostRecentMessage : "No Recent Message",
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontSize: 16.0,
