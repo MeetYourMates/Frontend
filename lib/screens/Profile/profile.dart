@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:meet_your_mates/api/services/stream_socket_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/api/util/shared_preference.dart';
 import 'package:meet_your_mates/screens/Insignias/background.dart';
@@ -340,6 +341,8 @@ class LogOutCard extends StatelessWidget {
                 onPressed: () {
                   UserPreferences().removeUser();
                   authProvider.signOutGoogle();
+                  Provider.of<StreamSocketProvider>(context, listen: false)
+                      .disconnectSocket();
                   Navigator.pushReplacementNamed(context, '/login');
                 },
                 icon: Icon(

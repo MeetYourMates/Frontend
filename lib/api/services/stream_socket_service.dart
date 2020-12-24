@@ -68,6 +68,13 @@ class StreamSocketProvider with ChangeNotifier {
     }
   }
 
+  void disconnectSocket() {
+    if (socket != null) {
+      socket.disconnect();
+      socket.dispose();
+    }
+  }
+
   /// ================================================================================================
   /// *                                  EVENTS FUNCTIONS
   ///================================================================================================**/
