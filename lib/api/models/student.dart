@@ -22,17 +22,27 @@ class Student {
       this.ratings});
 
   factory Student.fromJson(Map<String, dynamic> responseData) {
+    //Check all of the lists if not null than assign  temp var to hold the maps
+    List<Rating> tmp1 = responseData["ratings"] != null
+        ? List<Rating>.from(
+            responseData["ratings"].map((x) => Rating.fromJson(x)))
+        : null;
+    List<Trophy> tmp2 = responseData["trophies"] != null
+        ? List<Trophy>.from(
+            responseData["trophies"].map((x) => Trophy.fromJson(x)))
+        : null;
+    List<Insignia> tmp3 = responseData["ratings"] != null
+        ? List<Insignia>.from(
+            responseData["insignias"].map((x) => Insignia.fromJson(x)))
+        : null;
     return new Student(
         id: responseData['_id'],
         university: responseData['university'],
         degree: responseData['degree'],
         user: User.fromJson(responseData['user']),
-        ratings: List<Rating>.from(
-            responseData["ratings"].map((x) => Rating.fromJson(x))),
-        trophies: List<Trophy>.from(
-            responseData["trophies"].map((x) => Trophy.fromJson(x))),
-        insignias: List<Insignia>.from(
-            responseData["insignias"].map((x) => Insignia.fromJson(x))));
+        ratings: tmp1,
+        trophies: tmp2,
+        insignias: tmp3);
 
     //trophies: (responseData['trophies']),
     //insignias: (responseData['insignias']));

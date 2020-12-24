@@ -25,7 +25,9 @@ class StudentProvider with ChangeNotifier {
 
   void setStudentWithUser(Student student) {
     if (student != null) {
+      String pass = _student.user.password;
       _student = student;
+      _student.user.password = pass;
       notifyListeners();
     }
   }

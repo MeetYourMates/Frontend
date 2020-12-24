@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:meet_your_mates/api/models/chat_user.dart';
 import 'package:meet_your_mates/api/models/send_menu_items.dart';
+import 'package:meet_your_mates/api/models/user.dart';
 import 'package:meet_your_mates/api/services/stream_socket_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/constants.dart';
@@ -113,7 +113,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     var textValue = "";
     StreamSocketProvider socketProvider =
         Provider.of<StreamSocketProvider>(context, listen: true);
-    ChatUser chatUser = socketProvider.users.usersList[widget.selectedIndex];
+    User chatUser = socketProvider.users.usersList[widget.selectedIndex];
     // ignore: unused_local_variable
     StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
     Future<void> sendMessage(String value) async {

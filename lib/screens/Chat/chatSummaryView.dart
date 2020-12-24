@@ -14,7 +14,7 @@ class ChatSummaryView extends StatelessWidget {
     @required this.name,
     @required this.messageDate,
     @required this.mostRecentMessage,
-    this.avatar,
+    @required this.avatar,
     @required this.unreadMessagesCount,
     @required this.viewIndex,
   }) : super(key: key);

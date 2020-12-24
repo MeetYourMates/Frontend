@@ -1,3 +1,5 @@
+import 'package:meet_your_mates/api/models/message.dart';
+
 class User {
   String id;
   String email;
@@ -5,6 +7,7 @@ class User {
   String picture;
   String name;
   String token;
+  List<Message> messagesList = <Message>[];
   User(
       {this.id,
       this.email,

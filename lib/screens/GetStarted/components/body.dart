@@ -115,7 +115,8 @@ class _BodyState extends State<Body> {
 
   @override
   Widget build(BuildContext context) {
-    StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
+    StudentProvider _studentProvider =
+        Provider.of<StudentProvider>(context, listen: false);
     StartProvider _start = Provider.of<StartProvider>(context, listen: true);
     Future _fetchUniversities() async {
       return _memoizerUniversities.runOnce(() async {
@@ -167,9 +168,13 @@ class _BodyState extends State<Body> {
       //For and Not ForEach because stupid dart makes the await call useless
       //and we loose syncronicity between the result and the code execution
       for (int i = 0; i < _subjects.length; i++) {
-        Map<String, dynamic> response =
-            await _start.start(_subjects[i], _studentProvider.student.id);
+        Map<String, dynamic> response = await _start.start(
+            _subjects[i], _studentProvider.student.id, _university, _degree);
         enrollStatus = enrollStatus || response['status'];
+        if (response['status']) {
+          //Correctly Enrolled
+          _studentProvider.setStudentWithUser(response['student']);
+        }
         logger.d("Subjects Do Start stateBool: " + enrollStatus.toString());
         logger.d("Enrolling in Selected Subject $i");
       }

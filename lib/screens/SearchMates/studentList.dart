@@ -10,7 +10,6 @@ class StudentList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String _imageUrl;
     return ListView.builder(
       itemCount: _queryResult.length,
       shrinkWrap: true,

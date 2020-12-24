@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/degreeWithList.dart';
+import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/models/university.dart';
 import 'package:meet_your_mates/api/util/app_url.dart';
 
@@ -129,14 +130,22 @@ class StartProvider with ChangeNotifier {
     return result;
   }
 
-  Future<Map<String, dynamic>> start(String subjectId, String studentId) async {
+  Future<Map<String, dynamic>> start(String subjectId, String studentId,
+      String university, String degree) async {
     var result;
     Response response;
     _enrolledStatus = Status.GettingEnrolled;
     notifyListeners();
 
-    String json =
-        '{"subjectId":"' + subjectId + '","studentId":"' + studentId + '"}';
+    String json = '{"subjectId":"' +
+        subjectId +
+        '","studentId":"' +
+        studentId +
+        '","university":"' +
+        university +
+        '","degree":"' +
+        degree +
+        '"}';
     try {
       response = await post(AppUrl.addsubjects,
           body: json, headers: {'Content-Type': 'application/json'});
@@ -150,7 +159,11 @@ class StartProvider with ChangeNotifier {
       if (response.statusCode == 201) {
         _enrolledStatus = Status.Enrolled;
         notifyListeners();
-        result = {'status': true, 'message': 'Successful'};
+        result = {
+          'status': true,
+          'message': 'Successful',
+          'student': Student.fromJson(jsonDecode(response.body))
+        };
       } else {
         if (response.statusCode == 409) {
           _enrolledStatus = Status.AlreadyEnrolled;

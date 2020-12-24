@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:meet_your_mates/api/models/user.dart';
 import 'package:meet_your_mates/api/models/users.dart';
 import 'package:meet_your_mates/api/services/stream_socket_service.dart';
 //Services
@@ -45,12 +46,16 @@ class _ChatSummaryListState extends State<ChatSummaryList> {
               itemCount:
                   usersList.usersList != null ? usersList.usersList.length : 0,
               itemBuilder: (context, index) {
+                User currUsr = usersList.usersList[index];
                 return ChatSummaryView(
                   messageDate: '18:13',
-                  mostRecentMessage: 'Hailo!',
-                  name: usersList.usersList[index].email,
+                  mostRecentMessage: currUsr.messagesList.isNotEmpty
+                      ? currUsr.messagesList.last.text
+                      : "",
+                  name: currUsr.name,
                   unreadMessagesCount: 1,
                   viewIndex: index,
+                  avatar: currUsr.picture,
                 );
               },
             ),
