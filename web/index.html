@@ -16,6 +16,7 @@
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="A new Flutter project.">
+  <meta name="google-signin-client_id" content="486960102534-prcol7e09vs65cdej3slslcctrhktnqd.apps.googleusercontent.com">
 
   <!-- iOS meta tags & icons -->
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -30,6 +31,21 @@
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
+  <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js"></script>
+  <script>
+    var firebaseConfig = {
+    apiKey: "AIzaSyAfqNWjw87RiuXlnygrxhfY9QOxj-kc330",
+    authDomain: "meetyourmatesin.firebaseapp.com",
+    projectId: "meetyourmatesin",
+    storageBucket: "meetyourmatesin.appspot.com",
+    messagingSenderId: "486960102534",
+    appId: "1:486960102534:web:e6607cb8700981504ae507",
+    measurementId: "G-L4YF55LNKG"
+    };
+    
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+  </script>
   <!-- This script installs service_worker.js to provide PWA functionality to
        application. For more information, see:
        https://developers.google.com/web/fundamentals/primers/service-workers -->

@@ -5,7 +5,7 @@ import 'package:meet_your_mates/api/services/auth_service.dart';
 //import 'package:meet_your_mates/api/util/shared_preference.dart';
 import 'package:meet_your_mates/api/util/validators.dart';
 //Components
-import 'package:meet_your_mates/components/already_have_an_account_acheck.dart';
+import 'package:meet_your_mates/components/already_have_an_account_check.dart';
 import 'package:meet_your_mates/components/or_divider.dart';
 import 'package:meet_your_mates/components/rounded_button.dart';
 import 'package:meet_your_mates/components/social_icon.dart';

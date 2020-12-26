@@ -9,9 +9,8 @@ import 'package:meet_your_mates/api/models/userDetails.dart';
 //Services
 import 'package:meet_your_mates/api/services/auth_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
-import 'package:meet_your_mates/api/util/validators.dart';
 //Components
-import 'package:meet_your_mates/components/already_have_an_account_acheck.dart';
+import 'package:meet_your_mates/components/already_have_an_account_check.dart';
 import 'package:meet_your_mates/components/rounded_button.dart';
 import 'package:meet_your_mates/components/text_field_container.dart';
 //Constants
@@ -19,6 +18,7 @@ import 'package:meet_your_mates/constants.dart';
 //Screens
 import 'package:meet_your_mates/screens/Login/background.dart';
 import 'package:provider/provider.dart';
+import 'package:reactive_forms/reactive_forms.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -26,67 +26,76 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  final formKey = new GlobalKey<FormState>();
+  //final formKey = new GlobalKey<FormState>();
   var logger = Logger();
+
+  /// [Reactive Form]
+  final form = FormGroup({
+    'password': FormControl(validators: [
+      Validators.required,
+      Validators.minLength(3),
+    ]),
+    'email': FormControl(validators: [
+      Validators.required,
+      Validators.email,
+    ]),
+  });
   String _username, _password;
 
   @override
   Widget build(BuildContext context) {
-    AuthProvider auth = Provider.of<AuthProvider>(context);
-    var loading = Row(
+    /// [AuthProvider] Single Dependency Injection of Authentication
+    AuthProvider auth = Provider.of<AuthProvider>(context, listen: true);
+
+    /// [loading] Widget of Loading Indicator
+    final loading = Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        CircularProgressIndicator(),
-        Text(" Authenticating ... Please wait")
-      ],
+      children: <Widget>[CircularProgressIndicator(), Text(" Authenticating ... Please wait")],
     );
 
-    final forgotLabel = Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        FlatButton(
-          padding: EdgeInsets.all(0.0),
-          child: Text("Forgot password?",
-              style:
-                  TextStyle(color: kPrimaryColor, fontWeight: FontWeight.w500)),
-          onPressed: () {
-            //Future
-            Navigator.pushReplacementNamed(context, '/passwordRecovery');
-          },
-        )
-      ],
-    );
+    /// [forgotLabel] Widget of forgotLabel
+    final forgotLabel = Center(
+        child: GestureDetector(
+      onTap: () {
+        //Future
+        Navigator.pushReplacementNamed(context, '/passwordRecovery');
+      },
+      child: Text(
+        "Forgot password?",
+        style: TextStyle(
+          color: kPrimaryColor,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    ));
 
-    var doLogin = () {
-      final form = formKey.currentState;
+    final doLogin = () {
+      //final form = formKey.currentState;
 
-      if (form.validate()) {
-        form.save();
+      if (form.valid) {
+        //form.save();
+        _username = this.form.control('email').value;
+        _password = this.form.control('password').value;
         logger.d("Do Login Pressed user:$_username pass:$_password");
-        final Future<Map<String, dynamic>> successfulMessage =
-            auth.login(_username, _password);
+        final Future<Map<String, dynamic>> successfulMessage = auth.login(_username, _password);
         //Callback to message recieved after login auth
         successfulMessage.then((response) {
           if (response['status'] == 0) {
             //Login Correct
             Student student = response['student'];
-            Provider.of<StudentProvider>(context, listen: false)
-                .setStudentWithUser(student);
+            Provider.of<StudentProvider>(context, listen: false).setStudentWithUser(student);
             Navigator.pushReplacementNamed(context, '/dashboard');
             logger.d("Logged In Succesfull!");
           } else if (response['status'] == 1) {
             //Not Validated
             Student student = response['student'];
-            Provider.of<StudentProvider>(context, listen: false)
-                .setStudentWithUser(student);
+            Provider.of<StudentProvider>(context, listen: false).setStudentWithUser(student);
             Navigator.pushReplacementNamed(context, '/validate');
             logger.d("Logged In Not Validated!");
           } else if (response['status'] == 2) {
             //Let's Get Started not completed
             Student student = response['student'];
-            Provider.of<StudentProvider>(context, listen: false)
-                .setStudentWithUser(student);
+            Provider.of<StudentProvider>(context, listen: false).setStudentWithUser(student);
             Navigator.pushReplacementNamed(context, '/getStarted');
             logger.d("Logged In Let's Get Started not completed!");
           } else {
@@ -127,15 +136,13 @@ class _LoginState extends State<Login> {
             if (response2['status'] == 0) {
               //Login Correct
               Student student = response2['student'];
-              Provider.of<StudentProvider>(context, listen: false)
-                  .setStudentWithUser(student);
+              Provider.of<StudentProvider>(context, listen: false).setStudentWithUser(student);
               Navigator.pushReplacementNamed(context, '/dashboard');
               logger.d("Logged In Succesfull!");
             } else if (response2['status'] == 2) {
               //Let's Get Started not completed
               Student student = response2['student'];
-              Provider.of<StudentProvider>(context, listen: false)
-                  .setStudentWithUser(student);
+              Provider.of<StudentProvider>(context, listen: false).setStudentWithUser(student);
               Navigator.pushReplacementNamed(context, '/getStarted');
               logger.d("Logged In Let's Get Started not completed!");
             } else {
@@ -157,15 +164,13 @@ class _LoginState extends State<Login> {
             if (response2['status'] == 0) {
               //Login Correct
               Student student = response2['student'];
-              Provider.of<StudentProvider>(context, listen: false)
-                  .setStudentWithUser(student);
+              Provider.of<StudentProvider>(context, listen: false).setStudentWithUser(student);
               Navigator.pushReplacementNamed(context, '/dashboard');
               logger.d("Logged In Succesfull!");
             } else if (response2['status'] == 2) {
               //Let's Get Started not completed
               Student student = response2['student'];
-              Provider.of<StudentProvider>(context, listen: false)
-                  .setStudentWithUser(student);
+              Provider.of<StudentProvider>(context, listen: false).setStudentWithUser(student);
               Navigator.pushReplacementNamed(context, '/getStarted');
               logger.d("Logged In Let's Get Started not completed!");
             } else {
@@ -188,84 +193,126 @@ class _LoginState extends State<Login> {
     };
 
     Widget _iconGoogle() {
-      return Column(children: <Widget>[
-        GoogleAuthButton(
-          onPressed: () => auth
-              .signInGoogle()
-              .then((UserDetails user) => signInGoogleCorrectly(user))
-              .catchError((e) => logger.e(e)),
-          darkMode: false, // default: false
-        ),
-      ]);
+      return Column(
+        children: <Widget>[
+          GoogleAuthButton(
+            onPressed: () => auth
+                .signInGoogle()
+                .then((UserDetails user) => signInGoogleCorrectly(user))
+                .catchError((e) => logger.e(e)),
+            darkMode: false, // default: false
+          ),
+        ],
+      );
     }
 
 /******************************************************************/
-
-    Size size = MediaQuery.of(context).size;
-    return SafeArea(
-      child: Scaffold(
-        body: Background(
-          child: SingleChildScrollView(
-            child: Form(
-              key: formKey,
+//* RESPONSIVE LOGIN...
+    Size size = MediaQuery.of(context).size * 0.95;
+    return Scaffold(
+      body: SafeArea(
+        child: Background(
+          child: Container(
+            alignment: Alignment.center,
+            constraints: BoxConstraints.tightForFinite(width: 400, height: size.height),
+            child: ReactiveForm(
+              formGroup: this.form,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Text(
-                    "LOGIN",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                  SizedBox(
+                    width: size.width,
+                    height: size.height * 0.4,
+                    child: Image.asset(
+                      "assets/icons/login.png",
+                      //width: size.width * 0.35,
+                    ),
                   ),
-                  SizedBox(height: size.height * 0.03),
-                  Image.asset(
-                    "assets/icons/login.png",
-                    width: size.width * 0.35,
-                  ),
-                  SizedBox(height: size.height * 0.03),
-                  TextFieldContainer(
-                    child: TextFormField(
-                      autofocus: false,
-                      validator: validateEmail,
-                      onSaved: (value) => _username = value,
-                      cursorColor: kPrimaryColor,
-                      decoration: InputDecoration(
-                        icon: Icon(
-                          Icons.person,
-                          color: kPrimaryColor,
+                  SizedBox(
+                    width: size.width,
+                    height: size.height * 0.12,
+                    child: TextFieldContainer(
+                      child: ReactiveTextField(
+                        formControlName: 'email',
+                        autofocus: false,
+                        cursorColor: kPrimaryColor,
+                        decoration: InputDecoration(
+                          icon: Icon(
+                            Icons.person,
+                            color: kPrimaryColor,
+                          ),
+                          hintText: "email",
+                          border: InputBorder.none,
                         ),
-                        hintText: "email/username",
-                        border: InputBorder.none,
+                        validationMessages: (control) => {
+                          'required': 'The email must not be empty',
+                          'email': 'The email value must be a valid email'
+                        },
                       ),
                     ),
                   ),
-                  TextFieldContainer(
-                    child: TextFormField(
-                      autofocus: false,
-                      obscureText: true,
-                      validator: (value) =>
-                          value.isEmpty ? "Please enter password" : null,
-                      onSaved: (value) => _password = value,
-                      cursorColor: kPrimaryColor,
-                      decoration: InputDecoration(
-                        icon: Icon(
-                          Icons.person,
-                          color: kPrimaryColor,
+                  SizedBox(
+                    width: size.width,
+                    height: size.height * 0.12,
+                    child: TextFieldContainer(
+                      child: ReactiveTextField(
+                        formControlName: 'password',
+                        obscureText: true,
+                        autofocus: false,
+                        cursorColor: kPrimaryColor,
+                        decoration: InputDecoration(
+                          icon: Icon(
+                            Icons.person,
+                            color: kPrimaryColor,
+                          ),
+                          hintText: "password",
+                          border: InputBorder.none,
                         ),
-                        hintText: "password",
-                        border: InputBorder.none,
+                        validationMessages: (control) => {
+                          'required': 'The password must not be empty',
+                          'minLenght': 'The password must have at least 8 characters'
+                        },
                       ),
                     ),
                   ),
-                  auth.loggedInStatus == Status.Authenticating
-                      ? loading
-                      : RoundedButton(text: "LOGIN", press: doLogin),
-                  SizedBox(height: size.height * 0.03),
-                  AlreadyHaveAnAccountCheck(
-                    press: () {
-                      Navigator.pushReplacementNamed(context, '/register');
-                    },
+                  SizedBox(
+                    width: size.width,
+                    height: size.height * 0.1,
+                    child: auth.loggedInStatus == Status.Authenticating
+                        ? loading
+                        : RoundedButton(text: "LOGIN", press: doLogin),
                   ),
-                  forgotLabel,
-                  _iconGoogle(),
+                  SizedBox(height: 6, width: size.width),
+                  SizedBox(
+                    width: size.width,
+                    height: size.height * 0.03,
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: AlreadyHaveAnAccountCheck(
+                        press: () {
+                          Navigator.pushReplacementNamed(context, '/register');
+                        },
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 6, width: size.width),
+                  SizedBox(
+                    width: size.width,
+                    height: size.height * 0.03,
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: forgotLabel,
+                    ),
+                  ),
+                  SizedBox(height: 6, width: size.width),
+                  SizedBox(
+                    width: size.width,
+                    height: size.height * 0.07,
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: _iconGoogle(),
+                    ),
+                  ),
                 ],
               ),
             ),
