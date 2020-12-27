@@ -33,7 +33,7 @@ class _DirectOptionsState extends State<DirectOptions> {
   int _index = 0;
   ValueNotifier<String> selectedItemTitle;
   //String selectedItemTitle = "Text";
-  var logger = Logger(level: Level.debug);
+  var logger = Logger(level: Level.error);
   @override
   void initState() {
     super.initState();

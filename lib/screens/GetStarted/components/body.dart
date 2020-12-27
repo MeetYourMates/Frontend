@@ -189,22 +189,26 @@ class _BodyState extends State<Body> {
         EasyLoading.show(
           status: 'loading...',
           maskType: EasyLoadingMaskType.black,
-        );
-        //Execute Enrollment
-        final bool enrollStatus = await enrollStudents();
-        logger.d("enrollStudents Status: " + enrollStatus.toString());
-        if (enrollStatus) {
-          EasyLoading.dismiss().then((value) => {
-                logger.d("Succesfully Enrolled and Launched Dashboard"),
-                Navigator.pushReplacementNamed(context, '/dashboard'),
+        ).then((value) {
+          //Execute Enrollment
+          //final bool enrollStatus = await enrollStudents();
+          enrollStudents().then((enrollStatus) {
+            //Enroll
+            logger.d("enrollStudents Status: " + enrollStatus.toString());
+            if (enrollStatus) {
+              EasyLoading.dismiss().then((value) {
+                logger.d("Succesfully Enrolled and Launched Dashboard");
+                Navigator.pushReplacementNamed(context, '/dashboard');
               });
-        } else {
-          //Failed
-          EasyLoading.dismiss().then((value) => {
-                logger.d("Failed Enrollment in all Subjects!"),
-                doFlushbar("Failed Enrollment in all Subjects!"),
+            } else {
+              //Failed
+              EasyLoading.dismiss().then((value) {
+                logger.d("Failed Enrollment in all Subjects!");
+                doFlushbar("Failed Enrollment in all Subjects!");
               });
-        }
+            }
+          });
+        });
       } else {
         doFlushbar("You must choose your universtity, faculty, degree and subjects first...");
       }
