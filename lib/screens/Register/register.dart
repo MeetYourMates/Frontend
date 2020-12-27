@@ -112,7 +112,7 @@ class _RegisterState extends State<Register> {
               physics: NeverScrollableScrollPhysics(),
               child: Container(
                 alignment: Alignment.center,
-                constraints: BoxConstraints.tightForFinite(width: 400, height: size.height * 1),
+                constraints: BoxConstraints.tightForFinite(width: 400, height: size.height * 0.95),
                 child: ReactiveForm(
                   formGroup: this.form,
                   child: Column(
@@ -120,19 +120,7 @@ class _RegisterState extends State<Register> {
                     children: <Widget>[
                       SizedBox(
                         width: size.width,
-                        height: size.height * 0.1,
-                        child: FittedBox(
-                          fit: BoxFit.contain,
-                          child: Text(
-                            "Register",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 24, color: kPrimaryColor),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: size.width,
-                        height: size.height * 0.27,
+                        height: size.height * 0.32,
                         child: Image.asset(
                           "assets/icons/signup.png",
                           //width: size.width * 0.35,

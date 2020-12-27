@@ -1,5 +1,6 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/services/auth_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
@@ -51,31 +52,39 @@ class _ChangePasswordState extends State<ChangePassword> {
 
     void _accept() {
       if (form.valid) {
-        String email = Provider.of<StudentProvider>(context, listen: false).student.user.email;
-        String code = this.form.control('code').value;
-        String password = this.form.control('password').value;
-        //We need to send the server the email and than see
-        final Future<Map<String, dynamic>> successfulMessage =
-            auth.changePassword(code, email, password);
-        //Callback to message recieved after login auth
-        successfulMessage.then(
-          (response) {
-            //If the email does exist status = true
-            if (response['status']) {
-              // Send the User to Login
-              Navigator.pushReplacementNamed(context, '/login');
-            } else {
-              //If the email doesn't exist status = false
-              //flushbar
-              logger.d("Incorrect Recovery Code");
-              Flushbar(
-                title: "Failed changing password",
-                message: "Incorrect recovery code or No connection!",
-                duration: Duration(seconds: 3),
-              ).show(context);
-            }
-          },
-        );
+        EasyLoading.show(
+          status: 'loading...',
+          maskType: EasyLoadingMaskType.black,
+        ).then((value) {
+          //
+          String email = Provider.of<StudentProvider>(context, listen: false).student.user.email;
+          String code = this.form.control('code').value;
+          String password = this.form.control('password').value;
+          //We need to send the server the email and than see
+          final Future<Map<String, dynamic>> successfulMessage =
+              auth.changePassword(code, email, password);
+          //Callback to message recieved after login auth
+          successfulMessage.then(
+            (response) {
+              EasyLoading.dismiss().then((value) {
+                //If the email does exist status = true
+                if (response['status']) {
+                  // Send the User to Login
+                  Navigator.pushReplacementNamed(context, '/login');
+                } else {
+                  //If the email doesn't exist status = false
+                  //flushbar
+                  logger.d("Incorrect Recovery Code");
+                  Flushbar(
+                    title: "Failed changing password",
+                    message: "Incorrect recovery code or No connection!",
+                    duration: Duration(seconds: 3),
+                  ).show(context);
+                }
+              });
+            },
+          );
+        });
       } else {
         toast("Please form completly...");
       }

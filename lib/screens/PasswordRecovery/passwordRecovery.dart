@@ -1,5 +1,6 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/models/user.dart';
@@ -52,33 +53,40 @@ class _PasswordRecoveryState extends State<PasswordRecovery> {
     String email() => this.form.control('email').value;
     void sendEmail() {
       if (form.valid) {
-        //We need to send the server the email and than see
-        final Future<Map<String, dynamic>> successfulMessage = auth.recoverPassword(email());
-        //Callback to message recieved after login auth
-        successfulMessage.then(
-          (response) {
-            //If the email does exist status = true
-            if (response['status']) {
-              //Means the email is correct --> save it in student->user->email
-              Student student = new Student();
-              User usr = new User();
-              usr.email = email();
-              student.user = usr;
-              //We have the email in our student for further use in change password
-              Provider.of<StudentProvider>(context, listen: false).setStudentWithUser(student);
-              Navigator.pushReplacementNamed(context, '/changePassword');
-            } else {
-              //If the email doesn't exist status = false
-              //flushbar
-              logger.d("Email Not Sent, Email Doesn't Exist!");
-              Flushbar(
-                title: "Email Not Sent",
-                message: "User with email doesn't exist",
-                duration: Duration(seconds: 3),
-              ).show(context);
-            }
-          },
-        );
+        EasyLoading.show(
+          status: 'loading...',
+          maskType: EasyLoadingMaskType.black,
+        ).then((value) {
+          //We need to send the server the email and than see
+          final Future<Map<String, dynamic>> successfulMessage = auth.recoverPassword(email());
+          //Callback to message recieved after login auth
+          successfulMessage.then(
+            (response) {
+              EasyLoading.dismiss().then((value) {
+                //If the email does exist status = true
+                if (response['status']) {
+                  //Means the email is correct --> save it in student->user->email
+                  Student student = new Student();
+                  User usr = new User();
+                  usr.email = email();
+                  student.user = usr;
+                  //We have the email in our student for further use in change password
+                  Provider.of<StudentProvider>(context, listen: false).setStudentWithUser(student);
+                  Navigator.pushReplacementNamed(context, '/changePassword');
+                } else {
+                  //If the email doesn't exist status = false
+                  //flushbar
+                  logger.d("Email Not Sent, Email Doesn't Exist!");
+                  Flushbar(
+                    title: "Email Not Sent",
+                    message: "User with email doesn't exist",
+                    duration: Duration(seconds: 3),
+                  ).show(context);
+                }
+              });
+            },
+          );
+        });
       } else {
         toast('Email must not be empty...');
         form.markAllAsTouched();

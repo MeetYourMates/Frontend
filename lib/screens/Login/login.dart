@@ -1,6 +1,7 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:auth_buttons/auth_buttons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/models/user.dart';
@@ -74,44 +75,52 @@ class _LoginState extends State<Login> {
 
       if (form.valid) {
         //form.save();
-        _username = this.form.control('email').value;
-        _password = this.form.control('password').value;
-        logger.d("Do Login Pressed user:$_username pass:$_password");
-        final Future<Map<String, dynamic>> successfulMessage = auth.login(_username, _password);
-        //Callback to message recieved after login auth
-        successfulMessage.then((response) {
-          if (response['status'] == 0) {
-            //Login Correct
-            Student student = response['student'];
-            //Provider.of<StudentProvider>(context, listen: false).setPassword(student.user.password);
-            Provider.of<StudentProvider>(context, listen: false)
-                .setStudentWithUserWithPassword(student);
-            Navigator.pushReplacementNamed(context, '/dashboard');
-            logger.d("Logged In Succesfull!");
-          } else if (response['status'] == 1) {
-            //Not Validated
-            Student student = response['student'];
-            //Provider.of<StudentProvider>(context, listen: false).setPassword(student.user.password);
-            Provider.of<StudentProvider>(context, listen: false)
-                .setStudentWithUserWithPassword(student);
-            Navigator.pushReplacementNamed(context, '/validate');
-            logger.d("Logged In Not Validated!");
-          } else if (response['status'] == 2) {
-            //Let's Get Started not completed
-            Student student = response['student'];
-            Provider.of<StudentProvider>(context, listen: false)
-                .setStudentWithUserWithPassword(student);
-            Navigator.pushReplacementNamed(context, '/getStarted');
-            logger.d("Logged In Let's Get Started not completed!");
-          } else {
-            logger.d("Logged In Failed: " + response['message'].toString());
+        EasyLoading.show(
+          status: 'loading...',
+          maskType: EasyLoadingMaskType.black,
+        ).then((value) {
+          //
+          _username = this.form.control('email').value;
+          _password = this.form.control('password').value;
+          logger.d("Do Login Pressed user:$_username pass:$_password");
+          final Future<Map<String, dynamic>> successfulMessage = auth.login(_username, _password);
+          //Callback to message recieved after login auth
+          successfulMessage.then((response) {
+            EasyLoading.dismiss().then((value) {
+              if (response['status'] == 0) {
+                //Login Correct
+                Student student = response['student'];
+                //Provider.of<StudentProvider>(context, listen: false).setPassword(student.user.password);
+                Provider.of<StudentProvider>(context, listen: false)
+                    .setStudentWithUserWithPassword(student);
+                Navigator.pushReplacementNamed(context, '/dashboard');
+                logger.d("Logged In Succesfull!");
+              } else if (response['status'] == 1) {
+                //Not Validated
+                Student student = response['student'];
+                //Provider.of<StudentProvider>(context, listen: false).setPassword(student.user.password);
+                Provider.of<StudentProvider>(context, listen: false)
+                    .setStudentWithUserWithPassword(student);
+                Navigator.pushReplacementNamed(context, '/validate');
+                logger.d("Logged In Not Validated!");
+              } else if (response['status'] == 2) {
+                //Let's Get Started not completed
+                Student student = response['student'];
+                Provider.of<StudentProvider>(context, listen: false)
+                    .setStudentWithUserWithPassword(student);
+                Navigator.pushReplacementNamed(context, '/getStarted');
+                logger.d("Logged In Let's Get Started not completed!");
+              } else {
+                logger.d("Logged In Failed: " + response['message'].toString());
 
-            Flushbar(
-              title: "Failed Login",
-              message: response['message'].toString(),
-              duration: Duration(seconds: 3),
-            ).show(context);
-          }
+                Flushbar(
+                  title: "Failed Login",
+                  message: response['message'].toString(),
+                  duration: Duration(seconds: 3),
+                ).show(context);
+              }
+            });
+          });
         });
       } else {
         logger.w("form is invalid");
@@ -222,7 +231,7 @@ class _LoginState extends State<Login> {
               physics: NeverScrollableScrollPhysics(),
               child: Container(
                 alignment: Alignment.center,
-                constraints: BoxConstraints.tightForFinite(width: 400, height: size.height),
+                constraints: BoxConstraints.tightForFinite(width: 400, height: size.height * 0.92),
                 child: ReactiveForm(
                   formGroup: this.form,
                   child: Column(
@@ -322,7 +331,7 @@ class _LoginState extends State<Login> {
                       ),
                       SizedBox(
                         width: size.width,
-                        height: size.height * 0.07,
+                        height: size.height * 0.08,
                         child: FittedBox(
                           fit: BoxFit.contain,
                           child: _iconGoogle(),
