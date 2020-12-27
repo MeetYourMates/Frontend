@@ -4,6 +4,7 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:async/async.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/universities.dart';
 import 'package:meet_your_mates/api/services/start_service.dart';
@@ -24,7 +25,9 @@ class Body extends StatefulWidget {
   _BodyState createState() => _BodyState();
 }
 
-//*******************************KRUNAL**************************************/
+/// -----------------------------------------------------------------------------------------------------------------------
+///*                                   GET STARTED LOGIC BODY!
+///-----------------------------------------------------------------------------------------------------------------------**/
 class _BodyState extends State<Body> {
   /// [logger] to logg all of the logs in console prettily!
   var logger = Logger(level: Level.error);
@@ -32,9 +35,12 @@ class _BodyState extends State<Body> {
   /// [_memoizerUniversities] to recieve all of the university from server just one
   /// all of the other runs it just gets data from local ram.
   final AsyncMemoizer _memoizerUniversities = AsyncMemoizer();
+
+  ///[_university] and [_faculty] and [_degree] are used, when a choosen item is changed.
+  ///it is saved here, for easier conditional chekcing if the next widget is hidden or shown, check down below!
   String _university = "", _faculty = "", _degree = "";
 
-  /// [ValueNotifie] Value Notifier with Initial Values which only rebuilds the
+  /// [ValueNotifier] Value Notifier with Initial Values which only rebuilds the
   /// widgets it is used
   //ValueNotifier<List<String>> universityNames = ValueNotifier(["Select your University:"]);
   ValueNotifier<List<String>> facultyNames = ValueNotifier(["Select your Faculty:"]);
@@ -81,10 +87,13 @@ class _BodyState extends State<Body> {
       });
     }
 
-    ///------------------------------------------------------------------------------------------------
-    ///!                         lOADING PROGRESS INDICATOR WIDGET
-    ///------------------------------------------------------------------------------------------------**/
-    var loading = Row(
+    /*----------------------------------------------
+     **              loading
+     *? Builds the loading widget?
+     *@param none
+     *@return Row
+     *---------------------------------------------**/
+    Row loading = Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         CircularProgressIndicator(),
@@ -92,10 +101,13 @@ class _BodyState extends State<Body> {
       ],
     );
 
-    ///------------------------------------------------------------------------------------------------
-    ///!                              FLUSHBAR MESSAGE
-    ///------------------------------------------------------------------------------------------------**/
-    var doFlushbar = (String message) {
+    /*----------------------------------------------
+     **              doFlushbar
+     *? Shows Flusbar with a custom message?
+     *@param message String
+     *@return null
+     *---------------------------------------------**/
+    Null Function(String message) doFlushbar = (String message) {
       Flushbar(
         title: "Oops!",
         message: message,
@@ -103,30 +115,39 @@ class _BodyState extends State<Body> {
       ).show(context);
     };
 
-    ///------------------------------------------------------------------------------------------------
-    ///!                             Loads Subject from Server when selected a Degree
-    ///------------------------------------------------------------------------------------------------**/
-    var loadchoicesSubjects = (String degreeId) {
+    /*----------------------------------------------
+     **              loadchoicesSubjects
+     *?  When a user has selected a degree, this loads the subjects of this degree from server?
+     *@param degreeId String
+     *@return null
+     *---------------------------------------------**/
+    Null Function(String degreeId) loadchoicesSubjects = (String degreeId) {
       final Future<Map<String, dynamic>> successfulMessage = _start.getSubjectData(degreeId);
       //Callback to message recieved after login auth
       successfulMessage.then((response) {
         if (response['status']) {
           _choicesSubjects.value.clear();
           _choicesSubjects.value = response['subjects'];
-          logger.d("_choicesSubjects" + _choicesSubjects.value.toString());
+          EasyLoading.dismiss()
+              .then((value) => {logger.d("_choicesSubjects" + _choicesSubjects.value.toString())});
         } else {
-          Flushbar(
-            title: "Failed",
-            message: response['message'].toString(),
-            duration: Duration(seconds: 3),
-          ).show(context);
+          EasyLoading.dismiss().then((value) => {
+                Flushbar(
+                  title: "Failed",
+                  message: response['message'].toString(),
+                  duration: Duration(seconds: 3),
+                ).show(context),
+              });
         }
       });
     };
 
-    ///------------------------------------------------------------------------------------------------
-    ///!                              ENROLLS STUDENT
-    ///------------------------------------------------------------------------------------------------**/
+    /*----------------------------------------------
+     **              enrollStudent
+     *?  Asynchronous function, which is only called by the do start function, when all of the choosen fields are valid
+     *@param none
+     *@return status bool
+     *---------------------------------------------**/
     Future<bool> enrollStudents() async {
       bool enrollStatus = false;
 
@@ -146,9 +167,12 @@ class _BodyState extends State<Body> {
       return enrollStatus;
     }
 
-    ///------------------------------------------------------------------------------------------------
-    ///!                              Start Button Event Handler
-    ///------------------------------------------------------------------------------------------------**/
+    /*----------------------------------------------
+     **              do start
+     *?  When a user has selected university, faculty, degree and subjects. This Function enrolls him/her?
+     *@param none
+     *@return void
+     *---------------------------------------------**/
     void doStart() async {
       logger.d('university: $_university');
       logger.d('faculty: $_faculty');
@@ -162,22 +186,36 @@ class _BodyState extends State<Body> {
           _faculty != null &&
           _degree != null &&
           _subjects.isNotEmpty) {
+        EasyLoading.show(
+          status: 'loading...',
+          maskType: EasyLoadingMaskType.black,
+        );
         //Execute Enrollment
         final bool enrollStatus = await enrollStudents();
         logger.d("enrollStudents Status: " + enrollStatus.toString());
         if (enrollStatus) {
-          logger.d("Succesfully Enrolled and Launched Dashboard");
-          Navigator.pushReplacementNamed(context, '/dashboard');
+          EasyLoading.dismiss().then((value) => {
+                logger.d("Succesfully Enrolled and Launched Dashboard"),
+                Navigator.pushReplacementNamed(context, '/dashboard'),
+              });
         } else {
           //Failed
-          logger.d("Failed Enrollment in all Subjects!");
-          doFlushbar("Failed Enrollment in all Subjects!");
+          EasyLoading.dismiss().then((value) => {
+                logger.d("Failed Enrollment in all Subjects!"),
+                doFlushbar("Failed Enrollment in all Subjects!"),
+              });
         }
       } else {
-        doFlushbar("You must enter your universtity, faculty, degree and subjects first.");
+        doFlushbar("You must choose your universtity, faculty, degree and subjects first...");
       }
     }
 
+    /*----------------------------------------------
+     **              universityDirectOptions
+     *?  Builds the University Widget with DirectOption and Title?
+     *@param none
+     *@return widget
+     *---------------------------------------------**/
     Widget universityDirectOptions = DirectOptions(
       title: "University",
       sizeDirectSelect: new Size(widget.size.width, widget.size.height * 0.08),
@@ -194,6 +232,12 @@ class _BodyState extends State<Body> {
           {facultyNames.value = universities.getUniversityByName(_university).getFacultyNames()}
       },
     );
+    /*----------------------------------------------
+     **              facultyDirectOptions
+     *?  Builds the faculty Widget with DirectOption and Title?
+     *@param none
+     *@return widget
+     *---------------------------------------------**/
     Widget facultyDirectOption = ValueListenableBuilder(
       builder: (BuildContext context, List<String> _facultNames, Widget child) {
         // This builder will only get called when the _counter
@@ -224,7 +268,12 @@ class _BodyState extends State<Body> {
       valueListenable: facultyNames,
       child: ErrorShow(errorText: "Unexpected error occured, Please Restart the App"),
     );
-
+    /*----------------------------------------------
+     **              degreeDirectOptions
+     *?  Builds the degree Widget with DirectOption and Title?
+     *@param none
+     *@return widget
+     *---------------------------------------------**/
     Widget degreeDegreeOption = ValueListenableBuilder(
       builder: (BuildContext context, List<String> _degreeNames, Widget child) {
         // This builder will only get called when the _counter
@@ -240,6 +289,10 @@ class _BodyState extends State<Body> {
             _degree = value,
             if (_degree != "Select your Degree:" && _degree != null && _degree.isNotEmpty)
               {
+                EasyLoading.show(
+                  status: 'loading...',
+                  maskType: EasyLoadingMaskType.black,
+                ),
                 //Here we make a request to server for Subjects
                 loadchoicesSubjects(universities
                     .getUniversityByName(_university)
@@ -279,9 +332,9 @@ class _BodyState extends State<Body> {
     //Local Temperory Variable
     //List<String> temp = <String>[];
 
-    ///------------------------------------------------------------------------------------------------
-    ///!                              Build the UI of GetStarted
-    ///------------------------------------------------------------------------------------------------**/
+    ///*------------------------------------------------------------------------------------------------
+    ///*                              Build the UI of GetStarted
+    ///*------------------------------------------------------------------------------------------------**/
     ///[_fetchUniversities --> FutureBuilder] Build the Screen based on Response from Server
     return FutureBuilder<dynamic>(
         future: _fetchUniversities(),
@@ -341,7 +394,7 @@ class _BodyState extends State<Body> {
                            *=============================================**/
                           subjectMultipleOption,
                           /**============================================
-                           **        DYNAMIC SPACER + BUTTON --> START
+                           **        DYNAMIC SPACER 
                            *=============================================**/
                           SizedBox(
                             width: widget.size.width,
@@ -351,6 +404,9 @@ class _BodyState extends State<Body> {
                               child: SizedBox(height: 6, width: widget.size.width),
                             ),
                           ),
+                          /**============================================
+                           **        Do Start Button
+                           *=============================================**/
                           SizedBox(
                             width: widget.size.width,
                             height: widget.size.height * 0.08,

@@ -47,6 +47,7 @@ dependencies:
   firebase_core: ^0.5.3
   firebase_auth: ^0.18.4+1
   google_sign_in: ^4.5.6
+  flutter_easyloading: ^2.2.1
   socket_io_client: ^0.9.12
   flutter_offline: ^0.3.0
 dev_dependencies:

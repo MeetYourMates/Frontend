@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 //Services
 import 'package:meet_your_mates/api/services/auth_service.dart';
@@ -144,6 +145,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
+        builder: EasyLoading.init(),
 
         /// We use [ConnectivityBuilder] to check if connectivity
         /// we recieve the data from [isConnected] which is a stream we are listening to, if state change occurs
