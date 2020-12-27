@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/student.dart';
+import 'package:meet_your_mates/api/models/course.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/screens/SearchMates/components/statefulwrapper.dart';
 import 'package:meet_your_mates/screens/SearchMates/studentList.dart';
@@ -18,10 +19,16 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   var logger = Logger();
 
-  Future<List<dynamic>> _futureQueryResult;
-  List<Student> _queryResult = [];
+  Future<List<dynamic>> _futureStudentQueryResult;
+  List<Student> _studentQueryResult = [];
+
+  Future<List<dynamic>> _futureCourseQueryResult;
+  List<Course> _courseQueryResult = [];
+
   StudentProvider _studentProvider;
 
+  //Consula los estudiantes de un curso (falta enviar id de curso como parametro)
+  /*
   Future<void> _getStudents() async {
     final List<Student> queryResult =
         await _studentProvider.getCourseStudents();
@@ -30,9 +37,27 @@ class _BodyState extends State<Body> {
         debugPrint("Executed search");
         if (queryResult != null) {
           debugPrint("Students found");
-          _queryResult.addAll(queryResult);
+          _studentQueryResult.addAll(queryResult);
         } else {
           print('Error retrieving students');
+        }
+      },
+    );
+  }
+  */
+
+  //Consula los cursos de un estudiante (falta enviar id de estudiante como parametro)
+
+  Future<void> _getStudents() async {
+    final List<Course> queryResult = await _studentProvider.getStudentCourses();
+    setState(
+      () {
+        debugPrint("Executed course search");
+        if (queryResult != null) {
+          debugPrint("Courses found");
+          _courseQueryResult.addAll(queryResult);
+        } else {
+          print('Error retrieving courses');
         }
       },
     );
@@ -56,7 +81,7 @@ class _BodyState extends State<Body> {
     return StatefulWrapper(
       onInit: () {},
       child: FutureBuilder<List<Student>>(
-        future: _futureQueryResult,
+        future: _futureStudentQueryResult,
         builder: (BuildContext context, AsyncSnapshot<List<Student>> snapshot) {
           // ignore: unused_local_variable
           List<Widget> children;
@@ -116,7 +141,7 @@ class _BodyState extends State<Body> {
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 24),
                             ),
-                            StudentList(_queryResult),
+                            StudentList(_studentQueryResult),
                             SizedBox(height: size.height * 0.03),
                           ],
                         ),
