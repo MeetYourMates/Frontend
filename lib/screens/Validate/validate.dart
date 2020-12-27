@@ -88,43 +88,45 @@ class _ValidateState extends State<Validate> {
       });
     }
 
-    ;
     void validateUser() {
       if (form.valid) {
-        logger.d("Valid Form");
-        //We send the code to server and check if truly correct and based on that
-        String code = this.form.control('code').value;
-        logger.d("Valid Form 2 $code");
-        auth.validateCode(code).then(
-          (response) {
-            logger.d("Validate Code then--> " + response['status'].toString());
-            if (response['status']) {
-              checkValidation();
-            } else {
-              //UnShow the Loader and FlushBar Incorrect Code...
-              EasyLoading.dismiss().then(
-                (value) {
-                  Flushbar(
-                    title: "Validation Failed",
-                    message: "Incorrect Code",
-                    duration: Duration(seconds: 3),
-                  ).show(context);
-                },
-              );
-            }
-          },
-        );
+        EasyLoading.show(
+          status: 'loading...',
+          maskType: EasyLoadingMaskType.black,
+        ).then((value) {
+          //
+
+          logger.d("Valid Form");
+          //We send the code to server and check if truly correct and based on that
+          String code = this.form.control('code').value;
+          logger.d("Valid Form 2 $code");
+          auth.validateCode(code).then(
+            (response) {
+              logger.d("Validate Code then--> " + response['status'].toString());
+              if (response['status']) {
+                checkValidation();
+              } else {
+                //UnShow the Loader and FlushBar Incorrect Code...
+                EasyLoading.dismiss().then(
+                  (value) {
+                    Flushbar(
+                      title: "Validation Failed",
+                      message: "Incorrect Code",
+                      duration: Duration(seconds: 3),
+                    ).show(context);
+                  },
+                );
+              }
+            },
+          );
+        });
       } else {
         logger.d("Form not filled");
-        EasyLoading.dismiss().then(
-          (value) {
-            Flushbar(
-              title: "Form not filled",
-              message: "Please fill the form first!",
-              duration: Duration(seconds: 3),
-            ).show(context);
-          },
-        );
+        Flushbar(
+          title: "Form not filled",
+          message: "Please fill the form first!",
+          duration: Duration(seconds: 3),
+        ).show(context);
         form.markAllAsTouched();
       }
     }
@@ -198,11 +200,6 @@ class _ValidateState extends State<Validate> {
                         child: RoundedButton(
                           text: "Validate",
                           press: () => {
-                            EasyLoading.show(
-                              status: 'loading...',
-                              maskType: EasyLoadingMaskType.black,
-                            ),
-                            logger.i("Going to call Validate"),
                             validateUser(),
                           },
                         ),
@@ -245,8 +242,10 @@ class _ValidateState extends State<Validate> {
                                   EasyLoading.show(
                                     status: 'loading...',
                                     maskType: EasyLoadingMaskType.black,
-                                  ),
-                                  checkValidation(),
+                                  ).then((value) {
+                                    //
+                                    checkValidation();
+                                  }),
                                 },
                               ),
                       ),

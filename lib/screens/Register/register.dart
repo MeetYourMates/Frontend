@@ -1,5 +1,6 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:logger/logger.dart';
 //Services
 import 'package:meet_your_mates/api/services/auth_service.dart';
@@ -48,7 +49,6 @@ class _RegisterState extends State<Register> {
       Validators.mustMatch('password', 'passwordConfirmation'),
     ],
   );
-  String _username, _password, _confirmPassword;
 
   @override
   Widget build(BuildContext context) {
@@ -69,22 +69,30 @@ class _RegisterState extends State<Register> {
     };
     var doRegister = () {
       if (form.valid) {
-        auth
-            .register(
-          _username,
-          _password,
-        )
-            .then((response) {
-          if (response['status']) {
-            //If status is ok than we make the user login and continue with the process
-            Navigator.pushReplacementNamed(context, '/login');
-          } else {
-            Flushbar(
-              title: "Registration Failed",
-              message: response['message'].toString(),
-              duration: Duration(seconds: 10),
-            ).show(context);
-          }
+        String _email = this.form.control('email').value;
+        String _password = this.form.control('password').value;
+        String _name = this.form.control('name').value;
+        EasyLoading.show(
+          status: 'loading...',
+          maskType: EasyLoadingMaskType.black,
+        ).then((value) {
+          //Function
+          auth.register(_email, _password, _name).then((response) {
+            if (response['status']) {
+              //If status is ok than we make the user login and continue with the process
+              EasyLoading.dismiss().then((value) => {
+                    Navigator.pushReplacementNamed(context, '/login'),
+                  });
+            } else {
+              EasyLoading.dismiss().then((value) => {
+                    Flushbar(
+                      title: "Registration Failed",
+                      message: response['message'].toString(),
+                      duration: Duration(seconds: 10),
+                    ).show(context),
+                  });
+            }
+          });
         });
       } else {
         Flushbar(
