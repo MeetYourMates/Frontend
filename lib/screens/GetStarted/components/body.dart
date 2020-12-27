@@ -224,7 +224,6 @@ class _BodyState extends State<Body> {
       isEnabled: true,
       onItemSelected: (value) => {
         _university = value,
-        logger.e(_university),
         logger.d("University Changed: " + value),
         if (_university != "Select your University:" &&
             _university != null &&
@@ -426,5 +425,4 @@ class _BodyState extends State<Body> {
           }
         });
   }
-  //*******************************KRUNAL**************************************/
 }
