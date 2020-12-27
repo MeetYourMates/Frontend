@@ -22,6 +22,7 @@ import 'package:meet_your_mates/screens/Profile/profile.dart';
 import 'package:meet_your_mates/screens/Register/register.dart';
 import 'package:meet_your_mates/screens/SearchMates/searchMates.dart';
 import 'package:meet_your_mates/screens/Validate/validate.dart';
+import 'package:overlay_support/overlay_support.dart';
 //Utilities
 import 'package:provider/provider.dart';
 
@@ -60,8 +61,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     /// Accessing the same Student Provider from the MultiProvider
-    StudentProvider _studentProvider =
-        Provider.of<StudentProvider>(context, listen: true);
+    StudentProvider _studentProvider = Provider.of<StudentProvider>(context, listen: true);
 
     /// [_fetchLogin] Fetches AutoLogin Response
     Future<int> _fetchLogin(String email, String password) async {
@@ -96,15 +96,13 @@ class MyApp extends StatelessWidget {
               /// we ask server [_fetchlogin] if the user is still valid
               /// untill than we show something else to user.
               return FutureBuilder<int>(
-                future:
-                    _fetchLogin(snapshot.data.email, snapshot.data.password),
+                future: _fetchLogin(snapshot.data.email, snapshot.data.password),
                 builder: (context, snapshot2) {
                   switch (snapshot2.connectionState) {
                     case ConnectionState.none:
 
                       /// Show [ErrorScreen], as we are unable to get the response...
-                      return ErrorShow(
-                          errorText: "Cannot Connect to Server...");
+                      return ErrorShow(errorText: "Cannot Connect to Server...");
                     case ConnectionState.waiting:
 
                       /// Show [LoadingScreen], as we are waiting for the response...
@@ -138,7 +136,8 @@ class MyApp extends StatelessWidget {
     );
 
     /// [MaterialApp] The main UI build of the application
-    return MaterialApp(
+    return OverlaySupport(
+      child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Meet Your Mates',
         theme: ThemeData(
@@ -156,8 +155,8 @@ class MyApp extends StatelessWidget {
               child: Text("Checking Connection..."),
             ),
           ),
-          connectivityBuilder: (BuildContext context,
-              ConnectivityResult connectivity, Widget child) {
+          connectivityBuilder:
+              (BuildContext context, ConnectivityResult connectivity, Widget child) {
             if (connectivity == ConnectivityResult.none) {
               return NoConnection();
             } else {
@@ -176,6 +175,8 @@ class MyApp extends StatelessWidget {
           '/changePassword': (context) => ChangePassword(),
           '/profile': (context) => Profile(),
           '/editProfile': (context) => EditProfile(),
-        });
+        },
+      ),
+    );
   }
 }

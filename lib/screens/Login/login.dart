@@ -83,19 +83,24 @@ class _LoginState extends State<Login> {
           if (response['status'] == 0) {
             //Login Correct
             Student student = response['student'];
-            Provider.of<StudentProvider>(context, listen: false).setStudentWithUser(student);
+            //Provider.of<StudentProvider>(context, listen: false).setPassword(student.user.password);
+            Provider.of<StudentProvider>(context, listen: false)
+                .setStudentWithUserWithPassword(student);
             Navigator.pushReplacementNamed(context, '/dashboard');
             logger.d("Logged In Succesfull!");
           } else if (response['status'] == 1) {
             //Not Validated
             Student student = response['student'];
-            Provider.of<StudentProvider>(context, listen: false).setStudentWithUser(student);
+            //Provider.of<StudentProvider>(context, listen: false).setPassword(student.user.password);
+            Provider.of<StudentProvider>(context, listen: false)
+                .setStudentWithUserWithPassword(student);
             Navigator.pushReplacementNamed(context, '/validate');
             logger.d("Logged In Not Validated!");
           } else if (response['status'] == 2) {
             //Let's Get Started not completed
             Student student = response['student'];
-            Provider.of<StudentProvider>(context, listen: false).setStudentWithUser(student);
+            Provider.of<StudentProvider>(context, listen: false)
+                .setStudentWithUserWithPassword(student);
             Navigator.pushReplacementNamed(context, '/getStarted');
             logger.d("Logged In Let's Get Started not completed!");
           } else {
@@ -212,108 +217,120 @@ class _LoginState extends State<Login> {
     return Scaffold(
       body: SafeArea(
         child: Background(
-          child: Container(
-            alignment: Alignment.center,
-            constraints: BoxConstraints.tightForFinite(width: 400, height: size.height),
-            child: ReactiveForm(
-              formGroup: this.form,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  SizedBox(
-                    width: size.width,
-                    height: size.height * 0.4,
-                    child: Image.asset(
-                      "assets/icons/login.png",
-                      //width: size.width * 0.35,
-                    ),
-                  ),
-                  SizedBox(
-                    width: size.width,
-                    height: size.height * 0.12,
-                    child: TextFieldContainer(
-                      child: ReactiveTextField(
-                        formControlName: 'email',
-                        autofocus: false,
-                        cursorColor: kPrimaryColor,
-                        decoration: InputDecoration(
-                          icon: Icon(
-                            Icons.person,
-                            color: kPrimaryColor,
-                          ),
-                          hintText: "email",
-                          border: InputBorder.none,
+          child: Center(
+            child: SingleChildScrollView(
+              physics: NeverScrollableScrollPhysics(),
+              child: Container(
+                alignment: Alignment.center,
+                constraints: BoxConstraints.tightForFinite(width: 400, height: size.height),
+                child: ReactiveForm(
+                  formGroup: this.form,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      SizedBox(
+                        width: size.width,
+                        height: size.height * 0.4,
+                        child: Image.asset(
+                          "assets/icons/login.png",
+                          //width: size.width * 0.35,
                         ),
-                        validationMessages: (control) => {
-                          'required': 'The email must not be empty',
-                          'email': 'The email value must be a valid email'
-                        },
                       ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: size.width,
-                    height: size.height * 0.12,
-                    child: TextFieldContainer(
-                      child: ReactiveTextField(
-                        formControlName: 'password',
-                        obscureText: true,
-                        autofocus: false,
-                        cursorColor: kPrimaryColor,
-                        decoration: InputDecoration(
-                          icon: Icon(
-                            Icons.person,
-                            color: kPrimaryColor,
+                      SizedBox(
+                        width: size.width,
+                        height: size.height * 0.12,
+                        child: TextFieldContainer(
+                          child: ReactiveTextField(
+                            formControlName: 'email',
+                            autofocus: false,
+                            cursorColor: kPrimaryColor,
+                            decoration: InputDecoration(
+                              icon: Icon(
+                                Icons.person,
+                                color: kPrimaryColor,
+                              ),
+                              hintText: "email",
+                              border: InputBorder.none,
+                            ),
+                            validationMessages: (control) => {
+                              'required': 'The email must not be empty',
+                              'email': 'The email value must be a valid email'
+                            },
                           ),
-                          hintText: "password",
-                          border: InputBorder.none,
                         ),
-                        validationMessages: (control) => {
-                          'required': 'The password must not be empty',
-                          'minLenght': 'The password must have at least 8 characters'
-                        },
                       ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: size.width,
-                    height: size.height * 0.1,
-                    child: auth.loggedInStatus == Status.Authenticating
-                        ? loading
-                        : RoundedButton(text: "LOGIN", press: doLogin),
-                  ),
-                  SizedBox(height: 6, width: size.width),
-                  SizedBox(
-                    width: size.width,
-                    height: size.height * 0.03,
-                    child: FittedBox(
-                      fit: BoxFit.contain,
-                      child: AlreadyHaveAnAccountCheck(
-                        press: () {
-                          Navigator.pushReplacementNamed(context, '/register');
-                        },
+                      SizedBox(
+                        width: size.width,
+                        height: size.height * 0.12,
+                        child: TextFieldContainer(
+                          child: ReactiveTextField(
+                            formControlName: 'password',
+                            obscureText: true,
+                            autofocus: false,
+                            cursorColor: kPrimaryColor,
+                            decoration: InputDecoration(
+                              icon: Icon(
+                                Icons.person,
+                                color: kPrimaryColor,
+                              ),
+                              hintText: "password",
+                              border: InputBorder.none,
+                            ),
+                            validationMessages: (control) => {
+                              'required': 'The password must not be empty',
+                              'minLenght': 'The password must have at least 8 characters'
+                            },
+                          ),
+                        ),
                       ),
-                    ),
+                      SizedBox(
+                        width: size.width,
+                        height: size.height * 0.1,
+                        child: auth.loggedInStatus == Status.Authenticating
+                            ? loading
+                            : RoundedButton(text: "LOGIN", press: doLogin),
+                      ),
+                      SizedBox(height: 6, width: size.width),
+                      SizedBox(
+                        width: size.width,
+                        height: size.height * 0.03,
+                        child: FittedBox(
+                          fit: BoxFit.contain,
+                          child: AlreadyHaveAnAccountCheck(
+                            press: () {
+                              Navigator.pushReplacementNamed(context, '/register');
+                            },
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 6, width: size.width),
+                      SizedBox(
+                        width: size.width,
+                        height: size.height * 0.03,
+                        child: FittedBox(
+                          fit: BoxFit.contain,
+                          child: forgotLabel,
+                        ),
+                      ),
+                      SizedBox(
+                        width: size.width,
+                        height: size.height * 0.01,
+                        child: FittedBox(
+                          fit: BoxFit.contain,
+                          child: SizedBox(height: 6, width: size.width),
+                        ),
+                      ),
+                      SizedBox(
+                        width: size.width,
+                        height: size.height * 0.07,
+                        child: FittedBox(
+                          fit: BoxFit.contain,
+                          child: _iconGoogle(),
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 6, width: size.width),
-                  SizedBox(
-                    width: size.width,
-                    height: size.height * 0.03,
-                    child: FittedBox(
-                      fit: BoxFit.contain,
-                      child: forgotLabel,
-                    ),
-                  ),
-                  SizedBox(height: 6, width: size.width),
-                  SizedBox(
-                    width: size.width,
-                    height: size.height * 0.07,
-                    child: FittedBox(
-                      fit: BoxFit.contain,
-                      child: _iconGoogle(),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),

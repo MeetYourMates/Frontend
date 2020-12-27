@@ -9,6 +9,8 @@ import 'package:meet_your_mates/api/models/universities.dart';
 import 'package:meet_your_mates/api/services/start_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/components/direct_options.dart';
+import 'package:meet_your_mates/components/error.dart';
+import 'package:meet_your_mates/components/loading.dart';
 import 'package:meet_your_mates/components/multiple_options.dart';
 import 'package:meet_your_mates/components/rounded_button.dart';
 import 'package:provider/provider.dart';
@@ -16,8 +18,8 @@ import 'package:provider/provider.dart';
 import 'background.dart';
 
 class Body extends StatefulWidget {
-  const Body({Key key}) : super(key: key);
-
+  const Body({Key key, @required this.size}) : super(key: key);
+  final Size size;
   @override
   _BodyState createState() => _BodyState();
 }
@@ -25,7 +27,7 @@ class Body extends StatefulWidget {
 //*******************************KRUNAL**************************************/
 class _BodyState extends State<Body> {
   /// [logger] to logg all of the logs in console prettily!
-  var logger = Logger(level: Level.warning);
+  var logger = Logger(level: Level.error);
 
   /// [_memoizerUniversities] to recieve all of the university from server just one
   /// all of the other runs it just gets data from local ram.
@@ -34,22 +36,13 @@ class _BodyState extends State<Body> {
 
   /// [ValueNotifie] Value Notifier with Initial Values which only rebuilds the
   /// widgets it is used
-  ValueNotifier<List<String>> universityNames =
-      ValueNotifier(["Select your University:"]);
-  ValueNotifier<List<String>> facultyNames =
-      ValueNotifier(["Select your Faculty:"]);
-  ValueNotifier<List<String>> degreeNames =
-      ValueNotifier(["Select your Degree:"]);
+  //ValueNotifier<List<String>> universityNames = ValueNotifier(["Select your University:"]);
+  ValueNotifier<List<String>> facultyNames = ValueNotifier(["Select your Faculty:"]);
+  List<String> universityNames = ["Select your University:"];
+  ValueNotifier<List<String>> degreeNames = ValueNotifier(["Select your Degree:"]);
   ValueNotifier<List<Map<String, dynamic>>> _choicesSubjects = ValueNotifier([
     {"id": "Test", "name": "test", "group": "test"}
   ]);
-
-  /// [enable,choosenUni,choosenFaculty,choosenDegree] are used to hide and show
-  /// the widgets
-  bool enabled = false;
-  bool chosenUni = false;
-  bool chosenFaculty = false;
-  bool chosenDegree = false;
 
   /// [universities] is used to store the universities Response Obtained
   Universities universities = new Universities();
@@ -62,61 +55,22 @@ class _BodyState extends State<Body> {
         _degree != "Select your Degree:" &&
         _university != null &&
         _faculty != null &&
-        _degree != null) {
+        _degree != null &&
+        _university.isNotEmpty &&
+        _faculty.isNotEmpty &&
+        _degree.isNotEmpty) {
       return true;
     } else {
       return false;
     }
   }
 
-  /// [_toggleUniversity] toggles university widget if valid value
-  void _toggleUniversity() {
-    setState(() {
-      if (_university != "Select your University:" && _university != null) {
-        chosenUni = true;
-      } else {
-        chosenUni = false;
-      }
-    });
-  }
-
-  /// [_toggleFaculty] toggles faculty widget if valid value
-  void _toggleFaculty() {
-    setState(() {
-      if (_faculty != "Select your Faculty:" && _faculty != null) {
-        chosenFaculty = true;
-      } else {
-        chosenFaculty = false;
-      }
-    });
-  }
-
-  /// [_toggleDegree] toggles degree widget if valid value
-  void _toggleDegree() {
-    setState(() {
-      if (_degree != "Select your Degree:" && _degree != null) {
-        chosenDegree = true;
-      } else {
-        chosenDegree = false;
-      }
-    });
-  }
-
-  /// [_toggleValidate] toggles subjtect widget if valid value
-  void _toggleValidate() {
-    setState(() {
-      if (validateAll()) {
-        enabled = true;
-      } else {
-        enabled = false;
-      }
-    });
-  }
-
+  ///**================================================================================================
+  ///*                                         WIDGET BUILDER OF GETSTARTED
+  ///*===================================================================================================
   @override
   Widget build(BuildContext context) {
-    StudentProvider _studentProvider =
-        Provider.of<StudentProvider>(context, listen: false);
+    StudentProvider _studentProvider = Provider.of<StudentProvider>(context, listen: false);
     StartProvider _start = Provider.of<StartProvider>(context, listen: true);
     Future _fetchUniversities() async {
       return _memoizerUniversities.runOnce(() async {
@@ -127,6 +81,9 @@ class _BodyState extends State<Body> {
       });
     }
 
+    ///------------------------------------------------------------------------------------------------
+    ///!                         lOADING PROGRESS INDICATOR WIDGET
+    ///------------------------------------------------------------------------------------------------**/
     var loading = Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -135,6 +92,9 @@ class _BodyState extends State<Body> {
       ],
     );
 
+    ///------------------------------------------------------------------------------------------------
+    ///!                              FLUSHBAR MESSAGE
+    ///------------------------------------------------------------------------------------------------**/
     var doFlushbar = (String message) {
       Flushbar(
         title: "Oops!",
@@ -143,16 +103,17 @@ class _BodyState extends State<Body> {
       ).show(context);
     };
 
+    ///------------------------------------------------------------------------------------------------
+    ///!                             Loads Subject from Server when selected a Degree
+    ///------------------------------------------------------------------------------------------------**/
     var loadchoicesSubjects = (String degreeId) {
-      final Future<Map<String, dynamic>> successfulMessage =
-          _start.getSubjectData(degreeId);
+      final Future<Map<String, dynamic>> successfulMessage = _start.getSubjectData(degreeId);
       //Callback to message recieved after login auth
       successfulMessage.then((response) {
         if (response['status']) {
           _choicesSubjects.value.clear();
           _choicesSubjects.value = response['subjects'];
           logger.d("_choicesSubjects" + _choicesSubjects.value.toString());
-          _toggleValidate();
         } else {
           Flushbar(
             title: "Failed",
@@ -163,13 +124,17 @@ class _BodyState extends State<Body> {
       });
     };
 
+    ///------------------------------------------------------------------------------------------------
+    ///!                              ENROLLS STUDENT
+    ///------------------------------------------------------------------------------------------------**/
     Future<bool> enrollStudents() async {
       bool enrollStatus = false;
-      //For and Not ForEach because stupid dart makes the await call useless
-      //and we loose syncronicity between the result and the code execution
+
+      ///[For loop] and Not [ForEach] because stupid dart makes the [await call useless]
+      ///and we loose [syncronicity] between the result and the code execution
       for (int i = 0; i < _subjects.length; i++) {
-        Map<String, dynamic> response = await _start.start(
-            _subjects[i], _studentProvider.student.id, _university, _degree);
+        Map<String, dynamic> response =
+            await _start.start(_subjects[i], _studentProvider.student.id, _university, _degree);
         enrollStatus = enrollStatus || response['status'];
         if (response['status']) {
           //Correctly Enrolled
@@ -181,6 +146,9 @@ class _BodyState extends State<Body> {
       return enrollStatus;
     }
 
+    ///------------------------------------------------------------------------------------------------
+    ///!                              Start Button Event Handler
+    ///------------------------------------------------------------------------------------------------**/
     void doStart() async {
       logger.d('university: $_university');
       logger.d('faculty: $_faculty');
@@ -206,199 +174,193 @@ class _BodyState extends State<Body> {
           doFlushbar("Failed Enrollment in all Subjects!");
         }
       } else {
-        doFlushbar(
-            "You must enter your universtity, faculty, degree and subjects first.");
+        doFlushbar("You must enter your universtity, faculty, degree and subjects first.");
       }
     }
 
+    Widget universityDirectOptions = DirectOptions(
+      title: "University",
+      sizeDirectSelect: new Size(widget.size.width, widget.size.height * 0.08),
+      sizeText: new Size(widget.size.width, widget.size.height * 0.06),
+      elements: universityNames,
+      isEnabled: true,
+      onItemSelected: (value) => {
+        _university = value,
+        logger.e(_university),
+        logger.d("University Changed: " + value),
+        if (_university != "Select your University:" &&
+            _university != null &&
+            _university.isNotEmpty)
+          {facultyNames.value = universities.getUniversityByName(_university).getFacultyNames()}
+      },
+    );
+    Widget facultyDirectOption = ValueListenableBuilder(
+      builder: (BuildContext context, List<String> _facultNames, Widget child) {
+        // This builder will only get called when the _counter
+        // is updated.
+        return DirectOptions(
+          key: UniqueKey(),
+          title: "Faculty",
+          sizeDirectSelect: new Size(widget.size.width, widget.size.height * 0.08),
+          sizeText: new Size(widget.size.width, widget.size.height * 0.06),
+          elements: _facultNames,
+          isEnabled: (_university != "Select your University:" &&
+              _university != null &&
+              _university.isNotEmpty),
+          onItemSelected: (value) => {
+            _faculty = value,
+            logger.d("Faculty Changed: " + value),
+            if (_faculty != "Select your Faculty:" && _faculty != null && _faculty.isNotEmpty)
+              {
+                //Clearing current degreeList and adding new Data
+                degreeNames.value = universities
+                    .getUniversityByName(_university)
+                    .getFacultyByName(_faculty)
+                    .getDegreeNames()
+              }
+          },
+        );
+      },
+      valueListenable: facultyNames,
+      child: ErrorShow(errorText: "Unexpected error occured, Please Restart the App"),
+    );
+
+    Widget degreeDegreeOption = ValueListenableBuilder(
+      builder: (BuildContext context, List<String> _degreeNames, Widget child) {
+        // This builder will only get called when the _counter
+        // is updated.
+        return DirectOptions(
+          title: "Degree",
+          sizeDirectSelect: new Size(widget.size.width, widget.size.height * 0.08),
+          sizeText: new Size(widget.size.width, widget.size.height * 0.06),
+          elements: _degreeNames,
+          isEnabled:
+              (_faculty != "Select your Faculty:" && _faculty != null && _faculty.isNotEmpty),
+          onItemSelected: (value) => {
+            _degree = value,
+            if (_degree != "Select your Degree:" && _degree != null && _degree.isNotEmpty)
+              {
+                //Here we make a request to server for Subjects
+                loadchoicesSubjects(universities
+                    .getUniversityByName(_university)
+                    .getFacultyByName(_faculty)
+                    .getDegreeByName(_degree)
+                    .id)
+              }
+          },
+        );
+      },
+      valueListenable: degreeNames,
+      child: ErrorShow(errorText: "Unexpected error occured, Please Restart the App"),
+    );
+    Widget subjectMultipleOption = ValueListenableBuilder(
+      builder: (BuildContext context, List<Map<String, dynamic>> _subjsList, Widget child) {
+        // This builder will only get called when the _counter
+        // is updated.
+        bool isActive = validateAll();
+        return AbsorbPointer(
+          absorbing: !isActive,
+          child: Opacity(
+            opacity: isActive ? 1 : 0.35,
+            child: MultipleOptions(
+              key: UniqueKey(),
+              title: "Subjects",
+              elements: _subjsList,
+              onSelected: (value) => {_subjects = value},
+              sizeMultiSelect: new Size(widget.size.width, widget.size.height * 0.08),
+              sizeText: new Size(widget.size.width, widget.size.height * 0.06),
+            ),
+          ),
+        );
+      },
+      valueListenable: _choicesSubjects,
+      child: ErrorShow(errorText: "Unexpected error occured, Please Restart the App"),
+    );
     //Local Temperory Variable
-    List<String> temp = <String>[];
-    Size size = MediaQuery.of(context).size;
+    //List<String> temp = <String>[];
+
+    ///------------------------------------------------------------------------------------------------
+    ///!                              Build the UI of GetStarted
+    ///------------------------------------------------------------------------------------------------**/
+    ///[_fetchUniversities --> FutureBuilder] Build the Screen based on Response from Server
     return FutureBuilder<dynamic>(
         future: _fetchUniversities(),
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
             case ConnectionState.waiting:
-              return Center(child: CircularProgressIndicator());
+              return LoadingPage();
             default:
               if (snapshot.hasError)
-                return Text('Error: ${snapshot.error}');
+                return ErrorShow(errorText: 'Error: ${snapshot.error}');
               else if ((snapshot.hasData)) if (snapshot.data['status']) {
                 //logger.d("Printing" + response['universities']);
+
                 universities.universityList = snapshot.data['universities'];
-                universityNames.value.addAll(universities.getUniversityNames());
-                universityNames.value.remove("Select your University:");
+                universityNames.clear();
+                //We clear the Universities List as, this fetch is runce every new update of the widget and we don't want to just add
+                universityNames.addAll(universities.getUniversityNames());
+                //universityNames.value.remove("Select your University:");
                 logger.d("Load Universities: " + universityNames.toString());
               } else {
-                return Scaffold(
-                    body: Center(
-                        child: Text(
-                            "Unexpected error. Unable to Retrieve Universities")));
+                return ErrorShow(errorText: "Unexpected error. Unable to Retrieve Universities");
               }
               return SafeArea(
-                child: Scaffold(
-                  body: Background(
-                    child: SingleChildScrollView(
+                child: Background(
+                  child: SingleChildScrollView(
+                    physics: NeverScrollableScrollPhysics(),
+                    child: Container(
+                      alignment: Alignment.center,
+                      constraints: BoxConstraints.tightForFinite(
+                          width: 600, height: widget.size.height * 0.95),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          SizedBox(height: size.height * 0.03),
-
-                          Image.asset(
-                            "assets/images/getstarted.png",
-                            width: size.width * 0.4,
+                          //* GET STARTED IMAGE WIDGET
+                          SizedBox(
+                            width: widget.size.width,
+                            height: widget.size.height * 0.2,
+                            child: Image.asset(
+                              "assets/images/getstarted.png",
+                            ),
                           ),
-                          //loadUniversities(),
-                          ValueListenableBuilder(
-                            builder: (BuildContext context,
-                                List<String> _universityNames, Widget child) {
-                              // This builder will only get called when the _counter
-                              // is updated.
-                              return DirectOptions(
-                                title: "University",
-                                elements: _universityNames,
-                                enable: true,
-                                onSelected: (value) => {
-                                  _university = value,
-                                  logger.d("University Changed: " + value),
-                                  _toggleUniversity(),
-                                  if (chosenUni)
-                                    {
-                                      //Clearing current degreeList and adding new Data
-                                      temp.clear(),
-                                      temp.addAll(universities
-                                          .getUniversityByName(_university)
-                                          .getFacultyNames()),
-                                      facultyNames.value.removeWhere((item) =>
-                                          item != "Select your University:"),
-                                      facultyNames.value.addAll(temp),
-                                      logger.d("Faculties Name List: " +
-                                          temp.join("/"))
-                                    }
-                                  else
-                                    {
-                                      //Changed back to not correct Option
-                                      facultyNames.value.removeWhere((item) =>
-                                          item != "Select your Faculty:"),
-                                      degreeNames.value.removeWhere((item) =>
-                                          item != "Select your Degree:"),
-                                    }
-                                },
-                              );
-                            },
-                            valueListenable: universityNames,
-                            child: Container(),
+                          /**============================================
+                           **               UNIVERSITY DIRECT OPTIONS
+                           *=============================================**/
+                          universityDirectOptions,
+                          /**============================================
+                           **               Faculty DIRECT OPTIONS
+                           *=============================================**/
+                          facultyDirectOption,
+                          /**============================================
+                           **               Degree DIRECT OPTIONS
+                           *=============================================**/
+                          degreeDegreeOption,
+                          /**============================================
+                           **               SUBJECTS MULTIPLE OPTIONS
+                           *=============================================**/
+                          subjectMultipleOption,
+                          /**============================================
+                           **        DYNAMIC SPACER + BUTTON --> START
+                           *=============================================**/
+                          SizedBox(
+                            width: widget.size.width,
+                            height: widget.size.height * 0.01,
+                            child: FittedBox(
+                              fit: BoxFit.contain,
+                              child: SizedBox(height: 6, width: widget.size.width),
+                            ),
                           ),
-                          ValueListenableBuilder(
-                            builder: (BuildContext context,
-                                List<String> _facultNames, Widget child) {
-                              // This builder will only get called when the _counter
-                              // is updated.
-                              return DirectOptions(
-                                title: "Faculty",
-                                elements: _facultNames,
-                                enable: chosenUni,
-                                onSelected: (value) => {
-                                  _faculty = value,
-                                  logger.d("Faculty Changed: " + value),
-                                  _toggleFaculty(),
-                                  if (chosenFaculty)
-                                    {
-                                      //Clearing current degreeList and adding new Data
-                                      temp.clear(),
-                                      temp.addAll(universities
-                                          .getUniversityByName(_university)
-                                          .getFacultyByName(_faculty)
-                                          .getDegreeNames()),
-                                      degreeNames.value.removeWhere((item) =>
-                                          item != "Select your Faculty:"),
-                                      degreeNames.value.addAll(temp),
-                                      logger.d("Degrees Name List: " +
-                                          temp.join("/"))
-                                    }
-                                  else
-                                    {
-                                      //Changed back to not correct Option
-                                      facultyNames.value.removeWhere((item) =>
-                                          item != "Select your Faculty:"),
-                                      degreeNames.value.removeWhere((item) =>
-                                          item != "Select your Degree:"),
-                                    }
-                                },
-                              );
-                            },
-                            valueListenable: facultyNames,
-                            child: Container(),
-                          ),
-                          ValueListenableBuilder(
-                            builder: (BuildContext context,
-                                List<String> _degreeNames, Widget child) {
-                              // This builder will only get called when the _counter
-                              // is updated.
-                              var id;
-                              return DirectOptions(
-                                title: "Degree",
-                                elements: _degreeNames,
-                                enable: chosenFaculty,
-                                onSelected: (value) => {
-                                  _degree = value,
-                                  _toggleDegree(),
-                                  if (chosenDegree)
-                                    {
-                                      //Here we call for choicesSubjects and show gettingEnrolled Status!
-                                      //Find the Degreeid from name
-                                      degreeNames
-                                          .value[_degreeNames.indexOf(_degree)],
-                                      id = universities
-                                          .getUniversityByName(_university)
-                                          .getFacultyByName(_faculty)
-                                          .getDegreeByName(_degree)
-                                          .id,
-                                      loadchoicesSubjects(id)
-                                    }
-                                  else
-                                    {
-                                      //Changed back to not correct Option
-                                      facultyNames.value.removeWhere((item) =>
-                                          item != "Select your Faculty:"),
-                                      degreeNames.value.removeWhere((item) =>
-                                          item != "Select your Degree:"),
-                                    }
-                                },
-                              );
-                            },
-                            valueListenable: degreeNames,
-                            child: Container(),
-                          ),
-                          ValueListenableBuilder(
-                            builder: (BuildContext context,
-                                List<Map<String, dynamic>> _subjsList,
-                                Widget child) {
-                              // This builder will only get called when the _counter
-                              // is updated.
-                              return AbsorbPointer(
-                                absorbing: !chosenDegree,
-                                child: Opacity(
-                                  opacity: chosenDegree ? 1 : 0.35,
-                                  child: MultipleOptions(
-                                    title: "Subjects",
-                                    elements: _subjsList,
-                                    onSelected: (value) => {_subjects = value},
+                          SizedBox(
+                            width: widget.size.width,
+                            height: widget.size.height * 0.08,
+                            child: _start.enrolledStatus == Status.GettingEnrolled
+                                ? loading
+                                : RoundedButton(
+                                    text: "START",
+                                    press: doStart,
                                   ),
-                                ),
-                              );
-                            },
-                            valueListenable: _choicesSubjects,
-                            child: Container(),
                           ),
-                          SizedBox(height: size.height * 0.03),
-                          _start.enrolledStatus == Status.GettingEnrolled
-                              ? loading
-                              : RoundedButton(
-                                  text: "START",
-                                  press: doStart,
-                                ),
                         ],
                       ),
                     ),

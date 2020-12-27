@@ -24,7 +24,6 @@ class Background extends StatelessWidget {
             alignment: Alignment.bottomRight,
             child: Image.asset(
               "assets/images/login_bottom.png",
-              //width: sizeParent.width * 0.4,
             ),
           ),
           child,

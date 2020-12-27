@@ -1,4 +1,5 @@
 import 'package:another_flushbar/flushbar.dart';
+import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/services/auth_service.dart';
@@ -6,14 +7,9 @@ import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/api/util/shared_preference.dart';
 import 'package:meet_your_mates/components/rounded_button.dart';
 import 'package:meet_your_mates/components/text_field_container.dart';
-import 'package:provider/provider.dart';
-import 'package:flutter/material.dart';
-//Services
-
-//Utilities
-
-//Screens
 import 'package:meet_your_mates/screens/Validate/background.dart';
+import 'package:provider/provider.dart';
+
 //Models
 
 import '../../constants.dart';
@@ -39,36 +35,25 @@ class _ValidateState extends State<Validate> {
     AuthProvider auth = Provider.of<AuthProvider>(context);
     var loading = Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        CircularProgressIndicator(),
-        Text(" Checking ... Please wait")
-      ],
+      children: <Widget>[CircularProgressIndicator(), Text(" Checking ... Please wait")],
     );
     var checkValidation = () {
       //Check if Server Validated, if True than retrieve Student
       final Future<Map<String, dynamic>> successfulMessage = auth.login(
-          Provider.of<StudentProvider>(context, listen: false)
-              .student
-              .user
-              .email,
-          Provider.of<StudentProvider>(context, listen: false)
-              .student
-              .user
-              .password);
+          Provider.of<StudentProvider>(context, listen: false).student.user.email,
+          Provider.of<StudentProvider>(context, listen: false).student.user.password);
       //Callback to message recieved after login auth
       successfulMessage.then((response) {
         if (response['status'] == 0) {
           //Validation Completed
           Student student = response['student'];
-          Provider.of<StudentProvider>(context, listen: false)
-              .setStudent(student);
+          Provider.of<StudentProvider>(context, listen: false).setStudent(student);
           Navigator.pushReplacementNamed(context, '/dashboard');
           logger.d("Validated From SomeWhere Else!");
         } else if (response['status'] == 2) {
           //Let's Get Started not completed
           Student student = response['student'];
-          Provider.of<StudentProvider>(context, listen: false)
-              .setStudent(student);
+          Provider.of<StudentProvider>(context, listen: false).setStudent(student);
           Navigator.pushReplacementNamed(context, '/getStarted');
           logger.d("Validated but --> Let's Get Started not completed!");
         } else {

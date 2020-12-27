@@ -62,8 +62,7 @@ class _DashBoardState extends State<DashBoard> {
       },
       child: Scaffold(
         appBar: PreferredSize(
-          preferredSize:
-              Size.fromHeight(kAppBarHeight), // here the desired height
+          preferredSize: Size.fromHeight(kAppBarHeight), // here the desired height
           child: AppBar(
             title: Text("Meet Your Mates"),
             actions: <Widget>[
@@ -117,8 +116,7 @@ class _DashBoardState extends State<DashBoard> {
           items: <BottomNavyBarItem>[
             BottomNavyBarItem(title: Text('Home'), icon: Icon(Icons.home)),
             BottomNavyBarItem(title: Text('Search'), icon: Icon(Icons.search)),
-            BottomNavyBarItem(
-                title: Text('Chat'), icon: Icon(Icons.chat_bubble)),
+            BottomNavyBarItem(title: Text('Chat'), icon: Icon(Icons.chat_bubble)),
             BottomNavyBarItem(title: Text('Profile'), icon: Icon(Icons.person)),
           ],
         ),
