@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/message.dart';
 import 'package:meet_your_mates/api/models/users.dart';
 import 'package:meet_your_mates/api/util/app_url.dart';
@@ -14,7 +15,7 @@ class StreamSocketProvider with ChangeNotifier {
   //StreamSocket streamUsers = StreamSocket();
   //StreamSocket streamMessages = StreamSocket();
   Users users = new Users();
-
+  Logger logger = Logger(level: Level.error);
   /*StreamController<String> streamUsers = StreamController<String>.broadcast();
   void disposeStreamUsers() {
     streamUsers.close();
@@ -49,11 +50,11 @@ class StreamSocketProvider with ChangeNotifier {
           (_) => {
                 socket.emit('authentication', {"token": token})
               });
-      socket.on('authenticated', (data) => {print(data)});
+      socket.on('authenticated', (data) => {logger.d(data)});
       socket.on(
           'online_users',
           (data) => {
-                print(data),
+                logger.d(data),
                 //handleOnlineusersen(data.toString()),
                 handleOnlineusersen(data),
               });
@@ -62,9 +63,9 @@ class StreamSocketProvider with ChangeNotifier {
           (data) => {
                 handleMessage(data),
               });
-      socket.on('disconnect', (_) => print('disconnect'));
+      socket.on('disconnect', (_) => logger.d('disconnect'));
     } catch (e) {
-      print(e.toString());
+      logger.e(e.toString());
     }
   }
 
@@ -80,7 +81,7 @@ class StreamSocketProvider with ChangeNotifier {
   ///================================================================================================**/
 // Authenticate myself on to the Server
   sendAuthenticate(String token) {
-    print('connected: ${socket.id}');
+    logger.d('connected: ${socket.id}');
     socket.emit('authentication', {"token": token});
   }
 
@@ -91,19 +92,17 @@ class StreamSocketProvider with ChangeNotifier {
 
   // Listen to Authentication updates for myself
   handleAuthenticationListen(Map<String, dynamic> data) async {
-    print('---------------------------------------');
-    print("Authentication Listener: " + data.toString());
-    print('Authenticated: ${socket.id}');
-    print('---------------------------------------');
+    logger.d("Authentication Listener: " + data.toString());
+    logger.d('Authenticated: ${socket.id}');
   }
 
   // Listen to OnlineUsers updates of connected usersfrom server
   handleOnlineusersen(List<dynamic> data) async {
     //streamUsers.addResponse(data);
-    print("online_users: " + data.toString());
+    logger.d("online_users: " + data.toString());
     //streamUsers.sink.add(data);
     users.usersList = Users.fromDynamicList(data).usersList;
-    print("Decoded Json: " + users.usersList.toString());
+    logger.d("Decoded Json: " + users.usersList.toString());
     notifyListeners();
   }
 
@@ -117,12 +116,12 @@ class StreamSocketProvider with ChangeNotifier {
 
   // Listen to update of typing status from connected users
   void handleTyping(Map<String, dynamic> data) {
-    print(data);
+    logger.d(data);
   }
 
   // Send a Message to the server
-  Future<void> sendMessage(String senderId, String recipientId, String message,
-      int recipientIndex) async {
+  Future<void> sendMessage(
+      String senderId, String recipientId, String message, int recipientIndex) async {
     Message tmp = new Message(
         senderId: senderId,
         recipientId: recipientId,
@@ -141,11 +140,9 @@ class StreamSocketProvider with ChangeNotifier {
   // Listen to all message events from connected users
   void handleMessage(Map<String, dynamic> data) {
     //streamMessages.addResponse(data);
-    print("Messages: " + data.toString());
+    logger.d("Messages: " + data.toString());
     //streamMessages.sink.add(data);
     //If Message New Added to User, Notify Listeners
-    users
-        .addMessage(data)
-        .then((wasAdded) => {if (wasAdded) notifyListeners()});
+    users.addMessage(data).then((wasAdded) => {if (wasAdded) notifyListeners()});
   }
 }

@@ -13,6 +13,10 @@ class StudentProvider with ChangeNotifier {
   Student _student = new Student();
   Student get student => _student;
   var logger = Logger(level: Level.warning);
+
+  /// ========================================================================
+  ///!      SHOULD BE USED TO SET STUDENT EVERYWHERE IN THE PROGRAM
+  ///========================================================================**/
   void setStudent(Student student) {
     if (student != null) {
       User usr = new User();
@@ -23,15 +27,31 @@ class StudentProvider with ChangeNotifier {
     }
   }
 
+  /// ================================================================================================
+  ///!   SHOULD ONLY BE USED WHEN PROFILE OF USER CHANGED BUT NOT PASSWORD. TO SET STUDENT USE SetStudent
+  ///================================================================================================**/
   void setStudentWithUser(Student student) {
     if (student != null) {
-      String pass = _student.user.password;
+      String pass;
+      pass = _student.user.password;
       _student = student;
       _student.user.password = pass;
       notifyListeners();
     }
   }
 
+  /// ================================================================================================
+  ///!          DON'T USE IT, SHOULD ONLY BE USED ON LOGIN AND PROFILE PASSWORD UPDATE!
+  ///================================================================================================**/
+
+  void setStudentWithUserWithPassword(Student student) {
+    _student = student;
+    notifyListeners();
+  }
+
+  /// ================================================================================================
+  ///!                                  Auto login Future
+  ///================================================================================================**/
   Future<int> autoLogin(String email, String password) async {
     logger.d("Trying AutoLogging!");
     int res = -1;
@@ -129,8 +149,7 @@ class StudentProvider with ChangeNotifier {
         logger.d("Student retrieved:");
         //Convert from json List of Map to List of Student
         var decodedList = (json.decode(response.body) as List<dynamic>);
-        List<Student> students =
-            decodedList.map((i) => Student.fromJson(i)).toList();
+        List<Student> students = decodedList.map((i) => Student.fromJson(i)).toList();
         //Send back List of Students
         return students;
       }

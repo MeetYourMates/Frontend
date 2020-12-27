@@ -7,8 +7,11 @@ class GetStarted extends StatelessWidget {
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size * 0.96;
     return Scaffold(
-      body: Body(),
+      body: Body(
+        size: size,
+      ),
     );
   }
 }
