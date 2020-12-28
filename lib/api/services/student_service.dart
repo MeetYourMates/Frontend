@@ -71,6 +71,10 @@ class StudentProvider with ChangeNotifier {
           Map responseData = jsonDecode(response.body);
           _student = (Student.fromJson(responseData));
           _student.user.password = password;
+          logger.e("200 AutoLogging response body");
+          logger.wtf(response.body.toString());
+          logger.e("200 AutoLogging Student");
+          logger.wtf(_student.toJson().toString());
           UserPreferences().saveUser(_student.user);
           res = 0;
         } catch (err) {

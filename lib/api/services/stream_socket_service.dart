@@ -33,7 +33,8 @@ class StreamSocketProvider with ChangeNotifier {
   ///================================================================================================**/
   //get getStreamUsers => {streamUsers.stream};
   //get getStreammessages => {streamMessages.stream};
-  void createSocketConnection(String token) {
+  bool createSocketConnection(String token) {
+    logger.e("createSocketConnection" + token);
     try {
       // Configure socket transports must be sepecified
       socket = IO.io(AppUrl.baseURL, <String, dynamic>{
@@ -64,8 +65,10 @@ class StreamSocketProvider with ChangeNotifier {
                 handleMessage(data),
               });
       socket.on('disconnect', (_) => logger.d('disconnect'));
+      return true;
     } catch (e) {
       logger.e(e.toString());
+      return false;
     }
   }
 

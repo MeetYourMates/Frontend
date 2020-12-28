@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/send_menu_items.dart';
 import 'package:meet_your_mates/api/models/user.dart';
 import 'package:meet_your_mates/api/services/stream_socket_service.dart';
@@ -12,8 +13,7 @@ import 'package:provider/provider.dart';
 class ChatDetailPage extends StatefulWidget {
   final int selectedIndex;
 
-  const ChatDetailPage({Key key, @required this.selectedIndex})
-      : super(key: key);
+  const ChatDetailPage({Key key, @required this.selectedIndex}) : super(key: key);
   @override
   _ChatDetailPageState createState() => _ChatDetailPageState();
 }
@@ -21,15 +21,14 @@ class ChatDetailPage extends StatefulWidget {
 class _ChatDetailPageState extends State<ChatDetailPage> {
   ScrollController _scrollController = ScrollController();
   List<SendMenuItems> menuItems = [
-    SendMenuItems(
-        text: "Photos & Videos", icons: Icons.image, color: Colors.amber),
-    SendMenuItems(
-        text: "Document", icons: Icons.insert_drive_file, color: Colors.blue),
+    SendMenuItems(text: "Photos & Videos", icons: Icons.image, color: Colors.amber),
+    SendMenuItems(text: "Document", icons: Icons.insert_drive_file, color: Colors.blue),
     SendMenuItems(text: "Audio", icons: Icons.music_note, color: Colors.orange),
-    SendMenuItems(
-        text: "Location", icons: Icons.location_on, color: Colors.green),
+    SendMenuItems(text: "Location", icons: Icons.location_on, color: Colors.green),
     SendMenuItems(text: "Contact", icons: Icons.person, color: Colors.purple),
   ];
+
+  Logger logger = new Logger(level: Level.debug);
 //
   void showModal() {
     showModalBottomSheet(
@@ -42,9 +41,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(20),
-                    topLeft: Radius.circular(20)),
+                borderRadius:
+                    BorderRadius.only(topRight: Radius.circular(20), topLeft: Radius.circular(20)),
               ),
               child: Column(
                 children: <Widget>[
@@ -108,18 +106,18 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) =>
-        {_scrollController.jumpTo(_scrollController.position.maxScrollExtent)});
+    var msgController = TextEditingController();
+    WidgetsBinding.instance.addPostFrameCallback(
+        (_) => {_scrollController.jumpTo(_scrollController.position.maxScrollExtent)});
     var textValue = "";
-    StreamSocketProvider socketProvider =
-        Provider.of<StreamSocketProvider>(context, listen: true);
+    StreamSocketProvider socketProvider = Provider.of<StreamSocketProvider>(context, listen: true);
     User chatUser = socketProvider.users.usersList[widget.selectedIndex];
     // ignore: unused_local_variable
     StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
     Future<void> sendMessage(String value) async {
       print("Message Sent: " + value);
-      socketProvider.sendMessage(_studentProvider.student.user.id, chatUser.id,
-          value, widget.selectedIndex);
+      socketProvider.sendMessage(
+          _studentProvider.student.user.id, chatUser.id, value, widget.selectedIndex);
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     }
 
@@ -173,11 +171,21 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                   ),
                   Expanded(
                     child: TextField(
+                      maxLength: 500,
+                      maxLines: null,
+                      showCursor: true,
+                      expands: true,
+                      autofocus: true,
+                      controller: msgController,
                       onChanged: (value) {
-                        textValue = value != null ? value : textValue;
+                        logger.wtf("onChanged: " + value);
+                        textValue =
+                            (value != null || value.isNotEmpty || value != "") ? value : textValue;
                       },
                       onSubmitted: (String value) {
+                        logger.wtf("onSubmitted: " + value);
                         sendMessage(value);
+                        msgController.clear();
                       },
                       decoration: InputDecoration(
                           hintText: "Type message...",
@@ -195,10 +203,9 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
               padding: EdgeInsets.only(right: 30, bottom: 15),
               child: FloatingActionButton(
                 onPressed: () {
-                  if (textValue.isNotEmpty &&
-                      textValue != null &&
-                      textValue != "") {
+                  if (textValue.isNotEmpty && textValue != null && textValue != "") {
                     sendMessage(textValue);
+                    msgController.clear();
                   }
                 },
                 child: Icon(

@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_offline/flutter_offline.dart';
 //Services
 import 'package:meet_your_mates/api/services/auth_service.dart';
 import 'package:meet_your_mates/api/services/image_service.dart';
@@ -11,7 +10,6 @@ import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/api/services/user_service.dart';
 import 'package:meet_your_mates/components/error.dart';
 import 'package:meet_your_mates/components/loading.dart';
-import 'package:meet_your_mates/components/no_connection.dart';
 import 'package:meet_your_mates/screens/Dashboard/dashboard.dart';
 import 'package:meet_your_mates/screens/GetStarted/getstarted.dart';
 //Screens
@@ -73,8 +71,8 @@ class MyApp extends StatelessWidget {
     /// [_fetchPreferences] We fetch the preference from the storage and notify in future
     Future<User> _fetchPreferences() async {
       print("AutoLogin Executed");
-      User status = await UserPreferences().getUser();
-      return status;
+      User user = await UserPreferences().getUser();
+      return user;
     }
 
     /// [getFutureBuildWidget] Depending on the Result from SharedPreferences or Server, we Build the Widget
@@ -151,7 +149,8 @@ class MyApp extends StatelessWidget {
         /// we recieve the data from [isConnected] which is a stream we are listening to, if state change occurs
         /// widget tree is rebuit. If [Null] Or [NotConnected] we show noConnection Wdiget
         /// else we try to connect to our Backend Server
-        home: OfflineBuilder(
+        home: getFutureBuildWidget,
+        /* OfflineBuilder(
           child: SizedBox.expand(
             child: Container(
               child: Text("Checking Connection..."),
@@ -162,10 +161,11 @@ class MyApp extends StatelessWidget {
             if (connectivity == ConnectivityResult.none) {
               return NoConnection();
             } else {
-              return getFutureBuildWidget;
+              return /
+              ;
             }
           },
-        ),
+        ) */
         routes: {
           '/dashboard': (context) => DashBoard(),
           '/login': (context) => Login(),
