@@ -1,11 +1,13 @@
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/send_menu_items.dart';
 import 'package:meet_your_mates/api/models/user.dart';
-import 'package:meet_your_mates/api/services/stream_socket_service.dart';
+import 'package:meet_your_mates/api/services/socket_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
-import 'package:meet_your_mates/constants.dart';
+import 'package:meet_your_mates/screens/Chat/ChatInput/chatInput.dart';
 import 'package:meet_your_mates/screens/Chat/chat_bubble.dart';
 import 'package:meet_your_mates/screens/Chat/chat_detail_appbar.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +21,7 @@ class ChatDetailPage extends StatefulWidget {
 }
 
 class _ChatDetailPageState extends State<ChatDetailPage> {
+  TextStyle inputTextStyle;
   ScrollController _scrollController = ScrollController();
   List<SendMenuItems> menuItems = [
     SendMenuItems(text: "Photos & Videos", icons: Icons.image, color: Colors.amber),
@@ -27,16 +30,28 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     SendMenuItems(text: "Location", icons: Icons.location_on, color: Colors.green),
     SendMenuItems(text: "Contact", icons: Icons.person, color: Colors.purple),
   ];
+  @override
+  void initState() {
+    //WidgetsBinding.instance.addPostFrameCallback(widgetBuilt);
+    inputTextStyle = inputTextStyle ?? TextStyle(fontSize: 16.0, color: Colors.black87);
+    super.initState();
+  }
 
-  Logger logger = new Logger(level: Level.debug);
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  Logger logger = new Logger(level: Level.error);
 //
   void showModal() {
     showModalBottomSheet(
         context: context,
         builder: (context) {
-          double availableHeight = MediaQuery.of(context).size.height / 2;
+          Size size = MediaQuery.of(context).size;
           return Container(
-            height: availableHeight,
+            //constraints:
+            //BoxConstraints.tightForFinite(width: size.width, height: size.height * 0.5),
             color: Color(0xff737373),
             child: Container(
               decoration: BoxDecoration(
@@ -45,49 +60,46 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     BorderRadius.only(topRight: Radius.circular(20), topLeft: Radius.circular(20)),
               ),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  Flexible(
-                    flex: 4,
+                  Expanded(
+                    flex: 2,
                     child: SizedBox(
                       height: 4,
                     ),
                   ),
-                  Flexible(
-                    flex: 4,
+                  Expanded(
+                    flex: 1,
                     child: Center(
                       child: Container(
-                        height: 4,
-                        width: 50,
+                        width: size.width * 0.30,
                         color: Colors.grey.shade200,
                       ),
                     ),
                   ),
-                  Flexible(
-                    flex: 4,
+                  Expanded(
+                    flex: 1,
                     child: SizedBox(
-                      height: 10,
+                      height: 1,
                     ),
                   ),
                   Flexible(
-                    flex: 82,
+                    flex: 96,
                     child: ListView.builder(
                       itemCount: menuItems.length,
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
                         return Container(
-                          padding: EdgeInsets.only(top: 10, bottom: 10),
+                          //padding: EdgeInsets.only(top: 10, bottom: 10),
                           child: ListTile(
                             leading: Container(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(30),
                                 color: menuItems[index].color.shade50,
                               ),
-                              height: 50,
-                              width: 50,
                               child: Icon(
                                 menuItems[index].icons,
-                                size: 20,
                                 color: menuItems[index].color.shade400,
                               ),
                             ),
@@ -96,7 +108,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                         );
                       },
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -109,11 +121,14 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     var msgController = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback(
         (_) => {_scrollController.jumpTo(_scrollController.position.maxScrollExtent)});
-    var textValue = "";
-    StreamSocketProvider socketProvider = Provider.of<StreamSocketProvider>(context, listen: true);
+    //var textValue = "";
+    SocketProvider socketProvider = Provider.of<SocketProvider>(context, listen: true);
     User chatUser = socketProvider.users.usersList[widget.selectedIndex];
-    // ignore: unused_local_variable
+
+    /// [_studentProvider] StudentProvider Instance of a singleton
     StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
+
+    ///[sendMessage] Function to send message to server and also save the message into local List of Messages(No LocalStorage!)
     Future<void> sendMessage(String value) async {
       print("Message Sent: " + value);
       socketProvider.sendMessage(
@@ -121,102 +136,60 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     }
 
+    /**========================================================================
+     *                CHAT VIEW FOR A CERTAIN USER!
+     *========================================================================**/
     return Scaffold(
+      /// [AppBar] which shows the user avatar, current status (online/offline) and name
       appBar: ChatDetailPageAppBar(
-        name: chatUser.email,
+        name: chatUser.name,
       ),
+
+      /// [Stack] STACK AS WE REQUIRE CHATINPUT AND MESSAGES TO ALWAYS BE SHOWN,
+      /// and thus never be hidden
       body: Stack(
         children: <Widget>[
-          ListView.builder(
-            itemCount: chatUser.messagesList.length,
-            shrinkWrap: true,
-            controller: _scrollController,
-            padding: EdgeInsets.only(top: 10, bottom: 10),
-            physics: ClampingScrollPhysics(),
-            itemBuilder: (context, index) {
-              return ChatBubble(
-                  chatMessage: chatUser.messagesList[index],
-                  myId: _studentProvider.student.user.id);
-            },
-          ),
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: Container(
-              padding: EdgeInsets.only(left: 16, bottom: 10),
-              height: 80,
-              width: double.infinity,
-              color: Colors.white,
-              child: Row(
-                children: <Widget>[
-                  GestureDetector(
-                    onTap: () {
-                      showModal();
-                    },
-                    child: Container(
-                      height: 40,
-                      width: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.blueGrey,
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: Icon(
-                        Icons.add,
-                        color: Colors.white,
-                        size: 21,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 16,
-                  ),
-                  Expanded(
-                    child: TextField(
-                      maxLength: 500,
-                      maxLines: null,
-                      showCursor: true,
-                      expands: true,
-                      autofocus: true,
-                      controller: msgController,
-                      onChanged: (value) {
-                        logger.wtf("onChanged: " + value);
-                        textValue =
-                            (value != null || value.isNotEmpty || value != "") ? value : textValue;
-                      },
-                      onSubmitted: (String value) {
-                        logger.wtf("onSubmitted: " + value);
-                        sendMessage(value);
-                        msgController.clear();
-                      },
-                      decoration: InputDecoration(
-                          hintText: "Type message...",
-                          hintStyle: TextStyle(color: Colors.grey.shade500),
-                          border: InputBorder.none),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Container(
-              padding: EdgeInsets.only(right: 30, bottom: 15),
-              child: FloatingActionButton(
-                onPressed: () {
-                  if (textValue.isNotEmpty && textValue != null && textValue != "") {
-                    sendMessage(textValue);
-                    msgController.clear();
-                  }
-                },
-                child: Icon(
-                  Icons.send,
-                  color: Colors.white,
+          Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              /**============================================
+           *               Message List
+           *=============================================**/
+              //* EXPANDED LIST OF MESSAGES OCCYPUYING THE REMAINING SPACE!
+              Expanded(
+                child: ListView.builder(
+                  itemCount: chatUser.messagesList.length,
+                  shrinkWrap: true,
+                  controller: _scrollController,
+                  padding: EdgeInsets.only(top: 10, bottom: 10),
+                  physics: ClampingScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    return ChatBubble(
+                        chatMessage: chatUser.messagesList[index],
+                        myId: _studentProvider.student.user.id);
+                  },
                 ),
-                backgroundColor: kPrimaryColor,
-                elevation: 0,
               ),
-            ),
-          )
+              /**============================================
+           *               ChatInput Toolbar
+           *=============================================**/
+              //* FIXED SIZE CHAT INPUT TOOLBAR
+              Align(
+                alignment: Alignment.bottomLeft,
+                child: SafeArea(
+                  child: ChatInputToolbar(
+                      onExtra: showModal,
+                      onSend: (textMessage) => {
+                            logger.d(textMessage),
+                            sendMessage(textMessage),
+                          },
+                      textEditingController: msgController,
+                      inputTextStyle: inputTextStyle),
+                ),
+                /* ), */
+              ),
+            ],
+          ),
         ],
       ),
     );

@@ -4,8 +4,8 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 //Services
 import 'package:meet_your_mates/api/services/auth_service.dart';
 import 'package:meet_your_mates/api/services/image_service.dart';
+import 'package:meet_your_mates/api/services/socket_service.dart';
 import 'package:meet_your_mates/api/services/start_service.dart';
-import 'package:meet_your_mates/api/services/stream_socket_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/api/services/user_service.dart';
 import 'package:meet_your_mates/components/error.dart';
@@ -48,7 +48,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => StudentProvider()),
         ChangeNotifierProvider(create: (_) => StartProvider()),
         ChangeNotifierProvider(create: (_) => ImagesProvider()),
-        ChangeNotifierProvider(create: (_) => StreamSocketProvider()),
+        ChangeNotifierProvider(create: (_) => SocketProvider()),
       ],
       child: MyApp(),
     ),

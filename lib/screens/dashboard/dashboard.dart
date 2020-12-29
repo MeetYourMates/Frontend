@@ -1,6 +1,6 @@
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:meet_your_mates/api/services/stream_socket_service.dart';
+import 'package:meet_your_mates/api/services/socket_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/components/statefull_wrapper.dart';
 import 'package:meet_your_mates/constants.dart';
@@ -51,7 +51,7 @@ class _DashBoardState extends State<DashBoard> {
     //StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
     //SocketService socketService = new SocketService();
     Future<void> openSocketConnection() async {
-      Provider.of<StreamSocketProvider>(context, listen: true)
+      Provider.of<SocketProvider>(context, listen: true)
           .createSocketConnection(_studentProvider.student.user.token);
     }
 

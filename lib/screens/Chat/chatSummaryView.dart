@@ -38,8 +38,7 @@ class ChatSummaryView extends StatelessWidget {
         padding: const EdgeInsets.all(4.0),
         child: ListTile(
           leading: avatar != null
-              ? CircleAvatar(
-                  radius: 30.0, backgroundImage: NetworkImage(avatar))
+              ? CircleAvatar(radius: 30.0, backgroundImage: NetworkImage(avatar))
               : Icon(
                   Icons.account_circle,
                   size: 64.0,
@@ -95,7 +94,7 @@ class ChatSummaryView extends StatelessWidget {
     return Text(
       messageDate,
       style: TextStyle(
-        color: messageDate.contains(":") ? textUnreadGreenColor : Colors.grey,
+        color: messageDate.contains(":") ? textUnreadGreenColor : Colors.grey[500],
       ),
     );
   }

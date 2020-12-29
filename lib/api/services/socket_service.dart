@@ -7,7 +7,7 @@ import 'package:meet_your_mates/api/models/users.dart';
 import 'package:meet_your_mates/api/util/app_url.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-class StreamSocketProvider with ChangeNotifier {
+class SocketProvider with ChangeNotifier {
   /// ================================================================================================
   /// *                                  Variables
   ///================================================================================================**/
