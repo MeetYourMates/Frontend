@@ -2,8 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:meet_your_mates/constants.dart';
 
-class ChatDetailPageAppBar extends StatelessWidget
-    implements PreferredSizeWidget {
+class ChatDetailPageAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String avatar;
   final String name;
   const ChatDetailPageAppBar({
@@ -33,12 +32,8 @@ class ChatDetailPageAppBar extends StatelessWidget
                     color: Colors.black,
                   ),
                 ),
-                SizedBox(
-                  width: 2,
-                ),
                 avatar != null
-                    ? CircleAvatar(
-                        radius: 40.0, backgroundImage: NetworkImage(avatar))
+                    ? CircleAvatar(radius: 40.0, backgroundImage: NetworkImage(avatar))
                     : Icon(
                         Icons.account_circle,
                         size: 40.0,

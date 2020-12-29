@@ -51,8 +51,11 @@ class ChatSummaryView extends StatelessWidget {
             ),
           ),
           subtitle: Text(
-            mostRecentMessage != null ? mostRecentMessage : "No Recent Message",
+            (mostRecentMessage != null && mostRecentMessage.isNotEmpty)
+                ? mostRecentMessage
+                : "No message",
             overflow: TextOverflow.ellipsis,
+            maxLines: 1,
             style: TextStyle(
               fontSize: 16.0,
               color: Colors.grey,
