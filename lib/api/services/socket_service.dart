@@ -1,10 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/message.dart';
 import 'package:meet_your_mates/api/models/privateChatHistory.dart';
-import 'package:meet_your_mates/api/models/user.dart';
 import 'package:meet_your_mates/api/models/users.dart';
 import 'package:meet_your_mates/api/util/app_url.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -17,6 +14,7 @@ class SocketProvider with ChangeNotifier {
   //StreamSocket streamUsers = StreamSocket();
   //StreamSocket streamMessages = StreamSocket();
   Users users = new Users(usersList: []);
+  List<String> usersOnline = <String>[];
   Logger logger = Logger(level: Level.error);
   String myId;
 
@@ -99,15 +97,10 @@ class SocketProvider with ChangeNotifier {
   /// ================================================================================================
   /// *                                  EVENTS FUNCTIONS
   ///================================================================================================**/
-// Authenticate myself on to the Server
-  sendAuthenticate(String token) {
-    logger.d('connected: ${socket.id}');
-    socket.emit('authentication', {"token": token});
-  }
 
   // Send OnlineUsers to Server
-  sendOnlineUsers(Map<String, dynamic> data) {
-    socket.emit("online_users", json.encode(data));
+  sendOnlineUsers() {
+    socket.emit("online_users", "");
   }
 
   // Listen to Authentication updates for myself
@@ -116,32 +109,37 @@ class SocketProvider with ChangeNotifier {
     logger.d('Authenticated: ${socket.id}');
   }
 
-  //! Listen to OnlineUsers updates of connected usersfrom server
+  //* Listen to OnlineUsers updates of connected usersfrom server
   handleOnlineUsers(List<dynamic> data) async {
     //streamUsers.addResponse(data);
     logger.d("online_users: " + data.toString());
     //streamUsers.sink.add(data);
-    List<User> usersListTemp = Users.fromDynamicList(data).usersList;
-    //From this usersList and chatHistorial Users List with messages
-    //Merge them together and wherever a user is in online_usersList set his status isOnline = true
-    usersListTemp.forEach((element) {
-      //Check if user in our usersList
-      //If it does set the status online = true else leave it false
-
-      int found = users.usersList.isNotEmpty ? users.usersList.indexOf(element) : -1;
-      if (found == -1) {
-        //If it doesn't exist, add the user and put status online true
-        element.isOnline = true;
-        users.usersList.add(element);
-      } else {
-        users.usersList[found].isOnline = true;
+    usersOnline = data.cast<String>();
+    //From this usersOnline and chatHistorial Users List with messages
+    //Wherever we find a chatHistorialUser with userOnline, set that user isOnline=true,else false!
+    if (users.usersList != null) {
+      for (int i = 0; i < users.usersList.length; i++) {
+        users.usersList[i].isOnline = false;
       }
-    });
-    logger.d("Decoded Json: " + users.usersList.toString());
+    }
+    for (int k = 0; k < usersOnline.length; k++) {
+      //Search for user in usersList and set Online
+      if (users.usersList != null) {
+        for (int i = 0; i < users.usersList.length; i++) {
+          if (users.usersList[i].id == usersOnline[k]) {
+            //Found User in List
+            users.usersList[i].isOnline = true;
+            break;
+          }
+        }
+      } else {
+        break;
+      }
+    }
     notifyListeners();
   }
 
-  //! HANDLES PRIVATE CHAT HISTORY!
+  //* HANDLES PRIVATE CHAT HISTORY!
   handlePrivateChatHistory(List<dynamic> data) async {
     //streamUsers.addResponse(data);
     logger.d("private_chat_history: " + data.toString());
@@ -149,21 +147,29 @@ class SocketProvider with ChangeNotifier {
     data.forEach((element) {
       privateChatHistoryList.add(PrivateChatHistory.fromJson(element));
     });
-    //From Chat history where each element is users + messages
-    //we merge it into users where each user contains messages and a state isOnline
-    privateChatHistoryList.forEach((privChat) {
-      //? Need to check if the user is online and not myself!
-      int indx = privChat.users[0].id == myId ? 1 : 0;
-      int found = users.usersList.indexOf(privChat.users[indx]);
-      if (found == -1) {
-        //Doesnt Contain
-        users.usersList.add(privChat.users[indx]);
-        users.usersList.last.messagesList = privChat.messages;
+    users.usersList = [];
+    //From Chat history convert to usersList with messages
+    for (int i = 0; i < privateChatHistoryList.length; i++) {
+      int indx = privateChatHistoryList[i].users[0].id == myId ? 1 : 0;
+      users.usersList.add(privateChatHistoryList[i].users[indx]);
+      users.usersList.last.isOnline = false;
+      users.usersList.last.messagesList = privateChatHistoryList[i].messages;
+    }
+    //Now check if any of the privateChatHistory Users are online
+    for (int k = 0; k < usersOnline.length; k++) {
+      //Search for user in usersList and set Online
+      if (users.usersList != null) {
+        for (int i = 0; i < users.usersList.length; i++) {
+          if (users.usersList[i].id == usersOnline[k]) {
+            //Found User in List
+            users.usersList[i].isOnline = true;
+            break;
+          }
+        }
       } else {
-        //User Already Online
-        users.usersList[found].messagesList = privChat.messages;
+        break;
       }
-    });
+    }
 
     logger.d("Decoded Json: " + users.usersList.toString());
     notifyListeners();
