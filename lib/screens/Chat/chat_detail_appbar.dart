@@ -5,10 +5,12 @@ import 'package:meet_your_mates/constants.dart';
 class ChatDetailPageAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String avatar;
   final String name;
+  final bool isOnline;
   const ChatDetailPageAppBar({
     Key key,
     this.avatar,
     @required this.name,
+    this.isOnline = false,
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,7 @@ class ChatDetailPageAppBar extends StatelessWidget implements PreferredSizeWidge
         backgroundColor: Colors.grey[300],
         flexibleSpace: SafeArea(
           child: Container(
-            padding: EdgeInsets.only(right: 16),
+            padding: EdgeInsets.only(right: 4),
             child: Row(
               children: <Widget>[
                 IconButton(
@@ -39,7 +41,7 @@ class ChatDetailPageAppBar extends StatelessWidget implements PreferredSizeWidge
                         size: 40.0,
                       ),
                 SizedBox(
-                  width: 12,
+                  width: 1,
                 ),
                 Expanded(
                   child: Column(
@@ -54,15 +56,16 @@ class ChatDetailPageAppBar extends StatelessWidget implements PreferredSizeWidge
                         height: 6,
                       ),
                       Text(
-                        "Online",
-                        style: TextStyle(color: Colors.green, fontSize: 12),
+                        isOnline ? "Online" : "Offline",
+                        style: TextStyle(
+                            color: isOnline ? Colors.green : Colors.red[900], fontSize: 12),
                       ),
                     ],
                   ),
                 ),
                 Icon(
                   Icons.more_vert,
-                  color: Colors.grey.shade700,
+                  color: Colors.grey.shade800,
                 ),
               ],
             ),

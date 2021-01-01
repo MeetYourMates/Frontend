@@ -7,34 +7,36 @@ class User {
   String picture;
   String name;
   String token;
+  DateTime lastActiveAt;
+  bool isOnline = false;
+
   List<Message> messagesList = <Message>[];
   User(
-      {this.id,
-      this.email,
-      this.password,
-      this.token,
-      this.picture,
-      this.name});
-  factory User.fromJson(Map<String, dynamic> responseData) {
-    return User(
-        id: responseData['_id'],
-        email: responseData['email'],
-        picture: responseData['picture'],
-        name: responseData['name'],
-        password: responseData['password'],
-        token: responseData['token']);
-  }
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['_id'] = this.id;
-    data['email'] = this.email;
-    data['picture'] = this.picture;
-    data['name'] = this.name;
-    data['password'] = this.password;
-    data['token'] = this.token;
-    return data;
-  }
+      {this.id, this.email, this.password, this.token, this.picture, this.lastActiveAt, this.name});
+  factory User.fromJson(Map<String, dynamic> json) => User(
+        id: json["_id"] == null ? null : json["_id"],
+        email: json["email"] == null ? null : json["email"],
+        password: json["password"] == null ? null : json["password"],
+        token: json["email"] == null ? null : json["token"],
+        picture: json["picture"] == null ? null : json["picture"],
+        name: json["name"] == null ? null : json["name"],
+        lastActiveAt: json["lastActiveAt"] == null ? null : DateTime.parse(json["lastActiveAt"]),
+      );
 
+  Map<String, dynamic> toJson() => {
+        "_id": id == null ? null : id,
+        "email": email == null ? null : email,
+        "password": password == null ? null : password,
+        "token": email == null ? null : token,
+        "picture": picture == null ? null : picture,
+        "name": name == null ? null : name,
+        "lastActiveAt": lastActiveAt == null ? null : lastActiveAt.toIso8601String(),
+      };
+  @override
+  bool operator ==(Object other) => other is User && other.id == id;
+
+  @override
+  int get hashCode => id.hashCode;
   @override
   String toString() {
     return "id: " +

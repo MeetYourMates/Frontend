@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/message.dart';
+import 'package:meet_your_mates/api/models/privateChatHistory.dart';
+import 'package:meet_your_mates/api/models/user.dart';
 import 'package:meet_your_mates/api/models/users.dart';
 import 'package:meet_your_mates/api/util/app_url.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -14,8 +16,11 @@ class SocketProvider with ChangeNotifier {
   IO.Socket socket;
   //StreamSocket streamUsers = StreamSocket();
   //StreamSocket streamMessages = StreamSocket();
-  Users users = new Users();
+  Users users = new Users(usersList: []);
   Logger logger = Logger(level: Level.error);
+  String myId;
+
+  //! DON'T DELETE!
   /*StreamController<String> streamUsers = StreamController<String>.broadcast();
   void disposeStreamUsers() {
     streamUsers.close();
@@ -33,7 +38,8 @@ class SocketProvider with ChangeNotifier {
   ///================================================================================================**/
   //get getStreamUsers => {streamUsers.stream};
   //get getStreammessages => {streamMessages.stream};
-  bool createSocketConnection(String token) {
+  bool createSocketConnection(String token, String myId) {
+    this.myId = myId;
     logger.e("createSocketConnection" + token);
     try {
       // Configure socket transports must be sepecified
@@ -51,13 +57,24 @@ class SocketProvider with ChangeNotifier {
           (_) => {
                 socket.emit('authentication', {"token": token})
               });
-      socket.on('authenticated', (data) => {logger.d(data)});
+      socket.on(
+          'authenticated',
+          (data) => {
+                logger.d(data),
+                //Get Chat Historial
+                socket.emit('private_chat_history', '{"message":"give my chat history"]'),
+              });
       socket.on(
           'online_users',
           (data) => {
                 logger.d(data),
-                //handleOnlineusersen(data.toString()),
-                handleOnlineusersen(data),
+                //handleOnlineUsers(data.toString()),
+                handleOnlineUsers(data),
+              });
+      socket.on(
+          'private_chat_history',
+          (data) => {
+                handlePrivateChatHistory(data),
               });
       socket.on(
           'chat_message',
@@ -99,12 +116,55 @@ class SocketProvider with ChangeNotifier {
     logger.d('Authenticated: ${socket.id}');
   }
 
-  // Listen to OnlineUsers updates of connected usersfrom server
-  handleOnlineusersen(List<dynamic> data) async {
+  //! Listen to OnlineUsers updates of connected usersfrom server
+  handleOnlineUsers(List<dynamic> data) async {
     //streamUsers.addResponse(data);
     logger.d("online_users: " + data.toString());
     //streamUsers.sink.add(data);
-    users.usersList = Users.fromDynamicList(data).usersList;
+    List<User> usersListTemp = Users.fromDynamicList(data).usersList;
+    //From this usersList and chatHistorial Users List with messages
+    //Merge them together and wherever a user is in online_usersList set his status isOnline = true
+    usersListTemp.forEach((element) {
+      //Check if user in our usersList
+      //If it does set the status online = true else leave it false
+
+      int found = users.usersList.isNotEmpty ? users.usersList.indexOf(element) : -1;
+      if (found == -1) {
+        //If it doesn't exist, add the user and put status online true
+        element.isOnline = true;
+        users.usersList.add(element);
+      } else {
+        users.usersList[found].isOnline = true;
+      }
+    });
+    logger.d("Decoded Json: " + users.usersList.toString());
+    notifyListeners();
+  }
+
+  //! HANDLES PRIVATE CHAT HISTORY!
+  handlePrivateChatHistory(List<dynamic> data) async {
+    //streamUsers.addResponse(data);
+    logger.d("private_chat_history: " + data.toString());
+    List<PrivateChatHistory> privateChatHistoryList = [];
+    data.forEach((element) {
+      privateChatHistoryList.add(PrivateChatHistory.fromJson(element));
+    });
+    //From Chat history where each element is users + messages
+    //we merge it into users where each user contains messages and a state isOnline
+    privateChatHistoryList.forEach((privChat) {
+      //? Need to check if the user is online and not myself!
+      int indx = privChat.users[0].id == myId ? 1 : 0;
+      int found = users.usersList.indexOf(privChat.users[indx]);
+      if (found == -1) {
+        //Doesnt Contain
+        users.usersList.add(privChat.users[indx]);
+        users.usersList.last.messagesList = privChat.messages;
+      } else {
+        //User Already Online
+        users.usersList[found].messagesList = privChat.messages;
+      }
+    });
+
     logger.d("Decoded Json: " + users.usersList.toString());
     notifyListeners();
   }
@@ -129,7 +189,7 @@ class SocketProvider with ChangeNotifier {
         senderId: senderId,
         recipientId: recipientId,
         text: message,
-        timestamp: DateTime.now().millisecondsSinceEpoch);
+        createdAt: DateTime.now().toIso8601String());
     emitChatMessage(tmp);
     users.usersList[recipientIndex].messagesList.add(tmp);
     notifyListeners();

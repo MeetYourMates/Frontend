@@ -51,8 +51,8 @@ class _DashBoardState extends State<DashBoard> {
     //StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
     //SocketService socketService = new SocketService();
     Future<void> openSocketConnection() async {
-      Provider.of<SocketProvider>(context, listen: true)
-          .createSocketConnection(_studentProvider.student.user.token);
+      Provider.of<SocketProvider>(context, listen: true).createSocketConnection(
+          _studentProvider.student.user.token, _studentProvider.student.user.id);
     }
 
     return StatefulWrapper(
