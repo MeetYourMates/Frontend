@@ -144,6 +144,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       appBar: ChatDetailPageAppBar(
         name: chatUser.name,
         avatar: chatUser.picture,
+        isOnline: chatUser.isOnline,
       ),
 
       /// [Stack] STACK AS WE REQUIRE CHATINPUT AND MESSAGES TO ALWAYS BE SHOWN,

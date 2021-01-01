@@ -2,6 +2,7 @@ import 'package:meet_your_mates/api/models/message.dart';
 import 'package:meet_your_mates/api/models/user.dart';
 
 class Users {
+  //List<User> usersList =new  List<User>[];
   List<User> usersList = [];
   String myId = "";
   Users({this.usersList});

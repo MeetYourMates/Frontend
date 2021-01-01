@@ -1,8 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/message.dart';
+import 'package:meet_your_mates/api/models/privateChatHistory.dart';
 import 'package:meet_your_mates/api/models/users.dart';
 import 'package:meet_your_mates/api/util/app_url.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -14,8 +13,12 @@ class SocketProvider with ChangeNotifier {
   IO.Socket socket;
   //StreamSocket streamUsers = StreamSocket();
   //StreamSocket streamMessages = StreamSocket();
-  Users users = new Users();
+  Users users = new Users(usersList: []);
+  List<String> usersOnline = <String>[];
   Logger logger = Logger(level: Level.error);
+  String myId;
+
+  //! DON'T DELETE!
   /*StreamController<String> streamUsers = StreamController<String>.broadcast();
   void disposeStreamUsers() {
     streamUsers.close();
@@ -33,7 +36,8 @@ class SocketProvider with ChangeNotifier {
   ///================================================================================================**/
   //get getStreamUsers => {streamUsers.stream};
   //get getStreammessages => {streamMessages.stream};
-  bool createSocketConnection(String token) {
+  bool createSocketConnection(String token, String myId) {
+    this.myId = myId;
     logger.e("createSocketConnection" + token);
     try {
       // Configure socket transports must be sepecified
@@ -51,13 +55,24 @@ class SocketProvider with ChangeNotifier {
           (_) => {
                 socket.emit('authentication', {"token": token})
               });
-      socket.on('authenticated', (data) => {logger.d(data)});
+      socket.on(
+          'authenticated',
+          (data) => {
+                logger.d(data),
+                //Get Chat Historial
+                socket.emit('private_chat_history', '{"message":"give my chat history"]'),
+              });
       socket.on(
           'online_users',
           (data) => {
                 logger.d(data),
-                //handleOnlineusersen(data.toString()),
-                handleOnlineusersen(data),
+                //handleOnlineUsers(data.toString()),
+                handleOnlineUsers(data),
+              });
+      socket.on(
+          'private_chat_history',
+          (data) => {
+                handlePrivateChatHistory(data),
               });
       socket.on(
           'chat_message',
@@ -82,15 +97,10 @@ class SocketProvider with ChangeNotifier {
   /// ================================================================================================
   /// *                                  EVENTS FUNCTIONS
   ///================================================================================================**/
-// Authenticate myself on to the Server
-  sendAuthenticate(String token) {
-    logger.d('connected: ${socket.id}');
-    socket.emit('authentication', {"token": token});
-  }
 
   // Send OnlineUsers to Server
-  sendOnlineUsers(Map<String, dynamic> data) {
-    socket.emit("online_users", json.encode(data));
+  sendOnlineUsers() {
+    socket.emit("online_users", "");
   }
 
   // Listen to Authentication updates for myself
@@ -99,12 +109,68 @@ class SocketProvider with ChangeNotifier {
     logger.d('Authenticated: ${socket.id}');
   }
 
-  // Listen to OnlineUsers updates of connected usersfrom server
-  handleOnlineusersen(List<dynamic> data) async {
+  //* Listen to OnlineUsers updates of connected usersfrom server
+  handleOnlineUsers(List<dynamic> data) async {
     //streamUsers.addResponse(data);
     logger.d("online_users: " + data.toString());
     //streamUsers.sink.add(data);
-    users.usersList = Users.fromDynamicList(data).usersList;
+    usersOnline = data.cast<String>();
+    //From this usersOnline and chatHistorial Users List with messages
+    //Wherever we find a chatHistorialUser with userOnline, set that user isOnline=true,else false!
+    if (users.usersList != null) {
+      for (int i = 0; i < users.usersList.length; i++) {
+        users.usersList[i].isOnline = false;
+      }
+    }
+    for (int k = 0; k < usersOnline.length; k++) {
+      //Search for user in usersList and set Online
+      if (users.usersList != null) {
+        for (int i = 0; i < users.usersList.length; i++) {
+          if (users.usersList[i].id == usersOnline[k]) {
+            //Found User in List
+            users.usersList[i].isOnline = true;
+            break;
+          }
+        }
+      } else {
+        break;
+      }
+    }
+    notifyListeners();
+  }
+
+  //* HANDLES PRIVATE CHAT HISTORY!
+  handlePrivateChatHistory(List<dynamic> data) async {
+    //streamUsers.addResponse(data);
+    logger.d("private_chat_history: " + data.toString());
+    List<PrivateChatHistory> privateChatHistoryList = [];
+    data.forEach((element) {
+      privateChatHistoryList.add(PrivateChatHistory.fromJson(element));
+    });
+    users.usersList = [];
+    //From Chat history convert to usersList with messages
+    for (int i = 0; i < privateChatHistoryList.length; i++) {
+      int indx = privateChatHistoryList[i].users[0].id == myId ? 1 : 0;
+      users.usersList.add(privateChatHistoryList[i].users[indx]);
+      users.usersList.last.isOnline = false;
+      users.usersList.last.messagesList = privateChatHistoryList[i].messages;
+    }
+    //Now check if any of the privateChatHistory Users are online
+    for (int k = 0; k < usersOnline.length; k++) {
+      //Search for user in usersList and set Online
+      if (users.usersList != null) {
+        for (int i = 0; i < users.usersList.length; i++) {
+          if (users.usersList[i].id == usersOnline[k]) {
+            //Found User in List
+            users.usersList[i].isOnline = true;
+            break;
+          }
+        }
+      } else {
+        break;
+      }
+    }
+
     logger.d("Decoded Json: " + users.usersList.toString());
     notifyListeners();
   }
@@ -129,7 +195,7 @@ class SocketProvider with ChangeNotifier {
         senderId: senderId,
         recipientId: recipientId,
         text: message,
-        timestamp: DateTime.now().millisecondsSinceEpoch);
+        createdAt: DateTime.now().toIso8601String());
     emitChatMessage(tmp);
     users.usersList[recipientIndex].messagesList.add(tmp);
     notifyListeners();
