@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/models/courseAndStudents.dart';
-import 'package:sticky_grouped_list/sticky_grouped_list.dart';
 
 class CourseList extends StatelessWidget {
-  CourseAndStudents _queryResult;
-  CourseList(queryResult) {
-    this._queryResult = queryResult;
-  }
+  final CourseAndStudents _queryResult;
+  CourseList(this._queryResult);
   /*
   @override
   Widget build(BuildContext context) {

@@ -6,7 +6,6 @@ import 'package:http/http.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/models/user.dart';
-import 'package:meet_your_mates/api/models/course.dart';
 import 'package:meet_your_mates/api/models/courseAndStudents.dart';
 import 'package:meet_your_mates/api/util/app_url.dart';
 import 'package:meet_your_mates/api/util/shared_preference.dart';

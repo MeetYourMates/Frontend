@@ -2,11 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/student.dart';
-import 'package:meet_your_mates/api/models/course.dart';
 import 'package:meet_your_mates/api/models/courseAndStudents.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/screens/SearchMates/components/statefulwrapper.dart';
-import 'package:meet_your_mates/screens/SearchMates/studentList.dart';
 import 'package:meet_your_mates/screens/SearchMates/courseList.dart';
 import 'package:provider/provider.dart';
 
@@ -21,30 +19,10 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   var logger = Logger();
 
-  Future<List<dynamic>> _futureStudentQueryResult;
-  List<Student> _studentQueryResult = [];
-
   Future<List<dynamic>> _futureCourseQueryResult;
   List<CourseAndStudents> _courseQueryResult = [];
 
   StudentProvider _studentProvider;
-
-  //Consula los estudiantes de un curso (falta enviar id de curso como parametro)
-  Future<void> _getStudents() async {
-    final List<Student> queryResult =
-        await _studentProvider.getCourseStudents();
-    setState(
-      () {
-        debugPrint("Executed search");
-        if (queryResult != null) {
-          debugPrint("Students found");
-          _studentQueryResult.addAll(queryResult);
-        } else {
-          print('Error retrieving students');
-        }
-      },
-    );
-  }
 
   //Consula los cursos de un estudiante (falta enviar id de estudiante como parametro)
   Future<void> _getCourses() async {
@@ -77,13 +55,11 @@ class _BodyState extends State<Body> {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-
     return StatefulWrapper(
       onInit: () {},
       //MANEJAMOS LAS VARIABLES FUTURAS
       child: FutureBuilder<List<Student>>(
-        future: _futureStudentQueryResult,
+        future: _futureCourseQueryResult,
         builder: (BuildContext context, AsyncSnapshot<List<Student>> snapshot) {
           // ignore: unused_local_variable
           List<Widget> children;
