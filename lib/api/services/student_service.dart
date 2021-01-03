@@ -146,12 +146,11 @@ class StudentProvider with ChangeNotifier {
 //*******************************************************/
 
 //************************PEP****************************/
-  Future<List<CourseAndStudents>> getStudentCourses() async {
+  Future<List<CourseAndStudents>> getStudentCourses(String id) async {
     logger.d("Trying to get student courses:");
     try {
       Response response = await get(
-        AppUrl.getStudentsAndCourses +
-            '/5fe3d2780c653345e8b1084a', //TENGO QUE PASAR EL ID DEL USUARIO LOGEADO
+        AppUrl.getStudentsAndCourses + '/' + id,
         headers: {'Content-Type': 'application/json'},
       );
       if (response.statusCode == 200) {

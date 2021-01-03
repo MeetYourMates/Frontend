@@ -27,7 +27,7 @@ class _BodyState extends State<Body> {
   //Consula los cursos de un estudiante (falta enviar id de estudiante como parametro)
   Future<void> _getCourses() async {
     final List<CourseAndStudents> queryResult =
-        await _studentProvider.getStudentCourses();
+        await _studentProvider.getStudentCourses(_studentProvider.student.id);
     setState(
       () {
         debugPrint("Executed course search");
