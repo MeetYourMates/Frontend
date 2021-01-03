@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/models/course.dart';
+import 'package:meet_your_mates/api/models/courseAndStudents.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/screens/SearchMates/components/statefulwrapper.dart';
 import 'package:meet_your_mates/screens/SearchMates/studentList.dart';
+import 'package:meet_your_mates/screens/SearchMates/courseList.dart';
 import 'package:provider/provider.dart';
 
 import 'background.dart';
@@ -23,12 +25,11 @@ class _BodyState extends State<Body> {
   List<Student> _studentQueryResult = [];
 
   Future<List<dynamic>> _futureCourseQueryResult;
-  List<Course> _courseQueryResult = [];
+  List<CourseAndStudents> _courseQueryResult = [];
 
   StudentProvider _studentProvider;
 
   //Consula los estudiantes de un curso (falta enviar id de curso como parametro)
-  /*
   Future<void> _getStudents() async {
     final List<Student> queryResult =
         await _studentProvider.getCourseStudents();
@@ -44,12 +45,11 @@ class _BodyState extends State<Body> {
       },
     );
   }
-  */
 
   //Consula los cursos de un estudiante (falta enviar id de estudiante como parametro)
-
-  Future<void> _getStudents() async {
-    final List<Course> queryResult = await _studentProvider.getStudentCourses();
+  Future<void> _getCourses() async {
+    final List<CourseAndStudents> queryResult =
+        await _studentProvider.getStudentCourses();
     setState(
       () {
         debugPrint("Executed course search");
@@ -63,6 +63,7 @@ class _BodyState extends State<Body> {
     );
   }
 
+  //Inicializa todo el FUTURE (debe inicializarse buera del build)
   @override
   void initState() {
     super.initState();
@@ -70,7 +71,7 @@ class _BodyState extends State<Body> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _studentProvider = Provider.of<StudentProvider>(context, listen: false);
 
-      _getStudents();
+      _getCourses();
     });
   }
 
@@ -80,6 +81,7 @@ class _BodyState extends State<Body> {
 
     return StatefulWrapper(
       onInit: () {},
+      //MANEJAMOS LAS VARIABLES FUTURAS
       child: FutureBuilder<List<Student>>(
         future: _futureStudentQueryResult,
         builder: (BuildContext context, AsyncSnapshot<List<Student>> snapshot) {
@@ -122,31 +124,20 @@ class _BodyState extends State<Body> {
               )
             ];
           }
+
+          //DEVOLVEMOS EL WIDGET ENCARGADO DE MOSTRAR LA INFORMACIÓN
           return SafeArea(
             child: Scaffold(
               body: Background(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Align(
-                        alignment: Alignment.topCenter,
-                        child: Column(
-                          children: <Widget>[
-                            SizedBox(height: size.height * 0.05),
-                            Text(
-                              "Here are your class mates!",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 24),
-                            ),
-                            StudentList(_studentQueryResult),
-                            SizedBox(height: size.height * 0.03),
-                          ],
-                        ),
-                      ),
-                    ],
+                //child: CourseList(_courseQueryResult),
+                child: Container(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        for (CourseAndStudents course in _courseQueryResult)
+                          CourseList(course)
+                      ],
+                    ),
                   ),
                 ),
               ),

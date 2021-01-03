@@ -7,6 +7,7 @@ import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/models/user.dart';
 import 'package:meet_your_mates/api/models/course.dart';
+import 'package:meet_your_mates/api/models/courseAndStudents.dart';
 import 'package:meet_your_mates/api/util/app_url.dart';
 import 'package:meet_your_mates/api/util/shared_preference.dart';
 
@@ -14,6 +15,7 @@ class StudentProvider with ChangeNotifier {
   Student _student = new Student();
   Student get student => _student;
   var logger = Logger(level: Level.warning);
+
   void setStudent(Student student) {
     if (student != null) {
       User usr = new User();
@@ -145,20 +147,20 @@ class StudentProvider with ChangeNotifier {
 //*******************************************************/
 
 //************************PEP****************************/
-  Future<List<Course>> getStudentCourses() async {
+  Future<List<CourseAndStudents>> getStudentCourses() async {
     logger.d("Trying to get student courses:");
     try {
       Response response = await get(
-        AppUrl.getStudentCourses +
-            '/5fe229a5e584a01f2cc60259', //TENGO QUE PASAR EL ID DEL USUARIO LOGEADO
+        AppUrl.getStudentsAndCourses +
+            '/5fe3d2780c653345e8b1084a', //TENGO QUE PASAR EL ID DEL USUARIO LOGEADO
         headers: {'Content-Type': 'application/json'},
       );
       if (response.statusCode == 200) {
         logger.d("Courses retrieved:");
         //Convert from json List of Map to List of Student
         var decodedList = (json.decode(response.body) as List<dynamic>);
-        List<Course> courses =
-            decodedList.map((i) => Course.fromJson(i)).toList();
+        List<CourseAndStudents> courses =
+            decodedList.map((i) => CourseAndStudents.fromJson(i)).toList();
         //Send back List of Students
         return courses;
       }
