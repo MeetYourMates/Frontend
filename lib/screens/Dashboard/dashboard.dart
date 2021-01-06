@@ -117,7 +117,7 @@ class _DashBoardState extends State<DashBoard> {
             _pageController.jumpToPage(index);
           },
           items: <BottomNavyBarItem>[
-            BottomNavyBarItem(title: Text('Home'), icon: Icon(Icons.home)),
+            //BottomNavyBarItem(title: Text('Home'), icon: Icon(Icons.home)),
             BottomNavyBarItem(title: Text('Search'), icon: Icon(Icons.search)),
             BottomNavyBarItem(title: Text('Chat'), icon: Icon(Icons.chat_bubble)),
             BottomNavyBarItem(title: Text('My Courses'), icon: Icon(Icons.menu_book)),
