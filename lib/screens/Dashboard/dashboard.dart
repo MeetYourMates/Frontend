@@ -51,8 +51,8 @@ class _DashBoardState extends State<DashBoard> {
     //StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
     //SocketService socketService = new SocketService();
     Future<void> openSocketConnection() async {
-      Provider.of<SocketProvider>(context, listen: true).createSocketConnection(
-          _studentProvider.student.user.token, _studentProvider.student.user.id);
+      Provider.of<SocketProvider>(context, listen: true)
+          .createSocketConnection(_studentProvider.student.user.token, _studentProvider.student.user.id);
     }
 
     return StatefulWrapper(
@@ -84,14 +84,17 @@ class _DashBoardState extends State<DashBoard> {
               Container(
                 //Home
                 color: Colors.blueGrey,
-                child: SizedBox.expand(
-                  child: SearchMates(),
-                ),
               ),
               Container(
                 //Search
                 color: Colors.red,
               ),
+              Container(
+                  //My Courses
+                  color: Colors.yellow,
+                  child: SizedBox.expand(
+                    child: SearchMates(),
+                  )),
               Container(
                 //Chat
                 color: Colors.green,
@@ -116,6 +119,8 @@ class _DashBoardState extends State<DashBoard> {
           items: <BottomNavyBarItem>[
             BottomNavyBarItem(title: Text('Home'), icon: Icon(Icons.home)),
             BottomNavyBarItem(title: Text('Search'), icon: Icon(Icons.search)),
+            BottomNavyBarItem(title: Text('Chat'), icon: Icon(Icons.chat_bubble)),
+            BottomNavyBarItem(title: Text('My Courses'), icon: Icon(Icons.menu_book)),
             BottomNavyBarItem(title: Text('Chat'), icon: Icon(Icons.chat_bubble)),
             BottomNavyBarItem(title: Text('Profile'), icon: Icon(Icons.person)),
           ],
