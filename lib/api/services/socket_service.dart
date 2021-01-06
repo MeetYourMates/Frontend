@@ -278,7 +278,8 @@ class SocketProvider with ChangeNotifier {
 
   //Emits chate message to the server
   Future<void> askTempMateStatus(String idTmpUser) async {
-    socket.emit("check_mate_status", "{'_id':'$idTmpUser'}");
+    Map<String, String> tmp = {'_id': idTmpUser};
+    socket.emit("check_mate_status", tmp);
   }
 
   // Listen to all message events from connected mates

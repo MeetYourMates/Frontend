@@ -137,8 +137,8 @@ class _ChatDetailPage2State extends State<ChatDetailPage2> {
     return Scaffold(
       /// [AppBar] which shows the user avatar, current status (online/offline) and name
       appBar: ChatDetailPageAppBar(
-        name: chatUser.name,
-        avatar: chatUser.picture,
+        name: chatUser.name != null ? chatUser.name : "No name",
+        avatar: (chatUser.picture != null && chatUser.picture.isNotEmpty) ? chatUser.picture : null,
         isOnline: chatUser.isOnline,
       ),
 
