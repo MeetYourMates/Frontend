@@ -6,6 +6,7 @@ import 'package:meet_your_mates/components/statefull_wrapper.dart';
 import 'package:meet_your_mates/constants.dart';
 import 'package:meet_your_mates/screens/Chat/chatSummaryList.dart';
 import 'package:meet_your_mates/screens/Profile/profile.dart';
+import 'package:meet_your_mates/screens/Projects/projects.dart';
 import 'package:meet_your_mates/screens/SearchMates/searchMates.dart';
 import 'package:provider/provider.dart';
 //Services
@@ -52,7 +53,8 @@ class _DashBoardState extends State<DashBoard> {
     //SocketService socketService = new SocketService();
     Future<void> openSocketConnection() async {
       Provider.of<SocketProvider>(context, listen: true).createSocketConnection(
-          _studentProvider.student.user.token, _studentProvider.student.user.id);
+          _studentProvider.student.user.token,
+          _studentProvider.student.user.id);
     }
 
     return StatefulWrapper(
@@ -62,7 +64,8 @@ class _DashBoardState extends State<DashBoard> {
       },
       child: Scaffold(
         appBar: PreferredSize(
-          preferredSize: Size.fromHeight(kAppBarHeight), // here the desired height
+          preferredSize:
+              Size.fromHeight(kAppBarHeight), // here the desired height
           child: AppBar(
             title: Text("Meet Your Mates"),
             actions: <Widget>[
@@ -98,12 +101,17 @@ class _DashBoardState extends State<DashBoard> {
                 child: ChatSummaryList(),
               ),
               Container(
-                //Profile
-                color: Colors.grey[100],
-                child: SizedBox.expand(
-                  child: Profile(),
-                ),
-              )
+                  //Profile
+                  color: Colors.grey[100],
+                  child: SizedBox.expand(
+                    child: Profile(),
+                  )),
+              Container(
+                  //Profile
+                  color: Colors.grey[100],
+                  child: SizedBox.expand(
+                    child: Projects(),
+                  ))
             ],
           ),
         ),
@@ -116,8 +124,11 @@ class _DashBoardState extends State<DashBoard> {
           items: <BottomNavyBarItem>[
             BottomNavyBarItem(title: Text('Home'), icon: Icon(Icons.home)),
             BottomNavyBarItem(title: Text('Search'), icon: Icon(Icons.search)),
-            BottomNavyBarItem(title: Text('Chat'), icon: Icon(Icons.chat_bubble)),
+            BottomNavyBarItem(
+                title: Text('Chat'), icon: Icon(Icons.chat_bubble)),
             BottomNavyBarItem(title: Text('Profile'), icon: Icon(Icons.person)),
+            BottomNavyBarItem(
+                title: Text('Projects'), icon: Icon(Icons.assignment_rounded)),
           ],
         ),
       ),
