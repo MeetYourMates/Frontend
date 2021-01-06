@@ -257,6 +257,7 @@ class _BodyState extends State<Body> {
           onItemSelected: (value) => {
             _faculty = value,
             logger.d("Faculty Changed: " + value),
+            _choicesSubjects.value.clear(),
             if (_faculty != "Select your Faculty:" && _faculty != null && _faculty.isNotEmpty)
               {
                 //Clearing current degreeList and adding new Data

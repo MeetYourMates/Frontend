@@ -11,8 +11,8 @@ class User {
   bool isOnline = false;
 
   List<Message> messagesList = <Message>[];
-  User(
-      {this.id, this.email, this.password, this.token, this.picture, this.lastActiveAt, this.name});
+
+  User({this.id, this.email, this.password, this.token, this.picture, this.lastActiveAt, this.name});
   factory User.fromJson(Map<String, dynamic> json) => User(
         id: json["_id"] == null ? null : json["_id"],
         email: json["email"] == null ? null : json["email"],

@@ -12,15 +12,13 @@ import 'package:meet_your_mates/screens/Chat/chat_bubble.dart';
 import 'package:meet_your_mates/screens/Chat/chat_detail_appbar.dart';
 import 'package:provider/provider.dart';
 
-class ChatDetailPage extends StatefulWidget {
-  final int selectedIndex;
-
-  const ChatDetailPage({Key key, @required this.selectedIndex}) : super(key: key);
+class ChatDetailPage2 extends StatefulWidget {
+  const ChatDetailPage2({Key key}) : super(key: key);
   @override
-  _ChatDetailPageState createState() => _ChatDetailPageState();
+  _ChatDetailPage2State createState() => _ChatDetailPage2State();
 }
 
-class _ChatDetailPageState extends State<ChatDetailPage> {
+class _ChatDetailPage2State extends State<ChatDetailPage2> {
   TextStyle inputTextStyle;
   ScrollController _scrollController = ScrollController();
   List<SendMenuItems> menuItems = [
@@ -121,15 +119,15 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) => {_scrollController.jumpTo(_scrollController.position.maxScrollExtent)});
     //var textValue = "";
     SocketProvider socketProvider = Provider.of<SocketProvider>(context, listen: true);
-    User chatUser = socketProvider.mates.usersList[widget.selectedIndex];
+    User chatUser = socketProvider.tempMate;
 
     /// [_studentProvider] StudentProvider Instance of a singleton
     StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
 
     ///[sendMessage] Function to send message to server and also save the message into local List of Messages(No LocalStorage!)
-    Future<void> sendMessage(String value) async {
-      print("Message Sent: " + value);
-      socketProvider.sendPrivateMessage(_studentProvider.student.user.id, chatUser.id, value, widget.selectedIndex);
+    Future<void> sendMessage(String textMessage) async {
+      print("Message Sent: " + textMessage);
+      socketProvider.sendPrivateMessageTemp(_studentProvider.student.user.id, chatUser, textMessage);
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     }
 

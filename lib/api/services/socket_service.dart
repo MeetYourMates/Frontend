@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/message.dart';
 import 'package:meet_your_mates/api/models/privateChatHistory.dart';
+import 'package:meet_your_mates/api/models/user.dart';
 import 'package:meet_your_mates/api/models/users.dart';
 import 'package:meet_your_mates/api/util/app_url.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -13,9 +14,10 @@ class SocketProvider with ChangeNotifier {
   IO.Socket socket;
   //StreamSocket streamUsers = StreamSocket();
   //StreamSocket streamMessages = StreamSocket();
-  Users users = new Users(usersList: []);
+  Users mates = new Users(usersList: []);
+  User tempMate = new User();
   List<String> usersOnline = <String>[];
-  Logger logger = Logger(level: Level.error);
+  Logger logger = Logger(level: Level.debug);
   String myId;
 
   //! DON'T DELETE!
@@ -50,35 +52,72 @@ class SocketProvider with ChangeNotifier {
       socket.connect();
 
       // Handle socket events
+      /**--------------------------------------------
+       *           User On Connect Event
+       *---------------------------------------------**/
       socket.on(
           'connect',
           (_) => {
+                //We try to authenticate
                 socket.emit('authentication', {"token": token})
               });
+      /**--------------------------------------------
+       *           When Authenticated from Server
+       *---------------------------------------------**/
       socket.on(
-          'authenticated',
+          'authentication',
           (data) => {
                 logger.d(data),
                 //Get Chat Historial
                 socket.emit('private_chat_history', '{"message":"give my chat history"]'),
               });
+      /**--------------------------------------------
+       *     ¿User Mates Status isOnline or isOffline?
+       *---------------------------------------------**/
       socket.on(
-          'online_users',
+          'mates_status',
           (data) => {
                 logger.d(data),
-                //handleOnlineUsers(data.toString()),
-                handleOnlineUsers(data),
+                //handleMatesStatusEvent(data.toString()),
+                handleMatesStatusEvent(data),
               });
+      /**--------------------------------------------
+       *     ¿User Mates Status isOnline or isOffline?
+       *---------------------------------------------**/
+      socket.on(
+          'check_mate_status',
+          (data) => {
+                logger.d(data),
+                //handleMatesStatusEvent(data.toString()),
+                handleMatesOnlineResponseEvent(data),
+              });
+      /**--------------------------------------------
+       *     Private Chat Hisotry of User
+       *---------------------------------------------**/
       socket.on(
           'private_chat_history',
           (data) => {
                 handlePrivateChatHistory(data),
               });
+      /**--------------------------------------------
+       *     Adds a new mate to list, recieved from server
+       *---------------------------------------------**/
       socket.on(
-          'chat_message',
+          'new_mate',
           (data) => {
-                handleMessage(data),
+                handleNewMate(data),
               });
+      /**--------------------------------------------
+       *     on new Private Message from User
+       *---------------------------------------------**/
+      socket.on(
+          'private_chat_message',
+          (data) => {
+                handlePrivateMessage(data),
+              });
+      /**--------------------------------------------
+       *     Disconnect event Recieved from Server!
+       *---------------------------------------------**/
       socket.on('disconnect', (_) => logger.d('disconnect'));
       return true;
     } catch (e) {
@@ -100,35 +139,56 @@ class SocketProvider with ChangeNotifier {
 
   // Send OnlineUsers to Server
   sendOnlineUsers() {
-    socket.emit("online_users", "");
+    socket.emit("online_users", "{'message':'I need my mates statuses if connected?'}");
   }
 
-  // Listen to Authentication updates for myself
+  // Handles the Authentication updates for myself
   handleAuthenticationListen(Map<String, dynamic> data) async {
     logger.d("Authentication Listener: " + data.toString());
     logger.d('Authenticated: ${socket.id}');
   }
 
+  // Handles MatesOnlineResponseEvent for some User X asked earlier to server
+  handleMatesOnlineResponseEvent(Map<String, dynamic> data) async {
+    logger.d("Mate Online Response: " + data.toString());
+    if (tempMate.id != null) {
+      if (tempMate.id == data['_id']) {
+        tempMate.isOnline = data['status'];
+      }
+    }
+  }
+
+  // Listen to Authentication updates for myself
+  handleNewMate(Map<String, dynamic> data) async {
+    Message message = Message.fromJson(data["message"]);
+    User usr = User.fromJson(data["user"]);
+    usr.messagesList = [message];
+    usr.isOnline = true;
+    mates.usersList.add(usr);
+    notifyListeners();
+    logger.d("Adding Mate to mate list, Listener: " + data.toString());
+  }
+
   //* Listen to OnlineUsers updates of connected usersfrom server
-  handleOnlineUsers(List<dynamic> data) async {
+  handleMatesStatusEvent(List<dynamic> data) async {
     //streamUsers.addResponse(data);
-    logger.d("online_users: " + data.toString());
+    logger.d("mates_statuses: " + data.toString());
     //streamUsers.sink.add(data);
     usersOnline = data.cast<String>();
     //From this usersOnline and chatHistorial Users List with messages
     //Wherever we find a chatHistorialUser with userOnline, set that user isOnline=true,else false!
-    if (users.usersList != null) {
-      for (int i = 0; i < users.usersList.length; i++) {
-        users.usersList[i].isOnline = false;
+    if (mates.usersList != null) {
+      for (int i = 0; i < mates.usersList.length; i++) {
+        mates.usersList[i].isOnline = false;
       }
     }
     for (int k = 0; k < usersOnline.length; k++) {
       //Search for user in usersList and set Online
-      if (users.usersList != null) {
-        for (int i = 0; i < users.usersList.length; i++) {
-          if (users.usersList[i].id == usersOnline[k]) {
+      if (mates.usersList != null) {
+        for (int i = 0; i < mates.usersList.length; i++) {
+          if (mates.usersList[i].id == usersOnline[k]) {
             //Found User in List
-            users.usersList[i].isOnline = true;
+            mates.usersList[i].isOnline = true;
             break;
           }
         }
@@ -147,22 +207,22 @@ class SocketProvider with ChangeNotifier {
     data.forEach((element) {
       privateChatHistoryList.add(PrivateChatHistory.fromJson(element));
     });
-    users.usersList = [];
+    mates.usersList = [];
     //From Chat history convert to usersList with messages
     for (int i = 0; i < privateChatHistoryList.length; i++) {
       int indx = privateChatHistoryList[i].users[0].id == myId ? 1 : 0;
-      users.usersList.add(privateChatHistoryList[i].users[indx]);
-      users.usersList.last.isOnline = false;
-      users.usersList.last.messagesList = privateChatHistoryList[i].messages;
+      mates.usersList.add(privateChatHistoryList[i].users[indx]);
+      mates.usersList.last.isOnline = false;
+      mates.usersList.last.messagesList = privateChatHistoryList[i].messages;
     }
     //Now check if any of the privateChatHistory Users are online
     for (int k = 0; k < usersOnline.length; k++) {
       //Search for user in usersList and set Online
-      if (users.usersList != null) {
-        for (int i = 0; i < users.usersList.length; i++) {
-          if (users.usersList[i].id == usersOnline[k]) {
+      if (mates.usersList != null) {
+        for (int i = 0; i < mates.usersList.length; i++) {
+          if (mates.usersList[i].id == usersOnline[k]) {
             //Found User in List
-            users.usersList[i].isOnline = true;
+            mates.usersList[i].isOnline = true;
             break;
           }
         }
@@ -171,47 +231,71 @@ class SocketProvider with ChangeNotifier {
       }
     }
 
-    logger.d("Decoded Json: " + users.usersList.toString());
+    logger.d("Decoded Json: " + mates.usersList.toString());
     notifyListeners();
-  }
-
-  // Send update of user's typing status
-  sendTyping(bool typing) {
-    socket.emit("typing", {
-      "id": socket.id,
-      "typing": typing,
-    });
-  }
-
-  // Listen to update of typing status from connected users
-  void handleTyping(Map<String, dynamic> data) {
-    logger.d(data);
   }
 
   // Send a Message to the server
-  Future<void> sendMessage(
-      String senderId, String recipientId, String message, int recipientIndex) async {
-    Message tmp = new Message(
-        senderId: senderId,
-        recipientId: recipientId,
-        text: message,
-        createdAt: DateTime.now().toIso8601String());
+  Future<void> sendPrivateMessage(String senderId, String recipientId, String message, int recipientIndex) async {
+    Message tmp = new Message(senderId: senderId, recipientId: recipientId, text: message, createdAt: DateTime.now().toIso8601String());
     emitChatMessage(tmp);
-    users.usersList[recipientIndex].messagesList.add(tmp);
+    mates.usersList[recipientIndex].messagesList.add(tmp);
     notifyListeners();
   }
 
-  //Asyncronhous Emit!
-  Future<void> emitChatMessage(Message tmp) async {
-    socket.emit("chat_message", tmp.toJson());
+  // Send a Message to the server for a temperory mate or for recently opened chat, without previous history!
+  Future<void> sendPrivateMessageTemp(String senderId, User usr, String messageText) async {
+    Message tmp = new Message(senderId: senderId, recipientId: usr.id, text: messageText, createdAt: DateTime.now().toIso8601String());
+    emitChatMessage(tmp);
+    mates.usersList.last.messagesList.add(tmp);
+    //As we have talked with the user --> We add him to the mates list and also the messagesList
+    int k = -1;
+    if (mates.usersList != null) {
+      for (int i = 0; i < mates.usersList.length; i++) {
+        if (mates.usersList[i].id == usr.id) {
+          //Found User in List
+          k = i;
+          break;
+        }
+      }
+    }
+    //If the temp mate exist in mates list, it simply means that the user has kept talking with the temp mate
+    //In this case we just add the message to the temp mate in mates list
+    if (k != -1) {
+      mates.usersList[k].messagesList.add(tmp);
+    } else {
+      //Else add the mate to the mate list and also add the message to the mate in mate list
+      usr.messagesList.add(tmp);
+      mates.usersList.add(usr);
+    }
+    notifyListeners();
   }
 
-  // Listen to all message events from connected users
-  void handleMessage(Map<String, dynamic> data) {
+  //Emits chate message to the server
+  Future<void> emitChatMessage(Message tmp) async {
+    socket.emit("private_chat_message", tmp.toJson());
+  }
+
+  //Emits chate message to the server
+  Future<void> askTempMateStatus(String idTmpUser) async {
+    socket.emit("check_mate_status", "{'_id':'$idTmpUser'}");
+  }
+
+  // Listen to all message events from connected mates
+  void handlePrivateMessage(Map<String, dynamic> data) {
     //streamMessages.addResponse(data);
     logger.d("Messages: " + data.toString());
+    Message messageData = new Message();
+    messageData = Message.fromJson(data);
     //streamMessages.sink.add(data);
+    //If tempMate exists, also add as user on different screen
+    if (tempMate.id != null && data['senderId'] != null) {
+      if (tempMate.id.isNotEmpty && tempMate.id == data['senderId']) {
+        tempMate.messagesList.add(messageData);
+        notifyListeners();
+      }
+    }
     //If Message New Added to User, Notify Listeners
-    users.addMessage(data).then((wasAdded) => {if (wasAdded) notifyListeners()});
+    mates.addMessage(messageData).then((wasAdded) => {if (wasAdded) notifyListeners()});
   }
 }
