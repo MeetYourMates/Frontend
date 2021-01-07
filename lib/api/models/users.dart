@@ -6,10 +6,9 @@ class Users {
   List<User> usersList = [];
   String myId = "";
   Users({this.usersList});
-  Future<bool> addMessage(Map<String, dynamic> responseData) async {
+  Future<bool> addMessage(Message messageData) async {
     //messageServer HashedMap to Object Message
-    Message messageData = new Message();
-    messageData = Message.fromJson(responseData);
+
     //Message from Server to UI Message
     for (int i = 0; i < usersList.length; i++) {
       if (usersList[i].id == messageData.senderId) {
@@ -21,6 +20,5 @@ class Users {
     return false;
   }
 
-  factory Users.fromDynamicList(List<dynamic> dynamicList) =>
-      new Users(usersList: dynamicList.map((i) => User.fromJson(i)).toList());
+  factory Users.fromDynamicList(List<dynamic> dynamicList) => new Users(usersList: dynamicList.map((i) => User.fromJson(i)).toList());
 }

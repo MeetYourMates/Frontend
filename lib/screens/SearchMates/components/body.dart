@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/models/courseAndStudents.dart';
+import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/screens/SearchMates/components/statefulwrapper.dart';
 import 'package:meet_your_mates/screens/SearchMates/courseList.dart';
@@ -26,8 +26,7 @@ class _BodyState extends State<Body> {
 
   //Consula los cursos de un estudiante (falta enviar id de estudiante como parametro)
   Future<void> _getCourses() async {
-    final List<CourseAndStudents> queryResult =
-        await _studentProvider.getStudentCourses(_studentProvider.student.id);
+    final List<CourseAndStudents> queryResult = await _studentProvider.getStudentCourses(_studentProvider.student.id);
     setState(
       () {
         debugPrint("Executed course search");
@@ -109,10 +108,7 @@ class _BodyState extends State<Body> {
                 child: Container(
                   child: SingleChildScrollView(
                     child: Column(
-                      children: [
-                        for (CourseAndStudents course in _courseQueryResult)
-                          CourseList(course)
-                      ],
+                      children: [for (CourseAndStudents course in _courseQueryResult) CourseList(queryResult: course)],
                     ),
                   ),
                 ),

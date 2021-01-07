@@ -55,7 +55,7 @@ class AuthProvider with ChangeNotifier {
         AppUrl.login,
         body: json.encode(userTmp.toJson()),
         headers: {'Content-Type': 'application/json'},
-      );
+      ).timeout(Duration(seconds: 10));
     } catch (err) {
       //Cannot Even Send a request -->Probably No connection
       res = -1;
@@ -178,8 +178,7 @@ class AuthProvider with ChangeNotifier {
     _registeredInStatus = Status.Registering;
     notifyListeners();
     try {
-      Response response = await post(AppUrl.register,
-          body: json.encode(registerData), headers: {'Content-Type': 'application/json'});
+      Response response = await post(AppUrl.register, body: json.encode(registerData), headers: {'Content-Type': 'application/json'});
 
       if (response.statusCode == 201) {
         User newUser = new User(id: null, email: email, password: password);
@@ -253,13 +252,11 @@ class AuthProvider with ChangeNotifier {
       final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
-      final firebaseAuth.AuthCredential credential = firebaseAuth.GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
-      firebaseAuth.UserCredential userDetails =
-          await _firebaseAuth.signInWithCredential(credential);
+      final firebaseAuth.AuthCredential credential =
+          firebaseAuth.GoogleAuthProvider.credential(accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+      firebaseAuth.UserCredential userDetails = await _firebaseAuth.signInWithCredential(credential);
       print("UserEmail 305: " + userDetails.user.email);
-      UserDetails details = new UserDetails(userDetails.user.uid, userDetails.user.displayName,
-          userDetails.user.photoURL, userDetails.user.email);
+      UserDetails details = new UserDetails(userDetails.user.uid, userDetails.user.displayName, userDetails.user.photoURL, userDetails.user.email);
       //Added New
       signedInWithGoogle = true;
       return details;
@@ -288,8 +285,7 @@ class AuthProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 201) {
-        User newUser = new User(
-            id: null, email: registeredGoogle.user.email, password: registeredGoogle.user.password);
+        User newUser = new User(id: null, email: registeredGoogle.user.email, password: registeredGoogle.user.password);
         UserPreferences().saveUser(newUser);
         _registeredInStatus = Status.Registered;
         notifyListeners();

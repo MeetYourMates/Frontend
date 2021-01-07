@@ -1,12 +1,44 @@
 import 'package:flutter/material.dart';
-import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/models/courseAndStudents.dart';
+import 'package:meet_your_mates/api/models/student.dart';
+import 'package:meet_your_mates/api/models/user.dart';
+import 'package:meet_your_mates/api/services/socket_service.dart';
+import 'package:meet_your_mates/screens/Chat/chatDetail.dart';
+import 'package:meet_your_mates/screens/Chat/chatDetail2.dart';
+import 'package:provider/provider.dart';
 
 class CourseList extends StatelessWidget {
-  final CourseAndStudents _queryResult;
-  CourseList(this._queryResult);
+  final CourseAndStudents queryResult;
+  const CourseList({this.queryResult});
 
   Widget build(BuildContext context) {
+    SocketProvider socketProvider = Provider.of<SocketProvider>(context, listen: false);
+    void openChat(User user) {
+      //Search if This user is already a mate
+      int index = socketProvider.mates.usersList.indexOf(user);
+      //If yes --> Open ChatDetail with Chathistory
+      if (index != -1) {
+        Navigator.push(
+          context,
+          new MaterialPageRoute(
+            builder: (context) => new ChatDetailPage(
+              selectedIndex: index,
+            ),
+          ),
+        );
+      } else {
+        //Else --> New Mate maybe --> Temporary ChatDetail or ChatDetail2!
+        socketProvider.tempMate = user;
+        socketProvider.askTempMateStatus(user.id);
+        Navigator.push(
+          context,
+          new MaterialPageRoute(
+            builder: (context) => new ChatDetailPage2(),
+          ),
+        );
+      }
+    }
+
     return Column(
       children: [
         Padding(
@@ -28,7 +60,7 @@ class CourseList extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  _queryResult.subjectName,
+                  queryResult.subjectName,
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -36,24 +68,21 @@ class CourseList extends StatelessWidget {
           ),
         ),
         ListView.builder(
-          itemCount: _queryResult.students.length,
+          itemCount: queryResult.students.length,
           shrinkWrap: true,
           physics: ClampingScrollPhysics(),
           itemBuilder: (context, index) {
-            Student student = _queryResult.students[index];
+            Student student = queryResult.students[index];
             return Card(
               child: ListTile(
-                  leading: student.user.picture != null
-                      ? Image.network(student.user.picture)
-                      : Text("No Picture"),
-                  title: Text(student.user.name != null
-                      ? student.user.name
-                      : "No name"),
-                  subtitle: Text(student.degree != null
-                      ? _queryResult.students[index].degree
-                      : "No Degree"),
+                  leading: student.user.picture != null ? Image.network(student.user.picture) : Text("No Picture"),
+                  title: Text(student.user.name != null ? student.user.name : "No name"),
+                  subtitle: Text(student.degree != null ? queryResult.students[index].degree : "No Degree"),
                   trailing: Icon(Icons.arrow_forward),
-                  onTap: () {/* REDIRECCIONAR A PERFIL SELECCIONADO */}),
+                  onTap: () {
+                    /* REDIRECCIONAR A PERFIL SELECCIONADO */
+                    openChat(student.user);
+                  }),
             );
           },
         ),

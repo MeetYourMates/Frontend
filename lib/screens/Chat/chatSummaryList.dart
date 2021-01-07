@@ -23,7 +23,7 @@ class _ChatSummaryListState extends State<ChatSummaryList> {
 
   @override
   Widget build(BuildContext context) {
-    Users usersList = Provider.of<SocketProvider>(context, listen: true).users;
+    Users usersList = Provider.of<SocketProvider>(context, listen: true).mates;
     // ignore: unused_local_variable
     StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
     // ignore: unused_local_variable
