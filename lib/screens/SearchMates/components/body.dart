@@ -2,9 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/student.dart';
+import 'package:meet_your_mates/api/models/courseAndStudents.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/screens/SearchMates/components/statefulwrapper.dart';
-import 'package:meet_your_mates/screens/SearchMates/studentList.dart';
+import 'package:meet_your_mates/screens/SearchMates/courseList.dart';
 import 'package:provider/provider.dart';
 
 import 'background.dart';
@@ -18,26 +19,29 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   var logger = Logger();
 
-  Future<List<dynamic>> _futureQueryResult;
-  List<Student> _queryResult = [];
+  Future<List<dynamic>> _futureCourseQueryResult;
+  List<CourseAndStudents> _courseQueryResult = [];
+
   StudentProvider _studentProvider;
 
-  Future<void> _getStudents() async {
-    final List<Student> queryResult =
-        await _studentProvider.getCourseStudents();
+  //Consula los cursos de un estudiante (falta enviar id de estudiante como parametro)
+  Future<void> _getCourses() async {
+    final List<CourseAndStudents> queryResult =
+        await _studentProvider.getStudentCourses(_studentProvider.student.id);
     setState(
       () {
-        debugPrint("Executed search");
+        debugPrint("Executed course search");
         if (queryResult != null) {
-          debugPrint("Students found");
-          _queryResult.addAll(queryResult);
+          debugPrint("Courses found");
+          _courseQueryResult.addAll(queryResult);
         } else {
-          print('Error retrieving students');
+          print('Error retrieving courses');
         }
       },
     );
   }
 
+  //Inicializa todo el FUTURE (debe inicializarse buera del build)
   @override
   void initState() {
     super.initState();
@@ -45,18 +49,17 @@ class _BodyState extends State<Body> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _studentProvider = Provider.of<StudentProvider>(context, listen: false);
 
-      _getStudents();
+      _getCourses();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-
     return StatefulWrapper(
       onInit: () {},
+      //MANEJAMOS LAS VARIABLES FUTURAS
       child: FutureBuilder<List<Student>>(
-        future: _futureQueryResult,
+        future: _futureCourseQueryResult,
         builder: (BuildContext context, AsyncSnapshot<List<Student>> snapshot) {
           // ignore: unused_local_variable
           List<Widget> children;
@@ -97,31 +100,20 @@ class _BodyState extends State<Body> {
               )
             ];
           }
+
+          //DEVOLVEMOS EL WIDGET ENCARGADO DE MOSTRAR LA INFORMACIÓN
           return SafeArea(
             child: Scaffold(
               body: Background(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Align(
-                        alignment: Alignment.topCenter,
-                        child: Column(
-                          children: <Widget>[
-                            SizedBox(height: size.height * 0.05),
-                            Text(
-                              "Here are your class mates!",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 24),
-                            ),
-                            StudentList(_queryResult),
-                            SizedBox(height: size.height * 0.03),
-                          ],
-                        ),
-                      ),
-                    ],
+                //child: CourseList(_courseQueryResult),
+                child: Container(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        for (CourseAndStudents course in _courseQueryResult)
+                          CourseList(course)
+                      ],
+                    ),
                   ),
                 ),
               ),
