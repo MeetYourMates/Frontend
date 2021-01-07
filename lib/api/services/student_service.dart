@@ -13,7 +13,7 @@ import 'package:meet_your_mates/api/util/shared_preference.dart';
 class StudentProvider with ChangeNotifier {
   Student _student = new Student();
   Student get student => _student;
-  var logger = Logger(level: Level.warning);
+  var logger = Logger(level: Level.error);
 
   /// ========================================================================
   ///!      SHOULD BE USED TO SET STUDENT EVERYWHERE IN THE PROGRAM
@@ -64,7 +64,7 @@ class StudentProvider with ChangeNotifier {
         AppUrl.login,
         body: json.encode(userTmp.toJson()),
         headers: {'Content-Type': 'application/json'},
-      );
+      ).timeout(Duration(seconds: 10));
       logger.d("AutoLogging Response:" + response.body);
       if (response.statusCode == 200) {
         //Logged In succesfully  from server
@@ -72,10 +72,10 @@ class StudentProvider with ChangeNotifier {
           Map responseData = jsonDecode(response.body);
           _student = (Student.fromJson(responseData));
           _student.user.password = password;
-          logger.e("200 AutoLogging response body");
-          logger.wtf(response.body.toString());
-          logger.e("200 AutoLogging Student");
-          logger.wtf(_student.toJson().toString());
+          logger.d("200 AutoLogging response body");
+          logger.d(response.body.toString());
+          logger.d("200 AutoLogging Student");
+          logger.d(_student.toJson().toString());
           UserPreferences().saveUser(_student.user);
           res = 0;
         } catch (err) {
