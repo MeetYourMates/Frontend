@@ -9,8 +9,7 @@ import 'package:provider/provider.dart';
 
 class CourseList extends StatelessWidget {
   final CourseAndStudents queryResult;
-  final String myId;
-  const CourseList({this.queryResult, this.myId});
+  const CourseList({this.queryResult});
 
   Widget build(BuildContext context) {
     SocketProvider socketProvider = Provider.of<SocketProvider>(context, listen: false);
@@ -74,22 +73,17 @@ class CourseList extends StatelessWidget {
           physics: ClampingScrollPhysics(),
           itemBuilder: (context, index) {
             Student student = queryResult.students[index];
-            if (student.user.id == myId) {
-              //If its me, then don't show it
-              return Container();
-            } else {
-              return Card(
-                child: ListTile(
-                    leading: student.user.picture != null ? Image.network(student.user.picture) : Text("No Picture"),
-                    title: Text(student.user.name != null ? student.user.name : "No name"),
-                    subtitle: Text(student.degree != null ? queryResult.students[index].degree : "No Degree"),
-                    trailing: Icon(Icons.arrow_forward),
-                    onTap: () {
-                      /* REDIRECCIONAR A PERFIL SELECCIONADO */
-                      openChat(student.user);
-                    }),
-              );
-            }
+            return Card(
+              child: ListTile(
+                  leading: student.user.picture != null ? Image.network(student.user.picture) : Text("No Picture"),
+                  title: Text(student.user.name != null ? student.user.name : "No name"),
+                  subtitle: Text(student.degree != null ? queryResult.students[index].degree : "No Degree"),
+                  trailing: Icon(Icons.arrow_forward),
+                  onTap: () {
+                    /* REDIRECCIONAR A PERFIL SELECCIONADO */
+                    openChat(student.user);
+                  }),
+            );
           },
         ),
       ],

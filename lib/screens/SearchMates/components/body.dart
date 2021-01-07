@@ -108,9 +108,7 @@ class _BodyState extends State<Body> {
                 child: Container(
                   child: SingleChildScrollView(
                     child: Column(
-                      children: [
-                        for (CourseAndStudents course in _courseQueryResult) CourseList(queryResult: course, myId: _studentProvider.student.id)
-                      ],
+                      children: [for (CourseAndStudents course in _courseQueryResult) CourseList(queryResult: course)],
                     ),
                   ),
                 ),
