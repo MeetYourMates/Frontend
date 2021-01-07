@@ -29,19 +29,7 @@ class _ProjectsState extends State<Projects> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          title: Text("Projects"),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.info),
-              color: Colors.white,
-              onPressed: () {},
-            )
-          ],
-        ),
-        body: Background(
-          child: ProjectList(),
-        ),
+        body: ProjectList(),
       ),
     );
   }
@@ -155,7 +143,7 @@ class ProjectCard extends StatelessWidget {
                   ),
                   SizedBox(height: 4.0),
                   Text(
-                    "Subject: " + this.subject,
+                    this.subject,
                     style: TextStyle(
                       color: Colors.grey[700],
                       fontSize: 12.0,
