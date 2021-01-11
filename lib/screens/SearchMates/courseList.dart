@@ -1,45 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:meet_your_mates/api/models/courseAndStudents.dart';
 import 'package:meet_your_mates/api/models/student.dart';
-import 'package:meet_your_mates/api/models/user.dart';
-import 'package:meet_your_mates/api/services/socket_service.dart';
-import 'package:meet_your_mates/screens/Chat/chatDetail.dart';
-import 'package:meet_your_mates/screens/Chat/chatDetail2.dart';
+import 'package:meet_your_mates/api/services/otherStudent_service.dart';
 import 'package:provider/provider.dart';
+import 'package:meet_your_mates/screens/Profile/otherprofile.dart';
 
 class CourseList extends StatelessWidget {
   final CourseAndStudents queryResult;
-  const CourseList({this.queryResult});
+  final BuildContext context;
+  const CourseList({this.queryResult, this.context});
 
-  Widget build(BuildContext context) {
-    SocketProvider socketProvider =
-        Provider.of<SocketProvider>(context, listen: false);
-    void openChat(User user) {
-      //Search if This user is already a mate
-      int index = socketProvider.mates.usersList.indexOf(user);
-      //If yes --> Open ChatDetail with Chathistory
-      if (index != -1) {
-        Navigator.push(
-          context,
-          new MaterialPageRoute(
-            builder: (context) => new ChatDetailPage(
-              selectedIndex: index,
-            ),
-          ),
-        );
-      } else {
-        //Else --> New Mate maybe --> Temporary ChatDetail or ChatDetail2!
-        socketProvider.tempMate = user;
-        socketProvider.askTempMateStatus(user.id);
-        Navigator.push(
-          context,
-          new MaterialPageRoute(
-            builder: (context) => new ChatDetailPage2(),
-          ),
-        );
-      }
-    }
-
+  Widget build(context) {
+    OtherStudentProvider _otherStudentProvider = Provider.of<OtherStudentProvider>(context);
     return Column(
       children: [
         Padding(
@@ -88,7 +60,13 @@ class CourseList extends StatelessWidget {
                   trailing: Icon(Icons.arrow_forward),
                   onTap: () {
                     /* REDIRECCIONAR A PERFIL SELECCIONADO */
-                    openChat(student.user);
+                    //_otherStudentProvider.setStudent(student);
+                    Navigator.push(
+                      context,
+                      new MaterialPageRoute(
+                        builder: (context) => new OtherProfile(),
+                      ),
+                    );
                   }),
             );
           },

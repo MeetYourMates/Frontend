@@ -59,7 +59,7 @@ class _BodyState extends State<Body> {
       //MANEJAMOS LAS VARIABLES FUTURAS
       child: FutureBuilder<List<Student>>(
         future: _futureCourseQueryResult,
-        builder: (BuildContext context, AsyncSnapshot<List<Student>> snapshot) {
+        builder: (context, AsyncSnapshot<List<Student>> snapshot) {
           // ignore: unused_local_variable
           List<Widget> children;
           if (snapshot.hasData) {
@@ -108,7 +108,7 @@ class _BodyState extends State<Body> {
                 child: Container(
                   child: SingleChildScrollView(
                     child: Column(
-                      children: [for (CourseAndStudents course in _courseQueryResult) CourseList(queryResult: course)],
+                      children: [for (CourseAndStudents course in _courseQueryResult) CourseList(queryResult: course, context: context,)],
                     ),
                   ),
                 ),

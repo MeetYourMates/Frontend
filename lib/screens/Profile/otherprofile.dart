@@ -1,23 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/services/socket_service.dart';
-import 'package:meet_your_mates/api/services/student_service.dart';
-import 'package:meet_your_mates/api/util/shared_preference.dart';
+import 'package:meet_your_mates/api/services/otherStudent_service.dart';
 import 'package:meet_your_mates/screens/Insignias/background.dart';
 import 'package:meet_your_mates/screens/Insignias/insignias.dart';
-import 'package:meet_your_mates/screens/Profile/edit_profile.dart';
 import 'package:meet_your_mates/screens/Trophies/trophies.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
+import 'package:meet_your_mates/api/models/user.dart';
+import 'package:meet_your_mates/screens/Chat/chatDetail.dart';
+import 'package:meet_your_mates/screens/Chat/chatDetail2.dart';
+import 'package:meet_your_mates/api/models/student.dart';
 
 import '../../api/services/auth_service.dart';
 
-class Profile extends StatefulWidget {
+class OtherProfile extends StatefulWidget {
   @override
   _ProfileState createState() => _ProfileState();
 }
 
-class _ProfileState extends State<Profile> {
+class _ProfileState extends State<OtherProfile> {
   final formKey = new GlobalKey<FormState>();
   var logger = Logger();
 
@@ -25,7 +27,7 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
-    StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
+    OtherStudentProvider _studentProvider = Provider.of<OtherStudentProvider>(context);
     AuthProvider _authProvider =
         Provider.of<AuthProvider>(context, listen: false);
     double meanRating = 0;
@@ -44,7 +46,6 @@ class _ProfileState extends State<Profile> {
                 Header(
                   icon: _studentProvider.student.user.picture,
                 ),
-                editButton(context: context),
                 StackContainer(
                   username: _studentProvider.student.user.name,
                   email: _studentProvider.student.user.email,
@@ -64,8 +65,9 @@ class _ProfileState extends State<Profile> {
                 ),
                 ListView.builder(
                   physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) =>
-                      LogOutCard(authProvider: _authProvider,),
+                  itemBuilder: (context, index) => SendMessage(
+                    authProvider: _authProvider,
+                  ),
                   shrinkWrap: true,
                   itemCount: 1,
                 ),
@@ -304,15 +306,51 @@ class TrophiesCard extends StatelessWidget {
   }
 }
 
-class LogOutCard extends StatelessWidget {
+class SendMessage extends StatelessWidget {
   final AuthProvider authProvider;
-  const LogOutCard({
+  const SendMessage({
     Key key,
     this.authProvider,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    SocketProvider socketProvider =
+        Provider.of<SocketProvider>(context, listen: false);
+    void openChat(User user) {
+      //Search if This user is already a mate
+      int index = socketProvider.mates.usersList.indexOf(user);
+      //If yes --> Open ChatDetail with Chathistory
+      if (index != -1) {
+        /*Navigator.push(
+          context,
+          new MaterialPageRoute(
+            builder: (context) => new ChatDetailPage(
+              selectedIndex: index,
+            ),
+          ),
+        );*/
+        Navigator.push(
+          context,
+          new MaterialPageRoute(
+            builder: (context) => new ChatDetailPage(
+              selectedIndex: index,
+            ),
+          ),
+        );
+      } else {
+        //Else --> New Mate maybe --> Temporary ChatDetail or ChatDetail2!
+        socketProvider.tempMate = user;
+        socketProvider.askTempMateStatus(user.id);
+        Navigator.push(
+          context,
+          new MaterialPageRoute(
+            builder: (context) => new ChatDetailPage2(),
+          ),
+        );
+      }
+    }
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.0),
       child: Card(
@@ -326,14 +364,10 @@ class LogOutCard extends StatelessWidget {
             children: <Widget>[
               IconButton(
                 onPressed: () {
-                  UserPreferences().removeUser();
-                  authProvider.signOutGoogle();
-                  Provider.of<SocketProvider>(context, listen: false)
-                      .disconnectSocket();
-                  Navigator.pushReplacementNamed(context,'/login');
+                  //openChat(student.user);
                 },
                 icon: Icon(
-                  Icons.logout,
+                  Icons.chat_bubble,
                   size: 40.0,
                   color: Colors.blue,
                 ),
@@ -344,7 +378,7 @@ class LogOutCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Text(
-                    "LogOut",
+                    "Send Message",
                     style: TextStyle(
                       fontSize: 18.0,
                     ),
@@ -392,35 +426,4 @@ class RatingStars extends StatelessWidget {
       ),
     );
   }
-}
-
-Container editButton({BuildContext context}) {
-  return Container(
-    padding: EdgeInsets.only(top: 2.0),
-    child: FlatButton(
-      onPressed: () {
-        Navigator.push(context,
-            new MaterialPageRoute(builder: (context) => new EditProfile()));
-      },
-      child: Container(
-        width: 250.0,
-        height: 27.0,
-        child: Text(
-          "Edit Profile",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: Colors.blue,
-          border: Border.all(
-            color: Colors.blue,
-          ),
-          borderRadius: BorderRadius.circular(5.0),
-        ),
-      ),
-    ),
-  );
 }

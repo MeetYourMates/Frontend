@@ -10,6 +10,7 @@ class StudentList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     return ListView.builder(
       itemCount: _queryResult.length,
       shrinkWrap: true,

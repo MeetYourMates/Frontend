@@ -18,6 +18,7 @@ import 'package:meet_your_mates/screens/PasswordRecovery/changePassword.dart';
 import 'package:meet_your_mates/screens/PasswordRecovery/passwordRecovery.dart';
 import 'package:meet_your_mates/screens/Profile/edit_profile.dart';
 import 'package:meet_your_mates/screens/Profile/profile.dart';
+import 'package:meet_your_mates/screens/Profile/otherprofile.dart';
 import 'package:meet_your_mates/screens/Register/register.dart';
 import 'package:meet_your_mates/screens/SearchMates/searchMates.dart';
 import 'package:meet_your_mates/screens/Validate/validate.dart';
@@ -180,6 +181,7 @@ class MyApp extends StatelessWidget {
           '/passwordRecovery': (context) => PasswordRecovery(),
           '/changePassword': (context) => ChangePassword(),
           '/profile': (context) => Profile(),
+          '/otherProfile': (context) => OtherProfile(),
           '/editProfile': (context) => EditProfile(),
         },
       ),
