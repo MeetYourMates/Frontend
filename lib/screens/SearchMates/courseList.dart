@@ -12,7 +12,8 @@ class CourseList extends StatelessWidget {
   const CourseList({this.queryResult});
 
   Widget build(BuildContext context) {
-    SocketProvider socketProvider = Provider.of<SocketProvider>(context, listen: false);
+    SocketProvider socketProvider =
+        Provider.of<SocketProvider>(context, listen: false);
     void openChat(User user) {
       //Search if This user is already a mate
       int index = socketProvider.mates.usersList.indexOf(user);
@@ -49,19 +50,19 @@ class CourseList extends StatelessWidget {
           child: Align(
             alignment: Alignment.center,
             child: Container(
-              width: 120,
               decoration: BoxDecoration(
-                color: Colors.blue[300],
+                color: Colors.cyan[400],
                 border: Border.all(
-                  color: Colors.blue[300],
+                  color: Colors.cyan[400],
                 ),
-                borderRadius: BorderRadius.all(Radius.circular(3.0)),
+                borderRadius: BorderRadius.all(Radius.circular(30.0)),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   queryResult.subjectName,
                   textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ),
@@ -75,9 +76,15 @@ class CourseList extends StatelessWidget {
             Student student = queryResult.students[index];
             return Card(
               child: ListTile(
-                  leading: student.user.picture != null ? Image.network(student.user.picture) : Text("No Picture"),
-                  title: Text(student.user.name != null ? student.user.name : "No name"),
-                  subtitle: Text(student.degree != null ? queryResult.students[index].degree : "No Degree"),
+                  leading: student.user.picture != null
+                      ? Image.network(student.user.picture)
+                      : Text("No Picture"),
+                  title: Text(student.user.name != null
+                      ? student.user.name
+                      : "No name"),
+                  subtitle: Text(student.degree != null
+                      ? queryResult.students[index].degree
+                      : "No Degree"),
                   trailing: Icon(Icons.arrow_forward),
                   onTap: () {
                     /* REDIRECCIONAR A PERFIL SELECCIONADO */

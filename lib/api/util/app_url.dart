@@ -24,4 +24,5 @@ class AppUrl {
       baseURL + "/student/getStudentsAndCourses";
   static const String editProfile = baseURL + "/student/updateStudent";
   static const String editProfilePhoto = baseURL + "/student/StudentPhoto";
+  static const String getProjects = baseURL + "/student/getStudentProjects/";
 }
