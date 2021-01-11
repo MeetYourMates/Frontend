@@ -9,22 +9,19 @@ class Background extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //Size size = MediaQuery.of(context).size;
+    Size size = MediaQuery.of(context).size;
     return Container(
+      width: double.infinity,
+      height: size.height,
       child: Stack(
         alignment: Alignment.center,
         children: <Widget>[
-          Align(
-            alignment: Alignment.topLeft,
+          Positioned(
+            top: 0,
+            left: 0,
             child: Image.asset(
-              "assets/images/main_top.png",
-            ),
-          ),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Image.asset(
-              "assets/images/login_bottom.png",
-              //width: sizeParent.width * 0.4,
+              "assets/images/blue-background.jpg",
+              width: size.width,
             ),
           ),
           child,

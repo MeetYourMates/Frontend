@@ -29,7 +29,10 @@ class _ChatSummaryListState extends State<ChatSummaryList> {
     // ignore: unused_local_variable
     var loading = Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[CircularProgressIndicator(), Text(" Getting Users Online... Please wait")],
+      children: <Widget>[
+        CircularProgressIndicator(),
+        Text(" Getting Users Online... Please wait")
+      ],
     );
 
     // ignore: unused_local_variable
@@ -39,17 +42,20 @@ class _ChatSummaryListState extends State<ChatSummaryList> {
         body: Background(
           child: Container(
             child: ListView.builder(
-              itemCount: usersList.usersList != null ? usersList.usersList.length : 0,
+              itemCount:
+                  usersList.usersList != null ? usersList.usersList.length : 0,
               itemBuilder: (context, index) {
                 User currUsr = usersList.usersList[index];
                 return ChatSummaryView(
                   messageDate: '18:13',
-                  mostRecentMessage:
-                      currUsr.messagesList.isNotEmpty ? currUsr.messagesList.last.text : "",
+                  mostRecentMessage: currUsr.messagesList.isNotEmpty
+                      ? currUsr.messagesList.last.text
+                      : "",
                   name: currUsr.name != null ? currUsr.name : "No Name",
                   unreadMessagesCount: 1,
                   viewIndex: index,
-                  avatar: currUsr.picture != null ? currUsr.picture : "No picture",
+                  avatar:
+                      currUsr.picture != null ? currUsr.picture : "No picture",
                 );
               },
             ),

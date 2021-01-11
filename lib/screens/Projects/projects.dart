@@ -29,7 +29,9 @@ class _ProjectsState extends State<Projects> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: ProjectList(),
+        body: Background(
+          child: ProjectList(),
+        ),
       ),
     );
   }

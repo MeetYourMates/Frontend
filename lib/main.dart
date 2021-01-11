@@ -60,7 +60,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     /// Accessing the same Student Provider from the MultiProvider
-    StudentProvider _studentProvider = Provider.of<StudentProvider>(context, listen: true);
+    StudentProvider _studentProvider =
+        Provider.of<StudentProvider>(context, listen: true);
 
     /// [_fetchLogin] Fetches AutoLogin Response
     Future<int> _fetchLogin(String email, String password) async {
@@ -95,13 +96,15 @@ class MyApp extends StatelessWidget {
               /// we ask server [_fetchlogin] if the user is still valid
               /// untill than we show something else to user.
               return FutureBuilder<int>(
-                future: _fetchLogin(snapshot.data.email, snapshot.data.password),
+                future:
+                    _fetchLogin(snapshot.data.email, snapshot.data.password),
                 builder: (context, snapshot2) {
                   switch (snapshot2.connectionState) {
                     case ConnectionState.none:
 
                       /// Show [ErrorScreen], as we are unable to get the response...
-                      return ErrorShow(errorText: "Cannot Connect to Server...");
+                      return ErrorShow(
+                          errorText: "Cannot Connect to Server...");
                     case ConnectionState.waiting:
 
                       /// Show [LoadingScreen], as we are waiting for the response...
@@ -150,6 +153,7 @@ class MyApp extends StatelessWidget {
         /// widget tree is rebuit. If [Null] Or [NotConnected] we show noConnection Wdiget
         /// else we try to connect to our Backend Server
         home: getFutureBuildWidget,
+
         /* OfflineBuilder(
           child: SizedBox.expand(
             child: Container(

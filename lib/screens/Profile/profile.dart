@@ -26,7 +26,8 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
-    AuthProvider _authProvider = Provider.of<AuthProvider>(context, listen: false);
+    AuthProvider _authProvider =
+        Provider.of<AuthProvider>(context, listen: false);
     double meanRating = 0;
     for (int i = 0; i < _studentProvider.student.ratings.length; i++) {
       meanRating = (meanRating + _studentProvider.student.ratings[i].stars);
@@ -63,7 +64,8 @@ class _ProfileState extends State<Profile> {
                 ),
                 ListView.builder(
                   physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) => LogOutCard(authProvider: _authProvider),
+                  itemBuilder: (context, index) =>
+                      LogOutCard(authProvider: _authProvider),
                   shrinkWrap: true,
                   itemCount: 1,
                 ),
@@ -80,7 +82,8 @@ class StackContainer extends StatelessWidget {
   final String username;
   final String email;
 
-  const StackContainer({Key key, @required this.username, @required this.email}) : super(key: key);
+  const StackContainer({Key key, @required this.username, @required this.email})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -176,19 +179,6 @@ class TopBar extends StatelessWidget {
     return SafeArea(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-            ),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.menu, color: Colors.white),
-          ),
-        ],
       ),
     );
   }
@@ -215,7 +205,9 @@ class InsigniaCard extends StatelessWidget {
               IconButton(
                 onPressed: () {
                   Navigator.push(
-                      context, new MaterialPageRoute(builder: (context) => new Insignias()));
+                      context,
+                      new MaterialPageRoute(
+                          builder: (context) => new Insignias()));
                 },
                 icon: Icon(
                   Icons.album_sharp,
@@ -273,7 +265,9 @@ class TrophiesCard extends StatelessWidget {
               IconButton(
                 onPressed: () {
                   Navigator.push(
-                      context, new MaterialPageRoute(builder: (context) => new Trophies()));
+                      context,
+                      new MaterialPageRoute(
+                          builder: (context) => new Trophies()));
                 },
                 icon: Icon(
                   Icons.amp_stories_rounded,
@@ -334,7 +328,8 @@ class LogOutCard extends StatelessWidget {
                 onPressed: () {
                   UserPreferences().removeUser();
                   authProvider.signOutGoogle();
-                  Provider.of<SocketProvider>(context, listen: false).disconnectSocket();
+                  Provider.of<SocketProvider>(context, listen: false)
+                      .disconnectSocket();
                   Navigator.pushReplacementNamed(context, '/login');
                 },
                 icon: Icon(
@@ -404,7 +399,8 @@ Container editButton({BuildContext context}) {
     padding: EdgeInsets.only(top: 2.0),
     child: FlatButton(
       onPressed: () {
-        Navigator.push(context, new MaterialPageRoute(builder: (context) => new EditProfile()));
+        Navigator.push(context,
+            new MaterialPageRoute(builder: (context) => new EditProfile()));
       },
       child: Container(
         width: 250.0,
