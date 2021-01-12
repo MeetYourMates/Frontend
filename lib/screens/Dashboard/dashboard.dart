@@ -1,4 +1,3 @@
-import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:flutter/material.dart';
 import 'package:meet_your_mates/api/services/socket_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
@@ -8,6 +7,7 @@ import 'package:meet_your_mates/screens/Chat/chatSummaryList.dart';
 import 'package:meet_your_mates/screens/Profile/profile.dart';
 import 'package:meet_your_mates/screens/Projects/projects.dart';
 import 'package:meet_your_mates/screens/SearchMates/searchMates.dart';
+import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 //Services
 
@@ -23,7 +23,6 @@ class DashBoard extends StatefulWidget {
 }
 
 class _DashBoardState extends State<DashBoard> {
-  int _currentIndex = 0;
   List usersList = [];
   PageController _pageController;
   //SocketService socketService;
@@ -48,12 +47,12 @@ class _DashBoardState extends State<DashBoard> {
   @override
   Widget build(BuildContext context) {
     StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
+
     //StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
     //SocketService socketService = new SocketService();
     Future<void> openSocketConnection() async {
-      Provider.of<SocketProvider>(context, listen: true).createSocketConnection(
-          _studentProvider.student.user.token,
-          _studentProvider.student.user.id);
+      Provider.of<SocketProvider>(context, listen: true)
+          .createSocketConnection(_studentProvider.student.user.token, _studentProvider.student.user.id);
     }
 
     PersistentTabController _controller;
@@ -61,13 +60,7 @@ class _DashBoardState extends State<DashBoard> {
     bool _hideNavBar = false;
 
     List<Widget> _buildScreens() {
-      return [
-        Profile(),
-        ChatSummaryList(),
-        SearchMates(),
-        Projects(),
-        SearchMates()
-      ];
+      return [Profile(), ChatSummaryList(), SearchMates(), Projects(), SearchMates()];
     }
 
     List<PersistentBottomNavBarItem> _navBarsItems() {
@@ -112,8 +105,7 @@ class _DashBoardState extends State<DashBoard> {
         },
         child: Scaffold(
           appBar: PreferredSize(
-            preferredSize:
-                Size.fromHeight(kAppBarHeight), // here the desired height
+            preferredSize: Size.fromHeight(kAppBarHeight), // here the desired height
             child: AppBar(
               title: Text("Meet Your Mates"),
               backgroundColor: Colors.cyan,
@@ -135,11 +127,9 @@ class _DashBoardState extends State<DashBoard> {
             confineInSafeArea: true,
             backgroundColor: Colors.cyan[100],
             handleAndroidBackButtonPress: true,
-            resizeToAvoidBottomInset:
-                true, // This needs to be true if you want to move up the screen when keyboard appears.
+            resizeToAvoidBottomInset: true, // This needs to be true if you want to move up the screen when keyboard appears.
             stateManagement: true,
-            hideNavigationBarWhenKeyboardShows:
-                true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument.
+            hideNavigationBarWhenKeyboardShows: true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument.
             hideNavigationBar: _hideNavBar,
             decoration: NavBarDecoration(
               borderRadius: BorderRadius.circular(30.0),
@@ -158,8 +148,7 @@ class _DashBoardState extends State<DashBoard> {
               curve: Curves.ease,
               duration: Duration(milliseconds: 200),
             ),
-            navBarStyle: NavBarStyle
-                .style15, // Choose the nav bar style with this property.
+            navBarStyle: NavBarStyle.style15, // Choose the nav bar style with this property.
           )),
         ));
   }

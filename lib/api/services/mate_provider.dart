@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:meet_your_mates/api/models/student.dart';
 
-class OtherStudentProvider with ChangeNotifier {
+class MateProvider with ChangeNotifier {
   Student _student = new Student();
 
   Student get student => _student;

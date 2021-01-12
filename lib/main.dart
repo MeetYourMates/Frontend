@@ -4,10 +4,10 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 //Services
 import 'package:meet_your_mates/api/services/auth_service.dart';
 import 'package:meet_your_mates/api/services/image_service.dart';
+import 'package:meet_your_mates/api/services/mate_provider.dart';
 import 'package:meet_your_mates/api/services/socket_service.dart';
 import 'package:meet_your_mates/api/services/start_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
-import 'package:meet_your_mates/api/services/otherstudent_service.dart';
 import 'package:meet_your_mates/api/services/user_service.dart';
 import 'package:meet_your_mates/components/error.dart';
 import 'package:meet_your_mates/components/loading.dart';
@@ -18,8 +18,8 @@ import 'package:meet_your_mates/screens/Login/login.dart';
 import 'package:meet_your_mates/screens/PasswordRecovery/changePassword.dart';
 import 'package:meet_your_mates/screens/PasswordRecovery/passwordRecovery.dart';
 import 'package:meet_your_mates/screens/Profile/edit_profile.dart';
-import 'package:meet_your_mates/screens/Profile/profile.dart';
 import 'package:meet_your_mates/screens/Profile/otherprofile.dart';
+import 'package:meet_your_mates/screens/Profile/profile.dart';
 import 'package:meet_your_mates/screens/Register/register.dart';
 import 'package:meet_your_mates/screens/SearchMates/searchMates.dart';
 import 'package:meet_your_mates/screens/Validate/validate.dart';
@@ -48,11 +48,10 @@ void main() async {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => StudentProvider()),
-        ChangeNotifierProvider(create: (_) => OtherStudentProvider()),
+        ChangeNotifierProvider(create: (_) => MateProvider()),
         ChangeNotifierProvider(create: (_) => StartProvider()),
         ChangeNotifierProvider(create: (_) => ImagesProvider()),
         ChangeNotifierProvider(create: (_) => SocketProvider()),
-        
       ],
       child: MyApp(),
     ),
@@ -64,8 +63,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     /// Accessing the same Student Provider from the MultiProvider
-    StudentProvider _studentProvider =
-        Provider.of<StudentProvider>(context, listen: true);
+    StudentProvider _studentProvider = Provider.of<StudentProvider>(context, listen: true);
 
     /// [_fetchLogin] Fetches AutoLogin Response
     Future<int> _fetchLogin(String email, String password) async {
@@ -100,15 +98,13 @@ class MyApp extends StatelessWidget {
               /// we ask server [_fetchlogin] if the user is still valid
               /// untill than we show something else to user.
               return FutureBuilder<int>(
-                future:
-                    _fetchLogin(snapshot.data.email, snapshot.data.password),
+                future: _fetchLogin(snapshot.data.email, snapshot.data.password),
                 builder: (context, snapshot2) {
                   switch (snapshot2.connectionState) {
                     case ConnectionState.none:
 
                       /// Show [ErrorScreen], as we are unable to get the response...
-                      return ErrorShow(
-                          errorText: "Cannot Connect to Server...");
+                      return ErrorShow(errorText: "Cannot Connect to Server...");
                     case ConnectionState.waiting:
 
                       /// Show [LoadingScreen], as we are waiting for the response...

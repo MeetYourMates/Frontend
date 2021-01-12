@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:meet_your_mates/api/models/user.dart';
+import 'package:meet_your_mates/api/services/mate_provider.dart';
 import 'package:meet_your_mates/api/services/socket_service.dart';
-import 'package:meet_your_mates/api/services/otherStudent_service.dart';
+import 'package:meet_your_mates/screens/Chat/chatDetail.dart';
+import 'package:meet_your_mates/screens/Chat/chatDetail2.dart';
 import 'package:meet_your_mates/screens/Insignias/background.dart';
 import 'package:meet_your_mates/screens/Insignias/insignias.dart';
 import 'package:meet_your_mates/screens/Trophies/trophies.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
-import 'package:meet_your_mates/api/models/user.dart';
-import 'package:meet_your_mates/screens/Chat/chatDetail.dart';
-import 'package:meet_your_mates/screens/Chat/chatDetail2.dart';
-import 'package:meet_your_mates/api/models/student.dart';
 
 import '../../api/services/auth_service.dart';
 
@@ -27,9 +26,8 @@ class _ProfileState extends State<OtherProfile> {
 
   @override
   Widget build(BuildContext context) {
-    OtherStudentProvider _studentProvider = Provider.of<OtherStudentProvider>(context);
-    AuthProvider _authProvider =
-        Provider.of<AuthProvider>(context, listen: false);
+    MateProvider _studentProvider = Provider.of<MateProvider>(context);
+    AuthProvider _authProvider = Provider.of<AuthProvider>(context, listen: false);
     double meanRating = 0;
     for (int i = 0; i < _studentProvider.student.ratings.length; i++) {
       meanRating = (meanRating + _studentProvider.student.ratings[i].stars);
@@ -84,8 +82,7 @@ class StackContainer extends StatelessWidget {
   final String username;
   final String email;
 
-  const StackContainer({Key key, @required this.username, @required this.email})
-      : super(key: key);
+  const StackContainer({Key key, @required this.username, @required this.email}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -206,10 +203,7 @@ class InsigniaCard extends StatelessWidget {
             children: <Widget>[
               IconButton(
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      new MaterialPageRoute(
-                          builder: (context) => new Insignias()));
+                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new Insignias()));
                 },
                 icon: Icon(
                   Icons.album_sharp,
@@ -266,10 +260,7 @@ class TrophiesCard extends StatelessWidget {
             children: <Widget>[
               IconButton(
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      new MaterialPageRoute(
-                          builder: (context) => new Trophies()));
+                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new Trophies()));
                 },
                 icon: Icon(
                   Icons.amp_stories_rounded,
@@ -315,21 +306,13 @@ class SendMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SocketProvider socketProvider =
-        Provider.of<SocketProvider>(context, listen: false);
+    SocketProvider socketProvider = Provider.of<SocketProvider>(context, listen: false);
+    // ignore: unused_element
     void openChat(User user) {
       //Search if This user is already a mate
       int index = socketProvider.mates.usersList.indexOf(user);
       //If yes --> Open ChatDetail with Chathistory
       if (index != -1) {
-        /*Navigator.push(
-          context,
-          new MaterialPageRoute(
-            builder: (context) => new ChatDetailPage(
-              selectedIndex: index,
-            ),
-          ),
-        );*/
         Navigator.push(
           context,
           new MaterialPageRoute(

@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:meet_your_mates/api/models/courseAndStudents.dart';
 import 'package:meet_your_mates/api/models/student.dart';
-import 'package:meet_your_mates/api/services/otherStudent_service.dart';
-import 'package:provider/provider.dart';
+import 'package:meet_your_mates/api/services/mate_provider.dart';
 import 'package:meet_your_mates/screens/Profile/otherprofile.dart';
+import 'package:provider/provider.dart';
 
 class CourseList extends StatelessWidget {
   final CourseAndStudents queryResult;
-  const CourseList({this.queryResult,});
-
+  const CourseList({
+    this.queryResult,
+  });
+  @override
   Widget build(BuildContext context) {
-    OtherStudentProvider _otherStudent = Provider.of<OtherStudentProvider>(context);
+    //OtherStudentProvider _otherStudent = Provider.of<OtherStudentProvider>(context);
+    MateProvider _otherStudent = Provider.of<MateProvider>(context);
     return Column(
       children: [
         Padding(
@@ -47,15 +50,9 @@ class CourseList extends StatelessWidget {
             Student student = queryResult.students[index];
             return Card(
               child: ListTile(
-                  leading: student.user.picture != null
-                      ? Image.network(student.user.picture)
-                      : Text("No Picture"),
-                  title: Text(student.user.name != null
-                      ? student.user.name
-                      : "No name"),
-                  subtitle: Text(student.degree != null
-                      ? queryResult.students[index].degree
-                      : "No Degree"),
+                  leading: student.user.picture != null ? Image.network(student.user.picture) : Text("No Picture"),
+                  title: Text(student.user.name != null ? student.user.name : "No name"),
+                  subtitle: Text(student.degree != null ? queryResult.students[index].degree : "No Degree"),
                   trailing: Icon(Icons.arrow_forward),
                   onTap: () {
                     /* REDIRECCIONAR A PERFIL SELECCIONADO */
