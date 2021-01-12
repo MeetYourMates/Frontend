@@ -15,6 +15,7 @@ import 'package:meet_your_mates/api/services/student_service.dart';
 //Components
 
 class Insignias extends StatefulWidget {
+ 
   @override
   _InsigniasState createState() => _InsigniasState();
 }
@@ -37,8 +38,7 @@ class _InsigniasState extends State<Insignias> {
           ],
         ),
         body: Background(
-          child: InsigniaList(
-          ),
+          child: InsigniaList(),
         ),
       ),
     );
@@ -51,20 +51,22 @@ class InsigniaList extends StatefulWidget {
 }
 
 class _InsigniaListState extends State<InsigniaList> {
-
-
-
   @override
   Widget build(BuildContext context) {
-
     StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
+
     List<Insignia> insignias = _studentProvider.student.insignias;
     return ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) => InsigniaCard(hashtag: insignias[index].hashtag, date: insignias[index].dateTime, requirement: insignias[index].requirement, logo: insignias[index].logo,),
-              shrinkWrap: true,
-              itemCount: insignias.length,
-      );
+      physics: NeverScrollableScrollPhysics(),
+      itemBuilder: (context, index) => InsigniaCard(
+        hashtag: insignias[index].hashtag,
+        date: insignias[index].dateTime,
+        requirement: insignias[index].requirement,
+        logo: insignias[index].logo,
+      ),
+      shrinkWrap: true,
+      itemCount: insignias.length,
+    );
   }
 }
 
@@ -74,13 +76,13 @@ class InsigniaCard extends StatelessWidget {
   final int requirement;
   final String logo;
 
-  const InsigniaCard({
-    Key key,
-    @required this.hashtag,
-    @required this.date,
-    @required this.logo,
-    @required this.requirement
-  }) : super(key: key);
+  const InsigniaCard(
+      {Key key,
+      @required this.hashtag,
+      @required this.date,
+      @required this.logo,
+      @required this.requirement})
+      : super(key: key);
 
   String timeAgo(DateTime d) {
     Duration diff = DateTime.now().difference(d);
@@ -133,7 +135,10 @@ class InsigniaCard extends StatelessWidget {
                   ),
                   SizedBox(height: 4.0),
                   Text(
-                    "Date: " + timeAgo(DateTime.parse(this.date)) + ", Requirement: " + this.requirement.toString(),
+                    "Date: " +
+                        timeAgo(DateTime.parse(this.date)) +
+                        ", Requirement: " +
+                        this.requirement.toString(),
                     style: TextStyle(
                       color: Colors.grey[700],
                       fontSize: 12.0,

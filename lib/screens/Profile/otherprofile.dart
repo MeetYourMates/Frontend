@@ -27,14 +27,15 @@ class _ProfileState extends State<OtherProfile> {
   @override
   Widget build(BuildContext context) {
     MateProvider _studentProvider = Provider.of<MateProvider>(context);
-    AuthProvider _authProvider = Provider.of<AuthProvider>(context, listen: false);
+    AuthProvider _authProvider =
+        Provider.of<AuthProvider>(context, listen: false);
     double meanRating = 0;
-    for (int i = 0; i < _studentProvider.student.ratings.length; i++) {
+    /*for (int i = 0; i < _studentProvider.student.ratings.length; i++) {
       meanRating = (meanRating + _studentProvider.student.ratings[i].stars);
     }
 
     meanRating = meanRating / (_studentProvider.student.ratings.length + 1);
-
+    */
     return SafeArea(
       child: Scaffold(
         body: Background(
@@ -65,6 +66,7 @@ class _ProfileState extends State<OtherProfile> {
                   physics: NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) => SendMessage(
                     authProvider: _authProvider,
+                    usr: _studentProvider.student.user,
                   ),
                   shrinkWrap: true,
                   itemCount: 1,
@@ -82,7 +84,8 @@ class StackContainer extends StatelessWidget {
   final String username;
   final String email;
 
-  const StackContainer({Key key, @required this.username, @required this.email}) : super(key: key);
+  const StackContainer({Key key, @required this.username, @required this.email})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -203,7 +206,10 @@ class InsigniaCard extends StatelessWidget {
             children: <Widget>[
               IconButton(
                 onPressed: () {
-                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new Insignias()));
+                  Navigator.push(
+                      context,
+                      new MaterialPageRoute(
+                          builder: (context) => new Insignias()));
                 },
                 icon: Icon(
                   Icons.album_sharp,
@@ -260,7 +266,10 @@ class TrophiesCard extends StatelessWidget {
             children: <Widget>[
               IconButton(
                 onPressed: () {
-                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new Trophies()));
+                  Navigator.push(
+                      context,
+                      new MaterialPageRoute(
+                          builder: (context) => new Trophies()));
                 },
                 icon: Icon(
                   Icons.amp_stories_rounded,
@@ -299,14 +308,17 @@ class TrophiesCard extends StatelessWidget {
 
 class SendMessage extends StatelessWidget {
   final AuthProvider authProvider;
+  final User usr;
   const SendMessage({
     Key key,
     this.authProvider,
+    this.usr
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    SocketProvider socketProvider = Provider.of<SocketProvider>(context, listen: false);
+    SocketProvider socketProvider =
+        Provider.of<SocketProvider>(context, listen: false);
     // ignore: unused_element
     void openChat(User user) {
       //Search if This user is already a mate
@@ -347,7 +359,7 @@ class SendMessage extends StatelessWidget {
             children: <Widget>[
               IconButton(
                 onPressed: () {
-                  //openChat(student.user);
+                  openChat(usr);
                 },
                 icon: Icon(
                   Icons.chat_bubble,
