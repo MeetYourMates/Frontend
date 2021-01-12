@@ -7,18 +7,18 @@ import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/screens/SearchMates/components/statefulwrapper.dart';
 import 'package:meet_your_mates/screens/SearchMates/courseList.dart';
 import 'package:provider/provider.dart';
+import 'package:meet_your_mates/api/services/otherStudent_service.dart';
 
 import 'background.dart';
 
 class Body extends StatefulWidget {
-  const Body({Key key}) : super(key: key);
+  const Body({Key key,}) : super(key: key);
   @override
   _BodyState createState() => _BodyState();
 }
 
 class _BodyState extends State<Body> {
   var logger = Logger();
-
   Future<List<dynamic>> _futureCourseQueryResult;
   List<CourseAndStudents> _courseQueryResult = [];
 
@@ -26,7 +26,8 @@ class _BodyState extends State<Body> {
 
   //Consula los cursos de un estudiante (falta enviar id de estudiante como parametro)
   Future<void> _getCourses() async {
-    final List<CourseAndStudents> queryResult = await _studentProvider.getStudentCourses(_studentProvider.student.id);
+    final List<CourseAndStudents> queryResult =
+        await _studentProvider.getStudentCourses(_studentProvider.student.id);
     setState(
       () {
         debugPrint("Executed course search");
@@ -47,7 +48,6 @@ class _BodyState extends State<Body> {
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _studentProvider = Provider.of<StudentProvider>(context, listen: false);
-
       _getCourses();
     });
   }
@@ -108,7 +108,12 @@ class _BodyState extends State<Body> {
                 child: Container(
                   child: SingleChildScrollView(
                     child: Column(
-                      children: [for (CourseAndStudents course in _courseQueryResult) CourseList(queryResult: course, context: context,)],
+                      children: [
+                        for (CourseAndStudents course in _courseQueryResult)
+                          CourseList(
+                            queryResult: course,
+                          )
+                      ],
                     ),
                   ),
                 ),

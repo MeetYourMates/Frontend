@@ -7,7 +7,7 @@ class StudentList extends StatelessWidget {
   StudentList(queryResult) {
     this._queryResult.addAll(queryResult);
   }
-
+  
   @override
   Widget build(BuildContext context) {
     
@@ -27,7 +27,7 @@ class StudentList extends StatelessWidget {
                   ? _queryResult[index].degree
                   : "No Degree"),
               trailing: Icon(Icons.arrow_forward),
-              onTap: () {/* REDIRECCIONAR A PERFIL SELECCIONADO */}),
+              onTap: () {}),
         );
       },
     );

@@ -7,11 +7,10 @@ import 'package:meet_your_mates/screens/Profile/otherprofile.dart';
 
 class CourseList extends StatelessWidget {
   final CourseAndStudents queryResult;
-  final BuildContext context;
-  const CourseList({this.queryResult, this.context});
+  const CourseList({this.queryResult,});
 
-  Widget build(context) {
-    OtherStudentProvider _otherStudentProvider = Provider.of<OtherStudentProvider>(context);
+  Widget build(BuildContext context) {
+    OtherStudentProvider _otherStudent = Provider.of<OtherStudentProvider>(context);
     return Column(
       children: [
         Padding(
@@ -60,7 +59,7 @@ class CourseList extends StatelessWidget {
                   trailing: Icon(Icons.arrow_forward),
                   onTap: () {
                     /* REDIRECCIONAR A PERFIL SELECCIONADO */
-                    //_otherStudentProvider.setStudent(student);
+                    _otherStudent.setStudent(student);
                     Navigator.push(
                       context,
                       new MaterialPageRoute(
