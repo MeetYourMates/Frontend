@@ -8,6 +8,7 @@ import 'package:meet_your_mates/api/models/user.dart';
 import 'package:meet_your_mates/api/services/auth_service.dart';
 import 'package:meet_your_mates/api/services/professor_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
+import 'package:meet_your_mates/api/services/user_service.dart';
 import 'package:meet_your_mates/api/util/shared_preference.dart';
 import 'package:meet_your_mates/components/rounded_button.dart';
 import 'package:meet_your_mates/components/text_field_container.dart';
@@ -52,14 +53,13 @@ class _ValidateState extends State<Validate> {
     Future<void> checkValidation() async {
       logger.d("Check Validation Called");
       //Check if Server Validated, if True than retrieve Student
-      User user = Provider.of<StudentProvider>(context, listen: false).student.user;
+      User user = Provider.of<UserProvider>(context, listen: false).user;
       final Future<Map<String, dynamic>> successfulMessage = auth.login(user.email, user.password);
 
       //Callback to message recieved after login auth
       successfulMessage.then((response) {
         if (response['status'] == 0) {
-          //Validation Completed
-
+          //Validation Completed & Somehow GetStarted too!
           Student student = response['student'];
           Provider.of<StudentProvider>(context, listen: false).setStudent(student);
           EasyLoading.dismiss().then((value) => {
