@@ -12,6 +12,7 @@ import 'package:meet_your_mates/api/models/userDetails.dart';
 import 'package:meet_your_mates/api/services/auth_service.dart';
 import 'package:meet_your_mates/api/services/professor_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
+import 'package:meet_your_mates/api/services/user_service.dart';
 //Components
 import 'package:meet_your_mates/components/already_have_an_account_check.dart';
 import 'package:meet_your_mates/components/rounded_button.dart';
@@ -98,9 +99,9 @@ class _LoginState extends State<Login> {
                 logger.d("Logged In Succesfull!");
               } else if (response['status'] == 1) {
                 //Not Validated
-                Student student = response['student'];
+                User user = response['user'];
                 //Provider.of<StudentProvider>(context, listen: false).setPassword(student.user.password);
-                Provider.of<StudentProvider>(context, listen: false).setStudentWithUserWithPassword(student);
+                Provider.of<UserProvider>(context, listen: false).setUser(user);
                 Navigator.pushReplacementNamed(context, '/validate');
                 logger.d("Logged In Not Validated!");
               } else if (response['status'] == 2) {

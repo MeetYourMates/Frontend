@@ -129,6 +129,8 @@ class MyApp extends StatelessWidget {
                         return DashBoardStudent();
                       } else if (snapshot2.data == 1) {
                         /// Redirect to [Validate Both Professor and Student]
+                        Provider.of<UserProvider>(context, listen: false).user.email = snapshot.data.email;
+                        Provider.of<UserProvider>(context, listen: false).user.password = snapshot.data.password;
                         return Validate();
                       } else if (snapshot2.data == 2) {
                         /// Redirect to [GetStarted Student]
