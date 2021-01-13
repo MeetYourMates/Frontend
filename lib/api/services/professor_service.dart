@@ -85,7 +85,7 @@ class ProfessorProvider with ChangeNotifier {
           logger.d("200 AutoLogging Professor");
           logger.d(_professor.toJson().toString());
           UserPreferences().saveUser(_professor.user);
-          res = 4; //Dashboard Professor
+          res = 3; //Dashboard Professor
         } catch (err) {
           logger.e("Error AutoLogin 200: " + err.toString());
           res = -1;

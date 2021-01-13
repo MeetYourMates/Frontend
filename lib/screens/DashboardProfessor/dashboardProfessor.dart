@@ -92,7 +92,7 @@ class _DashBoardProfessorState extends State<DashBoardProfessor> {
         ),
         PersistentBottomNavBarItem(
           icon: Icon(Icons.search),
-          title: ("Mates"),
+          title: ("Students"),
           activeColor: Colors.cyan,
           inactiveColor: Colors.grey,
         ),
