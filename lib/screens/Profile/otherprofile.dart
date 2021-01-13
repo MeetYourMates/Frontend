@@ -8,6 +8,7 @@ import 'package:meet_your_mates/screens/Chat/chatDetail2.dart';
 import 'package:meet_your_mates/screens/Insignias/background.dart';
 import 'package:meet_your_mates/screens/Insignias/insignias.dart';
 import 'package:meet_your_mates/screens/Trophies/trophies.dart';
+import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
 
@@ -27,8 +28,7 @@ class _ProfileState extends State<OtherProfile> {
   @override
   Widget build(BuildContext context) {
     MateProvider _studentProvider = Provider.of<MateProvider>(context);
-    AuthProvider _authProvider =
-        Provider.of<AuthProvider>(context, listen: false);
+    AuthProvider _authProvider = Provider.of<AuthProvider>(context, listen: false);
     double meanRating = 0;
     /*for (int i = 0; i < _studentProvider.student.ratings.length; i++) {
       meanRating = (meanRating + _studentProvider.student.ratings[i].stars);
@@ -84,8 +84,7 @@ class StackContainer extends StatelessWidget {
   final String username;
   final String email;
 
-  const StackContainer({Key key, @required this.username, @required this.email})
-      : super(key: key);
+  const StackContainer({Key key, @required this.username, @required this.email}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -206,10 +205,7 @@ class InsigniaCard extends StatelessWidget {
             children: <Widget>[
               IconButton(
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      new MaterialPageRoute(
-                          builder: (context) => new Insignias()));
+                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new Insignias()));
                 },
                 icon: Icon(
                   Icons.album_sharp,
@@ -266,10 +262,7 @@ class TrophiesCard extends StatelessWidget {
             children: <Widget>[
               IconButton(
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      new MaterialPageRoute(
-                          builder: (context) => new Trophies()));
+                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new Trophies()));
                 },
                 icon: Icon(
                   Icons.amp_stories_rounded,
@@ -309,29 +302,32 @@ class TrophiesCard extends StatelessWidget {
 class SendMessage extends StatelessWidget {
   final AuthProvider authProvider;
   final User usr;
-  const SendMessage({
-    Key key,
-    this.authProvider,
-    this.usr
-  }) : super(key: key);
+  const SendMessage({Key key, this.authProvider, this.usr}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    SocketProvider socketProvider =
-        Provider.of<SocketProvider>(context, listen: false);
+    SocketProvider socketProvider = Provider.of<SocketProvider>(context, listen: false);
     // ignore: unused_element
     void openChat(User user) {
       //Search if This user is already a mate
       int index = socketProvider.mates.usersList.indexOf(user);
       //If yes --> Open ChatDetail with Chathistory
       if (index != -1) {
-        Navigator.push(
+        /* Navigator.push(
           context,
           new MaterialPageRoute(
             builder: (context) => new ChatDetailPage(
               selectedIndex: index,
             ),
           ),
+        ); */
+        pushNewScreen(
+          context,
+          screen: ChatDetailPage(
+            selectedIndex: index,
+          ),
+          withNavBar: false, // OPTIONAL VALUE. True by default.
+          pageTransitionAnimation: PageTransitionAnimation.cupertino,
         );
       } else {
         //Else --> New Mate maybe --> Temporary ChatDetail or ChatDetail2!
