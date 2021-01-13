@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:meet_your_mates/api/services/professor_service.dart';
 import 'package:meet_your_mates/api/services/socket_service.dart';
-import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/components/statefull_wrapper.dart';
 import 'package:meet_your_mates/constants.dart';
 import 'package:meet_your_mates/screens/Chat/chatSummaryList.dart';
+import 'package:meet_your_mates/screens/Home/home.dart';
 import 'package:meet_your_mates/screens/Profile/profile.dart';
 import 'package:meet_your_mates/screens/Projects/projects.dart';
-import 'package:meet_your_mates/screens/SearchMates/searchMates.dart';
+import 'package:meet_your_mates/screens/SearchStudents/searchStudents.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 //Services
@@ -17,12 +18,12 @@ import 'package:provider/provider.dart';
 
 //Models
 
-class DashBoard extends StatefulWidget {
+class DashBoardProfessor extends StatefulWidget {
   @override
-  _DashBoardState createState() => _DashBoardState();
+  _DashBoardProfessorState createState() => _DashBoardProfessorState();
 }
 
-class _DashBoardState extends State<DashBoard> {
+class _DashBoardProfessorState extends State<DashBoardProfessor> {
   List usersList = [];
   PageController _pageController;
   //SocketService socketService;
@@ -46,13 +47,13 @@ class _DashBoardState extends State<DashBoard> {
   ///=======================================================================================================================**/
   @override
   Widget build(BuildContext context) {
-    StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
+    ProfessorProvider _professorProvider = Provider.of<ProfessorProvider>(context);
 
-    //StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
+    //StudentProvider _professorProvider = Provider.of<StudentProvider>(context);
     //SocketService socketService = new SocketService();
     Future<void> openSocketConnection() async {
       Provider.of<SocketProvider>(context, listen: true)
-          .createSocketConnection(_studentProvider.student.user.token, _studentProvider.student.user.id);
+          .createSocketConnection(_professorProvider.professor.user.token, _professorProvider.professor.user.id);
     }
 
     PersistentTabController _controller;
@@ -60,7 +61,7 @@ class _DashBoardState extends State<DashBoard> {
     bool _hideNavBar = false;
 
     List<Widget> _buildScreens() {
-      return [Profile(), ChatSummaryList(), SearchMates(), Projects(), SearchMates()];
+      return [Profile(), ChatSummaryList(), Home(), Projects(), SearchStudents()];
     }
 
     List<PersistentBottomNavBarItem> _navBarsItems() {

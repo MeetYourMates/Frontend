@@ -4,6 +4,7 @@ import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/components/statefull_wrapper.dart';
 import 'package:meet_your_mates/constants.dart';
 import 'package:meet_your_mates/screens/Chat/chatSummaryList.dart';
+import 'package:meet_your_mates/screens/Home/home.dart';
 import 'package:meet_your_mates/screens/Profile/profile.dart';
 import 'package:meet_your_mates/screens/Projects/projects.dart';
 import 'package:meet_your_mates/screens/SearchMates/searchMates.dart';
@@ -17,12 +18,12 @@ import 'package:provider/provider.dart';
 
 //Models
 
-class DashBoard extends StatefulWidget {
+class DashBoardStudent extends StatefulWidget {
   @override
-  _DashBoardState createState() => _DashBoardState();
+  _DashBoardStudentState createState() => _DashBoardStudentState();
 }
 
-class _DashBoardState extends State<DashBoard> {
+class _DashBoardStudentState extends State<DashBoardStudent> {
   List usersList = [];
   PageController _pageController;
   //SocketService socketService;
@@ -60,7 +61,7 @@ class _DashBoardState extends State<DashBoard> {
     bool _hideNavBar = false;
 
     List<Widget> _buildScreens() {
-      return [Profile(), ChatSummaryList(), SearchMates(), Projects(), SearchMates()];
+      return [Profile(), ChatSummaryList(), Home(), Projects(), SearchMates()];
     }
 
     List<PersistentBottomNavBarItem> _navBarsItems() {

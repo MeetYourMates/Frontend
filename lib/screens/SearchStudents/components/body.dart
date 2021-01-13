@@ -2,13 +2,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/courseAndStudents.dart';
-import 'package:meet_your_mates/api/services/student_service.dart';
+import 'package:meet_your_mates/api/services/professor_service.dart';
 import 'package:meet_your_mates/components/error.dart';
 import 'package:meet_your_mates/components/loading.dart';
-import 'package:meet_your_mates/screens/SearchMates/courseList.dart';
+import 'package:meet_your_mates/screens/SearchStudents/components/background.dart';
+import 'package:meet_your_mates/screens/SearchStudents/courseList.dart';
 import 'package:provider/provider.dart';
-
-import 'background.dart';
 
 class Body extends StatefulWidget {
   const Body({
@@ -21,7 +20,7 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   var logger = Logger(level: Level.info);
 
-  StudentProvider _studentProvider;
+  ProfessorProvider _professorProvider;
 
   //Inicializa todo el FUTURE (debe inicializarse buera del build)
   @override
@@ -33,11 +32,12 @@ class _BodyState extends State<Body> {
   Widget build(BuildContext context) {
     //Consula los cursos de un estudiante (falta enviar id de estudiante como parametro)
     Future<List<CourseAndStudents>> _getCourses() async {
-      _studentProvider = Provider.of<StudentProvider>(context, listen: false);
-      logger.d(_studentProvider.student);
-      List<CourseAndStudents> _courses = await _studentProvider.getStudentCourses(_studentProvider.student.id);
-      logger.d("COURSES BE CAREFULL!!");
+      _professorProvider = Provider.of<ProfessorProvider>(context, listen: false);
+      logger.d(_professorProvider.professor);
+      List<CourseAndStudents> _courses = await _professorProvider.getProfessorCourses(_professorProvider.professor.id);
+      logger.d("****************COURSES & Students *************!!");
       logger.d(_courses);
+      logger.d("****************COURSES & Students *************!!");
       return _courses;
     }
 

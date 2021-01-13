@@ -5,13 +5,15 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:meet_your_mates/api/services/auth_service.dart';
 import 'package:meet_your_mates/api/services/image_service.dart';
 import 'package:meet_your_mates/api/services/mate_provider.dart';
+import 'package:meet_your_mates/api/services/professor_service.dart';
 import 'package:meet_your_mates/api/services/socket_service.dart';
 import 'package:meet_your_mates/api/services/start_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/api/services/user_service.dart';
 import 'package:meet_your_mates/components/error.dart';
 import 'package:meet_your_mates/components/loading.dart';
-import 'package:meet_your_mates/screens/Dashboard/dashboard.dart';
+import 'package:meet_your_mates/screens/Dashboard/dashboardStudent.dart';
+import 'package:meet_your_mates/screens/DashboardProfessor/dashboardProfessor.dart';
 import 'package:meet_your_mates/screens/GetStarted/getstarted.dart';
 //Screens
 import 'package:meet_your_mates/screens/Login/login.dart';
@@ -46,6 +48,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => ProfessorProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => StudentProvider()),
         ChangeNotifierProvider(create: (_) => MateProvider()),
@@ -117,7 +120,8 @@ class MyApp extends StatelessWidget {
                         );
                       } else if (snapshot2.data == 0) {
                         /// Redirect to [DashBoard]
-                        return DashBoard();
+                        //return DashBoardStudent();
+                        return DashBoardProfessor();
                       } else if (snapshot2.data == 1) {
                         /// Redirect to [Validate]
                         return Validate();
@@ -171,7 +175,7 @@ class MyApp extends StatelessWidget {
           },
         ) */
         routes: {
-          '/dashboard': (context) => DashBoard(),
+          '/dashboard': (context) => DashBoardStudent(),
           '/login': (context) => Login(),
           '/register': (context) => Register(),
           '/validate': (context) => Validate(),
