@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart';
 import 'package:logger/logger.dart';
+import 'package:meet_your_mates/api/models/professor.dart';
 import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/models/user.dart';
 import 'package:meet_your_mates/api/models/userDetails.dart';
@@ -48,9 +49,12 @@ class AuthProvider with ChangeNotifier {
     _loggedInStatus = Status.Authenticating;
     notifyListeners();
     Student authenticatedStudent = new Student();
+    Professor authenticatedProfessor = new Professor();
     Response response;
+    bool isStudent = false;
     try {
       User userTmp = new User(email: email, password: password);
+      isStudent = email.contains('estudiantat');
       response = await post(
         AppUrl.login,
         body: json.encode(userTmp.toJson()),
@@ -66,14 +70,25 @@ class AuthProvider with ChangeNotifier {
       //Logged In succesfully  from server
       try {
         Map responseData = jsonDecode(response.body);
-        authenticatedStudent = Student.fromJson(responseData);
-        authenticatedStudent.user.password = password;
-        UserPreferences().saveUser(authenticatedStudent.user);
-        logger.d("User in Shared Preferences: " + authenticatedStudent.user.toString());
-        _loggedInStatus = Status.LoggedIn;
-        notifyListeners();
-        res = 0;
-        result = {'status': res, 'message': _loggedInStatus, 'student': authenticatedStudent};
+        if (isStudent) {
+          authenticatedStudent = Student.fromJson(responseData);
+          authenticatedStudent.user.password = password;
+          UserPreferences().saveUser(authenticatedStudent.user);
+          logger.d("User in Shared Preferences: " + authenticatedStudent.user.toString());
+          _loggedInStatus = Status.LoggedIn;
+          notifyListeners();
+          res = 0;
+          result = {'status': res, 'message': _loggedInStatus, 'student': authenticatedStudent};
+        } else {
+          authenticatedProfessor = Professor.fromJson(responseData);
+          authenticatedProfessor.user.password = password;
+          UserPreferences().saveUser(authenticatedProfessor.user);
+          logger.d("User in Shared Preferences: " + authenticatedProfessor.user.toString());
+          _loggedInStatus = Status.LoggedIn;
+          notifyListeners();
+          res = 3;
+          result = {'status': res, 'message': _loggedInStatus, 'professor': authenticatedProfessor};
+        }
       } catch (err) {
         res = -1;
         result = {'status': res, 'message': "Failed To Login!"};
@@ -99,14 +114,25 @@ class AuthProvider with ChangeNotifier {
       //Let's Get Started not completed
       try {
         Map responseData = jsonDecode(response.body);
-        authenticatedStudent = Student.fromJson(responseData);
-        authenticatedStudent.user.password = password;
-        UserPreferences().saveUser(authenticatedStudent.user);
-        logger.d("User in Shared Preferences: " + authenticatedStudent.user.toString());
-        _loggedInStatus = Status.NotCompleted;
-        notifyListeners();
-        res = 2;
-        result = {'status': res, 'message': _loggedInStatus, 'student': authenticatedStudent};
+        if (isStudent) {
+          authenticatedStudent = Student.fromJson(responseData);
+          authenticatedStudent.user.password = password;
+          UserPreferences().saveUser(authenticatedStudent.user);
+          logger.d("User in Shared Preferences: " + authenticatedStudent.user.toString());
+          _loggedInStatus = Status.NotCompleted;
+          notifyListeners();
+          res = 2;
+          result = {'status': res, 'message': _loggedInStatus, 'student': authenticatedStudent};
+        } else {
+          authenticatedProfessor = Professor.fromJson(responseData);
+          authenticatedProfessor.user.password = password;
+          UserPreferences().saveUser(authenticatedProfessor.user);
+          logger.d("User in Shared Preferences: " + authenticatedProfessor.user.toString());
+          _loggedInStatus = Status.NotCompleted;
+          notifyListeners();
+          res = 4;
+          result = {'status': res, 'message': _loggedInStatus, 'professor': authenticatedProfessor};
+        }
       } catch (err) {
         result = {'status': res, 'message': "Failed To Login!--> Error: " + err.toString()};
         _loggedInStatus = Status.NotLoggedIn;

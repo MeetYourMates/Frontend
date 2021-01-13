@@ -67,11 +67,17 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     /// Accessing the same Student Provider from the MultiProvider
     StudentProvider _studentProvider = Provider.of<StudentProvider>(context, listen: true);
+    ProfessorProvider _professorProvider = Provider.of<ProfessorProvider>(context, listen: true);
 
     /// [_fetchLogin] Fetches AutoLogin Response
     Future<int> _fetchLogin(String email, String password) async {
       print("AutoLogin Executed");
-      return await _studentProvider.autoLogin(email, password);
+      //Check if Email contains estudiantat, if not then its probably of professor
+      if (email.contains('estudiantat')) {
+        return await _studentProvider.autoLogin(email, password);
+      } else {
+        return await _professorProvider.autoLogin(email, password);
+      }
     }
 
     /// [_fetchPreferences] We fetch the preference from the storage and notify in future
@@ -119,15 +125,21 @@ class MyApp extends StatelessWidget {
                           errorText: snapshot2.error,
                         );
                       } else if (snapshot2.data == 0) {
-                        /// Redirect to [DashBoard]
-                        //return DashBoardStudent();
-                        return DashBoardProfessor();
+                        /// Redirect to [DashBoard Student]
+                        return DashBoardStudent();
                       } else if (snapshot2.data == 1) {
-                        /// Redirect to [Validate]
+                        /// Redirect to [Validate Both Professor and Student]
                         return Validate();
                       } else if (snapshot2.data == 2) {
-                        /// Redirect to [GetStarted]
+                        /// Redirect to [GetStarted Student]
                         return GetStarted();
+                      } else if (snapshot2.data == 3) {
+                        /// Redirect to [DashBoard Professor]
+                        return DashBoardProfessor();
+                      } else if (snapshot2.data == 4) {
+                        /// Redirect to [GetStarted Professor]
+                        /// //! TEMPERORY SUBSTITUTE FOR GETSTARTED PROFESSOR!
+                        return DashBoardProfessor();
                       } else {
                         //Error in Autologgin --> Login probably -1
                         /// Redirect to [Login]
@@ -175,11 +187,13 @@ class MyApp extends StatelessWidget {
           },
         ) */
         routes: {
-          '/dashboard': (context) => DashBoardStudent(),
+          '/dashboardStudent': (context) => DashBoardStudent(),
           '/login': (context) => Login(),
           '/register': (context) => Register(),
           '/validate': (context) => Validate(),
           '/getStarted': (context) => GetStarted(),
+          '/getStartedProfessor': (context) => GetStarted(), //! CHANGE HERE WITH GETSTARTED PROFESSOR!
+          '/dashboardProfessor': (context) => DashBoardProfessor(),
           '/searchMates': (context) => SearchMates(),
           '/passwordRecovery': (context) => PasswordRecovery(),
           '/changePassword': (context) => ChangePassword(),

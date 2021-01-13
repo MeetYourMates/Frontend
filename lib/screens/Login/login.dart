@@ -3,12 +3,14 @@ import 'package:auth_buttons/auth_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:logger/logger.dart';
+import 'package:meet_your_mates/api/models/professor.dart';
 import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/models/user.dart';
 //Models
 import 'package:meet_your_mates/api/models/userDetails.dart';
 //Services
 import 'package:meet_your_mates/api/services/auth_service.dart';
+import 'package:meet_your_mates/api/services/professor_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
 //Components
 import 'package:meet_your_mates/components/already_have_an_account_check.dart';
@@ -91,25 +93,35 @@ class _LoginState extends State<Login> {
                 //Login Correct
                 Student student = response['student'];
                 //Provider.of<StudentProvider>(context, listen: false).setPassword(student.user.password);
-                Provider.of<StudentProvider>(context, listen: false)
-                    .setStudentWithUserWithPassword(student);
-                Navigator.pushReplacementNamed(context, '/dashboard');
+                Provider.of<StudentProvider>(context, listen: false).setStudentWithUserWithPassword(student);
+                Navigator.pushReplacementNamed(context, '/dashboardStudent');
                 logger.d("Logged In Succesfull!");
               } else if (response['status'] == 1) {
                 //Not Validated
                 Student student = response['student'];
                 //Provider.of<StudentProvider>(context, listen: false).setPassword(student.user.password);
-                Provider.of<StudentProvider>(context, listen: false)
-                    .setStudentWithUserWithPassword(student);
+                Provider.of<StudentProvider>(context, listen: false).setStudentWithUserWithPassword(student);
                 Navigator.pushReplacementNamed(context, '/validate');
                 logger.d("Logged In Not Validated!");
               } else if (response['status'] == 2) {
                 //Let's Get Started not completed
                 Student student = response['student'];
-                Provider.of<StudentProvider>(context, listen: false)
-                    .setStudentWithUserWithPassword(student);
-                Navigator.pushReplacementNamed(context, '/getStarted');
+                Provider.of<StudentProvider>(context, listen: false).setStudentWithUserWithPassword(student);
+                Navigator.pushReplacementNamed(context, '/getStartedStudent');
                 logger.d("Logged In Let's Get Started not completed!");
+              } else if (response['status'] == 3) {
+                //Validated and getStarted completed Dashboard Professor
+                Professor professor = response['professor'];
+                //Provider.of<StudentProvider>(context, listen: false).setPassword(student.user.password);
+                Provider.of<ProfessorProvider>(context, listen: false).setProfessorWithUserWithPassword(professor);
+                Navigator.pushReplacementNamed(context, '/dashboardProfessor');
+                logger.d("Logged In dashboard Professor!");
+              } else if (response['status'] == 4) {
+                //Validated but GetStarted Professor not Finished
+                Professor professor = response['professor'];
+                Provider.of<ProfessorProvider>(context, listen: false).setProfessorWithUserWithPassword(professor);
+                Navigator.pushReplacementNamed(context, '/getStartedProfessor');
+                logger.d("Logged In getStartedProfessor not completed!");
               } else {
                 logger.d("Logged In Failed: " + response['message'].toString());
 
@@ -128,22 +140,19 @@ class _LoginState extends State<Login> {
     };
 
 /***************POL************************************************/
-
+    // ignore: todo
+    //TODO: IN THE SIGNIN GOOGLE ALSO NEED TO CHECK IN FUTURE IF PROFESSOR OR USER!
     var signInGoogleCorrectly = (UserDetails userRegistered) {
       Student regGoogle = new Student();
-      User userTemp = new User(
-          email: userRegistered.userEmail,
-          password: userRegistered.uid,
-          name: userRegistered.userName,
-          picture: userRegistered.photoUrl);
+      User userTemp =
+          new User(email: userRegistered.userEmail, password: userRegistered.uid, name: userRegistered.userName, picture: userRegistered.photoUrl);
       logger.w("UserEmail 112: " + userRegistered.userEmail);
       regGoogle.user = userTemp;
 
       auth.registerWithGoogle(regGoogle).then((response) {
         if (response['status'] == true) {
           //If status is ok than we make the user login and continue with the process
-          final Future<Map<String, dynamic>> successfulMessage =
-              auth.login(userRegistered.userEmail, userRegistered.userEmail);
+          final Future<Map<String, dynamic>> successfulMessage = auth.login(userRegistered.userEmail, userRegistered.userEmail);
           //Callback to message recieved after login auth
           successfulMessage.then((response2) {
             logger.w("UserEmail 125: " + userRegistered.userEmail);
@@ -171,8 +180,7 @@ class _LoginState extends State<Login> {
           });
         } else if ((response['status'] == false)) {
           logger.w("UserEmail 150: " + userRegistered.userEmail);
-          final Future<Map<String, dynamic>> successfulMessage =
-              auth.login(userRegistered.userEmail, userRegistered.userEmail);
+          final Future<Map<String, dynamic>> successfulMessage = auth.login(userRegistered.userEmail, userRegistered.userEmail);
           //Callback to message recieved after login auth
           successfulMessage.then((response2) {
             if (response2['status'] == 0) {
@@ -210,10 +218,7 @@ class _LoginState extends State<Login> {
       return Column(
         children: <Widget>[
           GoogleAuthButton(
-            onPressed: () => auth
-                .signInGoogle()
-                .then((UserDetails user) => signInGoogleCorrectly(user))
-                .catchError((e) => logger.e(e)),
+            onPressed: () => auth.signInGoogle().then((UserDetails user) => signInGoogleCorrectly(user)).catchError((e) => logger.e(e)),
             darkMode: false, // default: false
           ),
         ],
@@ -261,10 +266,8 @@ class _LoginState extends State<Login> {
                               hintText: "email",
                               border: InputBorder.none,
                             ),
-                            validationMessages: (control) => {
-                              'required': 'The email must not be empty',
-                              'email': 'The email value must be a valid email'
-                            },
+                            validationMessages: (control) =>
+                                {'required': 'The email must not be empty', 'email': 'The email value must be a valid email'},
                           ),
                         ),
                       ),
@@ -285,19 +288,15 @@ class _LoginState extends State<Login> {
                               hintText: "password",
                               border: InputBorder.none,
                             ),
-                            validationMessages: (control) => {
-                              'required': 'The password must not be empty',
-                              'minLenght': 'The password must have at least 8 characters'
-                            },
+                            validationMessages: (control) =>
+                                {'required': 'The password must not be empty', 'minLenght': 'The password must have at least 8 characters'},
                           ),
                         ),
                       ),
                       SizedBox(
                         width: size.width,
                         height: size.height * 0.1,
-                        child: auth.loggedInStatus == Status.Authenticating
-                            ? loading
-                            : RoundedButton(text: "LOGIN", press: doLogin),
+                        child: auth.loggedInStatus == Status.Authenticating ? loading : RoundedButton(text: "LOGIN", press: doLogin),
                       ),
                       SizedBox(height: 6, width: size.width),
                       SizedBox(

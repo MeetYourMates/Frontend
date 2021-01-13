@@ -2,9 +2,11 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:logger/logger.dart';
+import 'package:meet_your_mates/api/models/professor.dart';
 import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/models/user.dart';
 import 'package:meet_your_mates/api/services/auth_service.dart';
+import 'package:meet_your_mates/api/services/professor_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/api/util/shared_preference.dart';
 import 'package:meet_your_mates/components/rounded_button.dart';
@@ -61,18 +63,37 @@ class _ValidateState extends State<Validate> {
           Student student = response['student'];
           Provider.of<StudentProvider>(context, listen: false).setStudent(student);
           EasyLoading.dismiss().then((value) => {
-                Navigator.pushReplacementNamed(context, '/dashboard'),
+                Navigator.pushReplacementNamed(context, '/dashboardStudent'),
               });
           logger.d("Validated From SomeWhere Else!");
         } else if (response['status'] == 2) {
           //Let's Get Started not completed
           Student student = response['student'];
           Provider.of<StudentProvider>(context, listen: false).setStudent(student);
-          Navigator.pushReplacementNamed(context, '/getStarted');
+          //Navigator.pushReplacementNamed(context, '/getStartedStudent');
           EasyLoading.dismiss().then((value) => {
-                Navigator.pushReplacementNamed(context, '/getStarted'),
+                Navigator.pushReplacementNamed(context, '/getStartedStudent'),
               });
           logger.d("Validated but --> Let's Get Started not completed!");
+        } else if (response['status'] == 3) {
+          //Validated and getStarted completed Dashboard Professor
+          Professor professor = response['professor'];
+          //Provider.of<StudentProvider>(context, listen: false).setPassword(student.user.password);
+          Provider.of<ProfessorProvider>(context, listen: false).setProfessorWithUserWithPassword(professor);
+          //Navigator.pushReplacementNamed(context, '/dashboardProfessor');
+          EasyLoading.dismiss().then((value) => {
+                Navigator.pushReplacementNamed(context, '/dashboardProfessor'),
+              });
+          logger.d("Logged In dashboard Professor!");
+        } else if (response['status'] == 4) {
+          //Validated but GetStarted Professor not Finished
+          Professor professor = response['professor'];
+          Provider.of<ProfessorProvider>(context, listen: false).setProfessorWithUserWithPassword(professor);
+          //Navigator.pushReplacementNamed(context, '/getStartedProfessor');
+          EasyLoading.dismiss().then((value) => {
+                Navigator.pushReplacementNamed(context, '/getStartedProfessor'),
+              });
+          logger.d("Logged In getStartedProfessor not completed!");
         } else {
           //Not Validated
           //Remember to now user any other fields from Student other than user
@@ -154,8 +175,7 @@ class _ValidateState extends State<Validate> {
                           fit: BoxFit.contain,
                           child: Text(
                             "We are close to end!",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 24, color: kPrimaryColor),
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24, color: kPrimaryColor),
                           ),
                         ),
                       ),
@@ -217,10 +237,7 @@ class _ValidateState extends State<Validate> {
                         height: size.height * 0.08,
                         child: RoundedButton(
                           text: "Logout",
-                          press: () => {
-                            UserPreferences().removeUser(),
-                            Navigator.pushReplacementNamed(context, '/login')
-                          },
+                          press: () => {UserPreferences().removeUser(), Navigator.pushReplacementNamed(context, '/login')},
                         ),
                       ),
                       SizedBox(
