@@ -49,17 +49,16 @@ class _ValidateState extends State<Validate> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[CircularProgressIndicator(), Text(" Checking ... Please wait")],
     );
+    //We need to check if the user is a professor or a student
     Future<void> checkValidation() async {
       logger.d("Check Validation Called");
       //Check if Server Validated, if True than retrieve Student
       User user = Provider.of<StudentProvider>(context, listen: false).student.user;
       final Future<Map<String, dynamic>> successfulMessage = auth.login(user.email, user.password);
-
       //Callback to message recieved after login auth
       successfulMessage.then((response) {
         if (response['status'] == 0) {
           //Validation Completed
-
           Student student = response['student'];
           Provider.of<StudentProvider>(context, listen: false).setStudent(student);
           EasyLoading.dismiss().then((value) => {
