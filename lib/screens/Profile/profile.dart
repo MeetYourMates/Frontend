@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/services/socket_service.dart';
@@ -7,13 +8,14 @@ import 'package:meet_your_mates/screens/Insignias/background.dart';
 import 'package:meet_your_mates/screens/Insignias/insignias.dart';
 import 'package:meet_your_mates/screens/Profile/edit_profile.dart';
 import 'package:meet_your_mates/screens/Trophies/trophies.dart';
-import 'package:meet_your_mates/screens/Login/login.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
-import 'package:flutter/cupertino.dart';
+
 import '../../api/services/auth_service.dart';
 
 class Profile extends StatefulWidget {
+  final Function onTapLogOut;
+  Profile({Key key, @required this.onTapLogOut}) : super(key: key);
   @override
   _ProfileState createState() => _ProfileState();
 }
@@ -27,8 +29,7 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
-    AuthProvider _authProvider =
-        Provider.of<AuthProvider>(context, listen: false);
+    AuthProvider _authProvider = Provider.of<AuthProvider>(context, listen: false);
     double meanRating = 0;
     for (int i = 0; i < _studentProvider.student.ratings.length; i++) {
       meanRating = (meanRating + _studentProvider.student.ratings[i].stars);
@@ -67,6 +68,7 @@ class _ProfileState extends State<Profile> {
                   physics: NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) => LogOutCard(
                     authProvider: _authProvider,
+                    onTap: widget.onTapLogOut,
                   ),
                   shrinkWrap: true,
                   itemCount: 1,
@@ -84,8 +86,7 @@ class StackContainer extends StatelessWidget {
   final String username;
   final String email;
 
-  const StackContainer({Key key, @required this.username, @required this.email})
-      : super(key: key);
+  const StackContainer({Key key, @required this.username, @required this.email}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -206,10 +207,7 @@ class InsigniaCard extends StatelessWidget {
             children: <Widget>[
               IconButton(
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      new MaterialPageRoute(
-                          builder: (context) => new Insignias()));
+                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new Insignias()));
                 },
                 icon: Icon(
                   Icons.album_sharp,
@@ -266,10 +264,7 @@ class TrophiesCard extends StatelessWidget {
             children: <Widget>[
               IconButton(
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      new MaterialPageRoute(
-                          builder: (context) => new Trophies()));
+                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new Trophies()));
                 },
                 icon: Icon(
                   Icons.amp_stories_rounded,
@@ -308,9 +303,11 @@ class TrophiesCard extends StatelessWidget {
 
 class LogOutCard extends StatelessWidget {
   final AuthProvider authProvider;
+  final Function onTap;
   const LogOutCard({
     Key key,
     this.authProvider,
+    @required this.onTap,
   }) : super(key: key);
 
   @override
@@ -330,15 +327,8 @@ class LogOutCard extends StatelessWidget {
                 onPressed: () {
                   UserPreferences().removeUser();
                   authProvider.signOutGoogle();
-                  Provider.of<SocketProvider>(context, listen: false)
-                      .disconnectSocket();
-                 Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                    builder: (BuildContext context) => Login(),
-                  ),
-                  (route) => false,
-                );
+                  Provider.of<SocketProvider>(context, listen: false).disconnectSocket();
+                  onTap();
                 },
                 icon: Icon(
                   Icons.logout,
@@ -407,8 +397,7 @@ Container editButton({BuildContext context}) {
     padding: EdgeInsets.only(top: 2.0),
     child: FlatButton(
       onPressed: () {
-        Navigator.push(context,
-            new MaterialPageRoute(builder: (context) => new EditProfile()));
+        Navigator.push(context, new MaterialPageRoute(builder: (context) => new EditProfile()));
       },
       child: Container(
         width: 250.0,

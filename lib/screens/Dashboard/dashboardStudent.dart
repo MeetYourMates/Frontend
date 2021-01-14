@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/services/socket_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/components/statefull_wrapper.dart';
@@ -25,6 +26,7 @@ class DashBoardStudent extends StatefulWidget {
 
 class _DashBoardStudentState extends State<DashBoardStudent> {
   List usersList = [];
+  var logger = Logger(level: Level.debug);
   PageController _pageController;
   //SocketService socketService;
   @override
@@ -61,7 +63,16 @@ class _DashBoardStudentState extends State<DashBoardStudent> {
     bool _hideNavBar = false;
 
     List<Widget> _buildScreens() {
-      return [Profile(), ChatSummaryList(), Home(), Projects(), SearchMates()];
+      return [
+        Profile(onTapLogOut: () {
+          logger.d("LogOut Pressed");
+          Navigator.popAndPushNamed(context, '/login');
+        }),
+        ChatSummaryList(),
+        Home(),
+        Projects(),
+        SearchMates()
+      ];
     }
 
     List<PersistentBottomNavBarItem> _navBarsItems() {
