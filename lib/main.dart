@@ -141,7 +141,7 @@ class MyApp extends StatelessWidget {
                       } else if (snapshot2.data == 4) {
                         /// Redirect to [GetStarted Professor]
                         /// //! TEMPERORY SUBSTITUTE FOR GETSTARTED PROFESSOR!
-                        return DashBoardProfessor();
+                        return GetStarted();
                       } else {
                         //Error in Autologgin --> Login probably -1
                         /// Redirect to [Login]

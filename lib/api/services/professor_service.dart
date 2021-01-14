@@ -94,7 +94,7 @@ class ProfessorProvider with ChangeNotifier {
         //Not Validated
         try {
           Map responseData = jsonDecode(response.body);
-          _professor = (Professor.fromJson(responseData));
+          _professor.user = (User.fromJson(responseData));
           _professor.user.password = password;
           UserPreferences().saveUser(_professor.user);
           res = 1; //Same validation screen for both professor and Student
