@@ -62,7 +62,7 @@ class _ValidateState extends State<Validate> {
           //Validation Completed & Somehow GetStarted too!
 
           Student student = response['student'];
-          Provider.of<StudentProvider>(context, listen: false).setStudent(student);
+          Provider.of<StudentProvider>(context, listen: false).setStudentWithUserWithPassword(student);
           EasyLoading.dismiss().then((value) => {
                 Navigator.pushReplacementNamed(context, '/dashboardStudent'),
               });
@@ -70,7 +70,7 @@ class _ValidateState extends State<Validate> {
         } else if (response['status'] == 2) {
           //Let's Get Started not completed
           Student student = response['student'];
-          Provider.of<StudentProvider>(context, listen: false).setStudent(student);
+          Provider.of<StudentProvider>(context, listen: false).setStudentWithUserWithPassword(student);
           //Navigator.pushReplacementNamed(context, '/getStartedStudent');
           EasyLoading.dismiss().then((value) => {
                 Navigator.pushReplacementNamed(context, '/getStartedStudent'),
