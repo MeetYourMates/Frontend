@@ -87,9 +87,10 @@ class StudentProvider with ChangeNotifier {
         //Not Validated
         try {
           Map responseData = jsonDecode(response.body);
-          _student.user = (User.fromJson(responseData));
-          _student.user.password = password;
-          UserPreferences().saveUser(_student.user);
+          User userTmp2 = new User();
+          userTmp2 = (User.fromJson(responseData));
+          userTmp2.password = password;
+          UserPreferences().saveUser(userTmp2);
           res = 1;
         } catch (err) {
           logger.e("Error AutoLogin 203: " + err.toString());
