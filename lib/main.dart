@@ -15,7 +15,7 @@ import 'package:meet_your_mates/components/loading.dart';
 import 'package:meet_your_mates/screens/Dashboard/dashboardStudent.dart';
 import 'package:meet_your_mates/screens/DashboardProfessor/dashboardProfessor.dart';
 import 'package:meet_your_mates/screens/GetStarted/getstarted.dart';
-import 'package:meet_your_mates/screens/GetStartedProfessor/getstarted.dart';
+import 'package:meet_your_mates/screens/GetStartedProfessor/getstartedprofessor.dart';
 //Screens
 import 'package:meet_your_mates/screens/Login/login.dart';
 import 'package:meet_your_mates/screens/PasswordRecovery/changePassword.dart';
@@ -204,12 +204,14 @@ class MyApp extends StatelessWidget {
           '/validate': (context) => Validate(),
           '/getStartedStudent': (context) => GetStarted(),
           '/getStartedProfessor': (context) =>
-              GetStarted(), //! CHANGE HERE WITH GETSTARTED PROFESSOR!
+              GetStartedProfessor(), //! CHANGE HERE WITH GETSTARTED PROFESSOR!
           '/dashboardProfessor': (context) => DashBoardProfessor(),
           '/searchMates': (context) => SearchMates(),
           '/passwordRecovery': (context) => PasswordRecovery(),
           '/changePassword': (context) => ChangePassword(),
-          '/profile': (context) => Profile(),
+          '/profile': (context) => Profile(
+                onTapLogOut: null,
+              ),
           '/otherProfile': (context) => OtherProfile(),
           '/editProfile': (context) => EditProfile(),
         },
