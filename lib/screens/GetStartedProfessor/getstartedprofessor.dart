@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:meet_your_mates/screens/GetStarted/components/body.dart';
+import 'package:meet_your_mates/screens/GetStartedProfessor/components/body.dart';
 
 class GetStartedProfessor extends StatelessWidget {
   GetStartedProfessor({

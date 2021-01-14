@@ -159,8 +159,11 @@ class _BodyState extends State<Body> {
       ///[For loop] and Not [ForEach] because stupid dart makes the [await call useless]
       ///and we loose [syncronicity] between the result and the code execution
       for (int i = 0; i < _subjects.length; i++) {
-        Map<String, dynamic> response = await _start.start(_subjects[i],
-            _professorProvider.professor.id, _university, _degree);
+        Map<String, dynamic> response = await _start.startProfessor(
+            _subjects[i],
+            _professorProvider.professor.id,
+            _university,
+            _degree);
         enrollStatus = enrollStatus || response['status'];
         if (response['status']) {
           //Correctly Enrolled
