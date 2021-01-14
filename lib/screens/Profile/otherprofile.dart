@@ -6,8 +6,8 @@ import 'package:meet_your_mates/api/services/socket_service.dart';
 import 'package:meet_your_mates/screens/Chat/chatDetail.dart';
 import 'package:meet_your_mates/screens/Chat/chatDetail2.dart';
 import 'package:meet_your_mates/screens/Insignias/background.dart';
-import 'package:meet_your_mates/screens/Insignias/insignias.dart';
-import 'package:meet_your_mates/screens/Trophies/trophies.dart';
+import 'package:meet_your_mates/screens/Insignias/insigniasmate.dart';
+import 'package:meet_your_mates/screens/Trophies/matetrophies.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
@@ -30,14 +30,24 @@ class _ProfileState extends State<OtherProfile> {
     MateProvider _studentProvider = Provider.of<MateProvider>(context);
     AuthProvider _authProvider = Provider.of<AuthProvider>(context, listen: false);
     double meanRating = 0;
-    /*for (int i = 0; i < _studentProvider.student.ratings.length; i++) {
+    for (int i = 0; i < _studentProvider.student.ratings.length; i++) {
       meanRating = (meanRating + _studentProvider.student.ratings[i].stars);
     }
 
     meanRating = meanRating / (_studentProvider.student.ratings.length + 1);
-    */
+    
     return SafeArea(
       child: Scaffold(
+         appBar: AppBar(
+          title: Text("Profile"),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.info),
+              color: Colors.white,
+              onPressed: () {},
+            )
+          ],
+        ),
         body: Background(
           child: SingleChildScrollView(
             child: Column(
@@ -205,7 +215,7 @@ class InsigniaCard extends StatelessWidget {
             children: <Widget>[
               IconButton(
                 onPressed: () {
-                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new Insignias()));
+                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new InsigniasMate()));
                 },
                 icon: Icon(
                   Icons.album_sharp,
@@ -262,7 +272,7 @@ class TrophiesCard extends StatelessWidget {
             children: <Widget>[
               IconButton(
                 onPressed: () {
-                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new Trophies()));
+                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new TrophiesMate()));
                 },
                 icon: Icon(
                   Icons.amp_stories_rounded,

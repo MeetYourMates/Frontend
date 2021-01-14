@@ -7,9 +7,10 @@ import 'package:meet_your_mates/screens/Insignias/background.dart';
 import 'package:meet_your_mates/screens/Insignias/insignias.dart';
 import 'package:meet_your_mates/screens/Profile/edit_profile.dart';
 import 'package:meet_your_mates/screens/Trophies/trophies.dart';
+import 'package:meet_your_mates/screens/Login/login.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
-
+import 'package:flutter/cupertino.dart';
 import '../../api/services/auth_service.dart';
 
 class Profile extends StatefulWidget {
@@ -331,7 +332,13 @@ class LogOutCard extends StatelessWidget {
                   authProvider.signOutGoogle();
                   Provider.of<SocketProvider>(context, listen: false)
                       .disconnectSocket();
-                  Navigator.pushReplacementNamed(context, '/login');
+                 Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => Login(),
+                  ),
+                  (route) => false,
+                );
                 },
                 icon: Icon(
                   Icons.logout,

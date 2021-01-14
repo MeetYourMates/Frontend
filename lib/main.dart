@@ -66,8 +66,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     /// Accessing the same Student Provider from the MultiProvider
-    StudentProvider _studentProvider = Provider.of<StudentProvider>(context, listen: true);
-    ProfessorProvider _professorProvider = Provider.of<ProfessorProvider>(context, listen: true);
+    StudentProvider _studentProvider =
+        Provider.of<StudentProvider>(context, listen: true);
+    ProfessorProvider _professorProvider =
+        Provider.of<ProfessorProvider>(context, listen: true);
 
     /// [_fetchLogin] Fetches AutoLogin Response
     Future<int> _fetchLogin(String email, String password) async {
@@ -107,13 +109,15 @@ class MyApp extends StatelessWidget {
               /// we ask server [_fetchlogin] if the user is still valid
               /// untill than we show something else to user.
               return FutureBuilder<int>(
-                future: _fetchLogin(snapshot.data.email, snapshot.data.password),
+                future:
+                    _fetchLogin(snapshot.data.email, snapshot.data.password),
                 builder: (context, snapshot2) {
                   switch (snapshot2.connectionState) {
                     case ConnectionState.none:
 
                       /// Show [ErrorScreen], as we are unable to get the response...
-                      return ErrorShow(errorText: "Cannot Connect to Server...");
+                      return ErrorShow(
+                          errorText: "Cannot Connect to Server...");
                     case ConnectionState.waiting:
 
                       /// Show [LoadingScreen], as we are waiting for the response...
@@ -129,8 +133,12 @@ class MyApp extends StatelessWidget {
                         return DashBoardStudent();
                       } else if (snapshot2.data == 1) {
                         /// Redirect to [Validate Both Professor and Student]
-                        Provider.of<UserProvider>(context, listen: false).user.email = snapshot.data.email;
-                        Provider.of<UserProvider>(context, listen: false).user.password = snapshot.data.password;
+                        Provider.of<UserProvider>(context, listen: false)
+                            .user
+                            .email = snapshot.data.email;
+                        Provider.of<UserProvider>(context, listen: false)
+                            .user
+                            .password = snapshot.data.password;
                         return Validate();
                       } else if (snapshot2.data == 2) {
                         /// Redirect to [GetStarted Student]
@@ -189,12 +197,13 @@ class MyApp extends StatelessWidget {
           },
         ) */
         routes: {
-          '/dashboardStudent': (context) => DashBoardStudent(),
+          '/dashboard': (context) => DashBoardStudent(),
           '/login': (context) => Login(),
           '/register': (context) => Register(),
           '/validate': (context) => Validate(),
-          '/getStarted': (context) => GetStarted(),
-          '/getStartedProfessor': (context) => GetStarted(), //! CHANGE HERE WITH GETSTARTED PROFESSOR!
+          '/getStartedStudent': (context) => GetStarted(),
+          '/getStartedProfessor': (context) =>
+              GetStarted(), //! CHANGE HERE WITH GETSTARTED PROFESSOR!
           '/dashboardProfessor': (context) => DashBoardProfessor(),
           '/searchMates': (context) => SearchMates(),
           '/passwordRecovery': (context) => PasswordRecovery(),
