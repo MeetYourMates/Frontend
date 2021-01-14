@@ -15,6 +15,7 @@ import 'package:meet_your_mates/components/loading.dart';
 import 'package:meet_your_mates/screens/Dashboard/dashboardStudent.dart';
 import 'package:meet_your_mates/screens/DashboardProfessor/dashboardProfessor.dart';
 import 'package:meet_your_mates/screens/GetStarted/getstarted.dart';
+import 'package:meet_your_mates/screens/GetStartedProfessor/getstarted.dart';
 //Screens
 import 'package:meet_your_mates/screens/Login/login.dart';
 import 'package:meet_your_mates/screens/PasswordRecovery/changePassword.dart';
@@ -75,7 +76,7 @@ class MyApp extends StatelessWidget {
     Future<int> _fetchLogin(String email, String password) async {
       print("AutoLogin Executed");
       //Check if Email contains estudiantat, if not then its probably of professor
-      if (email.contains('estudiantat')) {
+      if (email.contains('@estudiantat.upc.edu')) {
         return await _studentProvider.autoLogin(email, password);
       } else {
         return await _professorProvider.autoLogin(email, password);
@@ -149,7 +150,7 @@ class MyApp extends StatelessWidget {
                       } else if (snapshot2.data == 4) {
                         /// Redirect to [GetStarted Professor]
                         /// //! TEMPERORY SUBSTITUTE FOR GETSTARTED PROFESSOR!
-                        return GetStarted();
+                        return GetStartedProfessor();
                       } else {
                         //Error in Autologgin --> Login probably -1
                         /// Redirect to [Login]

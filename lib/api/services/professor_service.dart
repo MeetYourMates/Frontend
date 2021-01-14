@@ -36,6 +36,19 @@ class ProfessorProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  /// ================================================================================================
+  ///!   SHOULD ONLY BE USED WHEN PROFILE OF USER CHANGED BUT NOT PASSWORD. TO SET PROFESSOR USE SetProfessor
+  ///================================================================================================**/
+  void setProfessorWithUser(Professor professor) {
+    if (professor != null) {
+      String pass;
+      pass = _professor.user.password;
+      _professor = professor;
+      _professor.user.password = pass;
+      notifyListeners();
+    }
+  }
+
   /// ======================
   ///    KRUNAL
   ///========================**/
@@ -50,7 +63,8 @@ class ProfessorProvider with ChangeNotifier {
         logger.d("Courses retrieved:");
         //Convert from json List of Map to List of Student
         var decodedList = (json.decode(response.body) as List<dynamic>);
-        List<CourseAndStudents> courses = decodedList.map((i) => CourseAndStudents.fromJson(i)).toList();
+        List<CourseAndStudents> courses =
+            decodedList.map((i) => CourseAndStudents.fromJson(i)).toList();
         //Send back List of Students
         return courses;
       }
