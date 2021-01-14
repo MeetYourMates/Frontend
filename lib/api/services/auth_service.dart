@@ -77,20 +77,30 @@ class AuthProvider with ChangeNotifier {
           authenticatedStudent = Student.fromJson(responseData);
           authenticatedStudent.user.password = password;
           UserPreferences().saveUser(authenticatedStudent.user);
-          logger.d("User in Shared Preferences: " + authenticatedStudent.user.toString());
+          logger.d("User in Shared Preferences: " +
+              authenticatedStudent.user.toString());
           _loggedInStatus = Status.LoggedIn;
           notifyListeners();
           res = 0;
-          result = {'status': res, 'message': _loggedInStatus, 'student': authenticatedStudent};
+          result = {
+            'status': res,
+            'message': _loggedInStatus,
+            'student': authenticatedStudent
+          };
         } else {
           authenticatedProfessor = Professor.fromJson(responseData);
           authenticatedProfessor.user.password = password;
           UserPreferences().saveUser(authenticatedProfessor.user);
-          logger.d("User in Shared Preferences: " + authenticatedProfessor.user.toString());
+          logger.d("User in Shared Preferences: " +
+              authenticatedProfessor.user.toString());
           _loggedInStatus = Status.LoggedIn;
           notifyListeners();
           res = 3;
-          result = {'status': res, 'message': _loggedInStatus, 'professor': authenticatedProfessor};
+          result = {
+            'status': res,
+            'message': _loggedInStatus,
+            'professor': authenticatedProfessor
+          };
         }
       } catch (err) {
         res = -1;
@@ -101,19 +111,35 @@ class AuthProvider with ChangeNotifier {
       try {
         //Not Validated Mean Student Doesn't Exist
         Map responseData = jsonDecode(response.body);
-        authenticatedStudent = Student.fromJson(responseData);
-        authenticatedStudent.user.password = password;
-        UserPreferences().saveUser(authenticatedStudent.user);
-        logger.d("User in Shared Preferences: " +
-            authenticatedStudent.user.toString());
-        _loggedInStatus = Status.NotValidated;
-        notifyListeners();
-        res = 1;
-        result = {
-          'status': res,
-          'message': _loggedInStatus,
-          'student': authenticatedStudent
-        };
+        if (isStudent) {
+          authenticatedStudent.user = (User.fromJson(responseData));
+          authenticatedStudent.user.password = password;
+          UserPreferences().saveUser(authenticatedStudent.user);
+          logger.d("User in Shared Preferences: " +
+              authenticatedStudent.user.toString());
+          _loggedInStatus = Status.NotValidated;
+          notifyListeners();
+          res = 1;
+          result = {
+            'status': res,
+            'message': _loggedInStatus,
+            'student': authenticatedStudent
+          };
+        }else{
+          authenticatedProfessor.user = (User.fromJson(responseData));
+          authenticatedProfessor.user.password = password;
+          UserPreferences().saveUser(authenticatedProfessor.user);
+          logger.d("User in Shared Preferences: " +
+              authenticatedProfessor.user.toString());
+          _loggedInStatus = Status.NotValidated;
+          notifyListeners();
+          res = 1;
+          result = {
+            'status': res,
+            'message': _loggedInStatus,
+            'professor': authenticatedProfessor
+          };
+        }
       } catch (err) {
         res = -1;
         result = {'status': res, 'message': "Failed To Login!"};
@@ -126,20 +152,30 @@ class AuthProvider with ChangeNotifier {
           authenticatedStudent = Student.fromJson(responseData);
           authenticatedStudent.user.password = password;
           UserPreferences().saveUser(authenticatedStudent.user);
-          logger.d("User in Shared Preferences: " + authenticatedStudent.user.toString());
+          logger.d("User in Shared Preferences: " +
+              authenticatedStudent.user.toString());
           _loggedInStatus = Status.NotCompleted;
           notifyListeners();
           res = 2;
-          result = {'status': res, 'message': _loggedInStatus, 'student': authenticatedStudent};
+          result = {
+            'status': res,
+            'message': _loggedInStatus,
+            'student': authenticatedStudent
+          };
         } else {
           authenticatedProfessor = Professor.fromJson(responseData);
           authenticatedProfessor.user.password = password;
           UserPreferences().saveUser(authenticatedProfessor.user);
-          logger.d("User in Shared Preferences: " + authenticatedProfessor.user.toString());
+          logger.d("User in Shared Preferences: " +
+              authenticatedProfessor.user.toString());
           _loggedInStatus = Status.NotCompleted;
           notifyListeners();
           res = 4;
-          result = {'status': res, 'message': _loggedInStatus, 'professor': authenticatedProfessor};
+          result = {
+            'status': res,
+            'message': _loggedInStatus,
+            'professor': authenticatedProfessor
+          };
         }
       } catch (err) {
         result = {
@@ -245,7 +281,7 @@ class AuthProvider with ChangeNotifier {
     }
     return result;
   }
-  
+
   Future<Map<String, dynamic>> validateCode(String code) async {
     var result;
     _validatedStatus = Status.Validating;

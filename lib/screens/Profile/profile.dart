@@ -64,8 +64,9 @@ class _ProfileState extends State<Profile> {
                 ),
                 ListView.builder(
                   physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) =>
-                      LogOutCard(authProvider: _authProvider,),
+                  itemBuilder: (context, index) => LogOutCard(
+                    authProvider: _authProvider,
+                  ),
                   shrinkWrap: true,
                   itemCount: 1,
                 ),
@@ -330,7 +331,7 @@ class LogOutCard extends StatelessWidget {
                   authProvider.signOutGoogle();
                   Provider.of<SocketProvider>(context, listen: false)
                       .disconnectSocket();
-                  Navigator.pushReplacementNamed(context,'/login');
+                  Navigator.pushReplacementNamed(context, '/login');
                 },
                 icon: Icon(
                   Icons.logout,
