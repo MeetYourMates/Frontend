@@ -1,5 +1,7 @@
 import 'dart:ui';
+import "dart:io";
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
@@ -18,6 +20,7 @@ class ChatDetailPage2 extends StatefulWidget {
   _ChatDetailPage2State createState() => _ChatDetailPage2State();
 }
 
+
 class _ChatDetailPage2State extends State<ChatDetailPage2> {
   TextStyle inputTextStyle;
   ScrollController _scrollController = ScrollController();
@@ -28,6 +31,7 @@ class _ChatDetailPage2State extends State<ChatDetailPage2> {
     SendMenuItems(text: "Location", icons: Icons.location_on, color: Colors.green),
     SendMenuItems(text: "Contact", icons: Icons.person, color: Colors.purple),
   ];
+  File _imageFile;
   @override
   void initState() {
     //WidgetsBinding.instance.addPostFrameCallback(widgetBuilt);
@@ -101,6 +105,8 @@ class _ChatDetailPage2State extends State<ChatDetailPage2> {
                               ),
                             ),
                             title: Text(menuItems[index].text),
+                            //**************ANTONIO***************
+                            onTap: _openFileExplorer,
                           ),
                         );
                       },
@@ -188,5 +194,13 @@ class _ChatDetailPage2State extends State<ChatDetailPage2> {
         ],
       ),
     );
+  }
+  void _openFileExplorer() async {
+    FilePickerResult result = await FilePicker.platform.pickFiles();
+    if (result != null) {
+      _imageFile = File(result.files.single.path);
+    } else {
+      // User canceled the picker
+    }
   }
 }

@@ -1,10 +1,14 @@
+import 'dart:math';
 import 'dart:ui';
+import "dart:io";
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/send_menu_items.dart';
 import 'package:meet_your_mates/api/models/user.dart';
+import 'package:meet_your_mates/api/services/image_service.dart';
 import 'package:meet_your_mates/api/services/socket_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/screens/Chat/ChatInput/chatInput.dart';
@@ -30,12 +34,30 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     SendMenuItems(text: "Location", icons: Icons.location_on, color: Colors.green),
     SendMenuItems(text: "Contact", icons: Icons.person, color: Colors.purple),
   ];
+  File _imageFile;
   @override
   void initState() {
     //WidgetsBinding.instance.addPostFrameCallback(widgetBuilt);
     inputTextStyle = inputTextStyle ?? TextStyle(fontSize: 16.0, color: Colors.black87);
     super.initState();
   }
+  ImagesProvider _imageProvider;
+
+  Future<void> sendImage() async {
+    Random rand = new Random();
+    int randNum = rand.nextInt(9999999);
+    String id = randNum.toString();
+    FilePickerResult result = await FilePicker.platform.pickFiles();
+    if (result != null) {
+      _imageFile = File(result.files.single.path);
+      _imageProvider.uploadPhoto(_imageFile.path, id);
+      int c = 1;
+    } else {
+      // User canceled the picker
+    }
+  }
+
+
 
   @override
   void dispose() {
@@ -103,6 +125,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                               ),
                             ),
                             title: Text(menuItems[index].text),
+                            onTap: sendImage,
                           ),
                         );
                       },
@@ -122,6 +145,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     //var textValue = "";
     SocketProvider socketProvider = Provider.of<SocketProvider>(context, listen: true);
     User chatUser = socketProvider.mates.usersList[widget.selectedIndex];
+    _imageProvider = Provider.of<ImagesProvider>(context);
 
     /// [_studentProvider] StudentProvider Instance of a singleton
     StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
@@ -132,6 +156,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       socketProvider.sendPrivateMessage(_studentProvider.student.user.id, chatUser.id, value, widget.selectedIndex);
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     }
+
+
 
     /**========================================================================
      *                CHAT VIEW FOR A CERTAIN USER!
