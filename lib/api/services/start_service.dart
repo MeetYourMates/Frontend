@@ -32,7 +32,10 @@ class StartProvider with ChangeNotifier {
     try {
       response = await get(
         AppUrl.universities,
-        headers: {'authorization': 'bearer $token', 'Content-Type': 'application/json'},
+        headers: {
+          'authorization': 'bearer $token',
+          'Content-Type': 'application/json'
+        },
       );
     } catch (err) {
       _enrolledStatus = Status.DataFailed;
@@ -42,21 +45,32 @@ class StartProvider with ChangeNotifier {
     try {
       if (response.statusCode == 200) {
         logger.d("Response Unis:" + response.body);
-        List<University> universities =
-            (json.decode(response.body) as List).map((i) => University.fromJson(i)).toList();
+        List<University> universities = (json.decode(response.body) as List)
+            .map((i) => University.fromJson(i))
+            .toList();
 
         // UserPreferences().saveUser(authUser.user);
 
         _enrolledStatus = Status.DataLoaded;
 
-        result = {'status': true, 'message': 'Successful', 'universities': universities};
+        result = {
+          'status': true,
+          'message': 'Successful',
+          'universities': universities
+        };
       } else {
         _enrolledStatus = Status.DataFailed;
-        result = {'status': false, 'message': json.decode(response.body)['error']};
+        result = {
+          'status': false,
+          'message': json.decode(response.body)['error']
+        };
       }
     } catch (err) {
       _enrolledStatus = Status.DataFailed;
-      result = {'status': false, 'message': "Failed Converting Universities From JSON!"};
+      result = {
+        'status': false,
+        'message': "Failed Converting Universities From JSON!"
+      };
       return result;
     }
     return result;
@@ -90,26 +104,32 @@ class StartProvider with ChangeNotifier {
         notifyListeners();
         //We have to convert to json {"id":"objId","name":"nameSubs"}
         //subjects = degree.getSubjects(); //Need to Implement This!!
-        degree.subjects
-            .forEach((val) => subjs.add({"id": val.id, "name": val.name, "group": "Subjects"}));
+        degree.subjects.forEach((val) =>
+            subjs.add({"id": val.id, "name": val.name, "group": "Subjects"}));
         //Now from Subjects list create a list of String with above format
         result = {'status': true, 'message': 'Successful', 'subjects': subjs};
       } else {
         _enrolledStatus = Status.DataFailed;
         notifyListeners();
-        result = {'status': false, 'message': json.decode(response.body)['error']};
+        result = {
+          'status': false,
+          'message': json.decode(response.body)['error']
+        };
       }
     } catch (err) {
       _enrolledStatus = Status.DataFailed;
       notifyListeners();
-      result = {'status': false, 'message': "Failed Converting Subjects List From JSON"};
+      result = {
+        'status': false,
+        'message': "Failed Converting Subjects List From JSON"
+      };
       return result;
     }
     return result;
   }
 
-  Future<Map<String, dynamic>> start(
-      String subjectId, String studentId, String university, String degree) async {
+  Future<Map<String, dynamic>> start(String subjectId, String studentId,
+      String university, String degree) async {
     var result;
     Response response;
     _enrolledStatus = Status.GettingEnrolled;
@@ -125,8 +145,8 @@ class StartProvider with ChangeNotifier {
         degree +
         '"}';
     try {
-      response =
-          await post(AppUrl.addsubjects, body: json, headers: {'Content-Type': 'application/json'});
+      response = await post(AppUrl.addsubjects,
+          body: json, headers: {'Content-Type': 'application/json'});
     } catch (err) {
       _enrolledStatus = Status.EnrollFailed;
       notifyListeners();
@@ -146,17 +166,89 @@ class StartProvider with ChangeNotifier {
         if (response.statusCode == 409) {
           _enrolledStatus = Status.AlreadyEnrolled;
           notifyListeners();
-          result = {'status': false, 'message': "You were already enrolled in "};
+          result = {
+            'status': false,
+            'message': "You were already enrolled in "
+          };
         } else {
           _enrolledStatus = Status.EnrollFailed;
           notifyListeners();
-          result = {'status': false, 'message': "Failed to get you enrolled in "};
+          result = {
+            'status': false,
+            'message': "Failed to get you enrolled in "
+          };
         }
       }
     } catch (err) {
       _enrolledStatus = Status.EnrollFailed;
       notifyListeners();
-      result = {'status': false, 'message': "Failed Converting Subjects List From JSON"};
+      result = {
+        'status': false,
+        'message': "Failed Converting Subjects List From JSON"
+      };
+      return result;
+    }
+    return result;
+  }
+
+  Future<Map<String, dynamic>> startProfessor(String subjectId,
+      String professorId, String university, String degree) async {
+    var result;
+    Response response;
+    _enrolledStatus = Status.GettingEnrolled;
+    notifyListeners();
+
+    String json = '{"subjectId":"' +
+        subjectId +
+        '","professorId":"' +
+        professorId +
+        '","university":"' +
+        university +
+        '","degree":"' +
+        degree +
+        '"}';
+    try {
+      response = await post(AppUrl.addsubjectsProfessor,
+          body: json, headers: {'Content-Type': 'application/json'});
+    } catch (err) {
+      _enrolledStatus = Status.EnrollFailed;
+      notifyListeners();
+      result = {'status': false, 'message': "Couldn't make the request"};
+      return result;
+    }
+    try {
+      if (response.statusCode == 201) {
+        _enrolledStatus = Status.Enrolled;
+        notifyListeners();
+        result = {
+          'status': true,
+          'message': 'Successful',
+          'student': Student.fromJson(jsonDecode(response.body))
+        };
+      } else {
+        if (response.statusCode == 409) {
+          _enrolledStatus = Status.AlreadyEnrolled;
+          notifyListeners();
+          result = {
+            'status': false,
+            'message': "You were already enrolled in "
+          };
+        } else {
+          _enrolledStatus = Status.EnrollFailed;
+          notifyListeners();
+          result = {
+            'status': false,
+            'message': "Failed to get you enrolled in "
+          };
+        }
+      }
+    } catch (err) {
+      _enrolledStatus = Status.EnrollFailed;
+      notifyListeners();
+      result = {
+        'status': false,
+        'message': "Failed Converting Subjects List From JSON"
+      };
       return result;
     }
     return result;
