@@ -6,7 +6,9 @@ import 'package:http/http.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/courseAndStudents.dart';
 import 'package:meet_your_mates/api/models/courseProjects.dart';
+import 'package:meet_your_mates/api/models/meeting.dart';
 import 'package:meet_your_mates/api/models/student.dart';
+import 'package:meet_your_mates/api/models/team.dart';
 import 'package:meet_your_mates/api/models/user.dart';
 import 'package:meet_your_mates/api/util/app_url.dart';
 import 'package:meet_your_mates/api/util/shared_preference.dart';
@@ -117,6 +119,65 @@ class StudentProvider with ChangeNotifier {
     }
     return res;
   }
+
+  //Get reunions from Server
+  Future<List<Meeting>> getMeetings(String teamId) async {
+    logger.d("Getting ReunionsData!");
+    List<Meeting> res = [];
+    try {
+      Response response = await get(
+        AppUrl.getMeeting + teamId,
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(Duration(seconds: 10));
+      logger.d("Meeting Response:" + response.body);
+      if (response.statusCode == 200) {
+        //Logged In succesfully  from server
+        try {
+          Map responseData = jsonDecode(response.body);
+          Team team = (Team.fromJson(responseData));
+          res = team.meetings;
+          return res;
+        } catch (err) {
+          logger.e("Error Meeting 404: " + err.toString());
+          return res;
+        }
+      } else {
+        return res;
+      }
+    } catch (err) {
+      logger.e("Error Meeting: " + err.toString());
+      return res;
+    }
+  }
+
+  //Get reunions from Server
+  Future<Meeting> createMeeting(String teamId, Meeting meeting) async {
+    logger.d("Adding meeting!");
+    try {
+      Response response = await post(
+        AppUrl.addMeeting,
+        body: json.encode(meeting.toJson()),
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(Duration(seconds: 10));
+      logger.d("Meeting Response:" + response.body);
+      if (response.statusCode == 200) {
+        //Logged In succesfully  from server
+        try {
+          Map responseData = jsonDecode(response.body);
+          Meeting resMeeting = (Meeting.fromJson(responseData));
+          return resMeeting;
+        } catch (err) {
+          logger.e("Error creating Meeting 404: " + err.toString());
+          return meeting;
+        }
+      } else {
+        return meeting;
+      }
+    } catch (err) {
+      logger.e("Error creating Meeting: " + err.toString());
+      return meeting;
+    }
+  }
   //*********************************************************************/
 
   //************************POL****************************/
@@ -214,6 +275,7 @@ class StudentProvider with ChangeNotifier {
       return null;
     }
   }
+
 //*******************************************************/
 
 }
