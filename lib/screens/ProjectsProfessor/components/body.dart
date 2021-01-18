@@ -5,7 +5,7 @@ import 'package:meet_your_mates/api/models/courseAndStudents.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/components/error.dart';
 import 'package:meet_your_mates/components/loading.dart';
-import 'package:meet_your_mates/screens/SearchMates/courseList.dart';
+import 'package:meet_your_mates/screens/ProjectsProfessor/projectList.dart';
 import 'package:provider/provider.dart';
 
 import 'background.dart';
