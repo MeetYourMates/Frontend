@@ -9,7 +9,9 @@ import 'package:meet_your_mates/components/rounded_button.dart';
 import 'package:meet_your_mates/components/text_field_container.dart';
 import 'package:meet_your_mates/constants.dart';
 import 'package:meet_your_mates/screens/Reunion/background.dart';
+import 'package:meet_your_mates/screens/Reunion/map_google.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 //Constants
 import 'package:provider/provider.dart';
 import 'package:reactive_forms/reactive_forms.dart';
@@ -50,13 +52,14 @@ class _CreateMeetingState extends State<CreateMeeting> {
     // ignore: unused_element
     Future<Meeting> _addMeeting() async {
       logger.d("_memoizer Reunions Executed");
+      meeting.date = dateTimeVal;
       Meeting result = await _studentProvider.createMeeting(widget.teamId, meeting);
       return result;
     }
 
     void createMeeting() {
       //Check Form
-      if (form.valid) {
+      if (form.valid && dateTimeVal != null) {
         //Create Meeting --> Future
         EasyLoading.show(
           status: 'loading...',
@@ -158,6 +161,32 @@ class _CreateMeetingState extends State<CreateMeeting> {
                       return null;
                     },
                     onSaved: (val) => {dateTimeVal = val},
+                  ),
+                ),
+                SizedBox(
+                  width: size.width,
+                  height: size.height * 0.12,
+                  child: Card(
+                    child: ListTile(
+                        leading: Icon(
+                          Icons.map,
+                          color: kPrimaryColor,
+                        ),
+                        title: Text("Pick a location..."),
+                        trailing: Icon(
+                          Icons.add_location_alt_sharp,
+                          color: kPrimaryColor,
+                        ),
+                        onTap: () {
+                          //on Tap of this
+                          logger.d("Pick a location pressed...");
+                          pushNewScreen(
+                            context,
+                            screen: MapGoogle(),
+                            withNavBar: false, // OPTIONAL VALUE. True by default.
+                            pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                          );
+                        }),
                   ),
                 ),
                 SizedBox(
