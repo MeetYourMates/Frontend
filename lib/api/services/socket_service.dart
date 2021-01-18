@@ -236,8 +236,8 @@ class SocketProvider with ChangeNotifier {
   }
 
   // Send a Message to the server
-  Future<void> sendPrivateMessage(String senderId, String recipientId, String message, int recipientIndex) async {
-    Message tmp = new Message(senderId: senderId, recipientId: recipientId, text: message, createdAt: DateTime.now().toIso8601String());
+  Future<void> sendPrivateMessage(String senderId, String recipientId, String message, int recipientIndex, String image) async {
+    Message tmp = new Message(senderId: senderId, recipientId: recipientId, text: message, createdAt: DateTime.now().toIso8601String(), picture: image);
     emitChatMessage(tmp);
     mates.usersList[recipientIndex].messagesList.add(tmp);
     notifyListeners();

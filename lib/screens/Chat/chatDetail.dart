@@ -34,31 +34,12 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     SendMenuItems(text: "Location", icons: Icons.location_on, color: Colors.green),
     SendMenuItems(text: "Contact", icons: Icons.person, color: Colors.purple),
   ];
-  File _imageFile;
   @override
   void initState() {
     //WidgetsBinding.instance.addPostFrameCallback(widgetBuilt);
     inputTextStyle = inputTextStyle ?? TextStyle(fontSize: 16.0, color: Colors.black87);
     super.initState();
   }
-  ImagesProvider _imageProvider;
-
-  Future<void> sendImage() async {
-    Random rand = new Random();
-    int randNum = rand.nextInt(9999999);
-    String id = randNum.toString();
-    FilePickerResult result = await FilePicker.platform.pickFiles();
-    if (result != null) {
-      _imageFile = File(result.files.single.path);
-      _imageProvider.uploadPhoto(_imageFile.path, id);
-      int c = 1;
-    } else {
-      // User canceled the picker
-    }
-  }
-
-
-
   @override
   void dispose() {
     super.dispose();
@@ -144,8 +125,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) => {_scrollController.jumpTo(_scrollController.position.maxScrollExtent)});
     //var textValue = "";
     SocketProvider socketProvider = Provider.of<SocketProvider>(context, listen: true);
+    ImagesProvider imageProvider = Provider.of<ImagesProvider>(context);
     User chatUser = socketProvider.mates.usersList[widget.selectedIndex];
-    _imageProvider = Provider.of<ImagesProvider>(context);
 
     /// [_studentProvider] StudentProvider Instance of a singleton
     StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
@@ -153,8 +134,28 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     ///[sendMessage] Function to send message to server and also save the message into local List of Messages(No LocalStorage!)
     Future<void> sendMessage(String value) async {
       print("Message Sent: " + value);
-      socketProvider.sendPrivateMessage(_studentProvider.student.user.id, chatUser.id, value, widget.selectedIndex);
+      socketProvider.sendPrivateMessage(_studentProvider.student.user.id, chatUser.id, value, widget.selectedIndex, null);
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    };
+
+    Future<void> sendImage() async {
+      Random rand = new Random();
+      int randNum = rand.nextInt(9999999);
+      String id = randNum.toString();
+      FilePickerResult result = await FilePicker.platform.pickFiles();
+      if (result != null) {
+        File _imageFile = File(result.files.single.path);
+        imageProvider.uploadPhoto(_imageFile.path, id).then(
+                (res) => {
+                  socketProvider.sendPrivateMessage(_studentProvider.student.user.id, chatUser.id, null, widget.selectedIndex, res),
+                _scrollController.jumpTo(_scrollController.position.maxScrollExtent),
+                  logger.d("Sent image")
+
+        });
+        int c = 1;
+      } else {
+        // User canceled the picker
+      }
     }
 
 
