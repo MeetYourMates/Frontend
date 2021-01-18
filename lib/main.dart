@@ -26,6 +26,7 @@ import 'package:meet_your_mates/screens/Profile/profile.dart';
 import 'package:meet_your_mates/screens/Register/register.dart';
 import 'package:meet_your_mates/screens/SearchMates/searchMates.dart';
 import 'package:meet_your_mates/screens/Validate/validate.dart';
+import 'package:meet_your_mates/screens/ProjectsProfessor/projectsProfessor.dart';
 import 'package:overlay_support/overlay_support.dart';
 //Utilities
 import 'package:provider/provider.dart';
@@ -214,6 +215,7 @@ class MyApp extends StatelessWidget {
               ),
           '/otherProfile': (context) => OtherProfile(),
           '/editProfile': (context) => EditProfile(),
+          '/projectsProfessor': (context) => ProjectsProfessor(),
         },
       ),
     );

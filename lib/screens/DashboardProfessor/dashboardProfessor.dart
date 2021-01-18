@@ -7,7 +7,7 @@ import 'package:meet_your_mates/constants.dart';
 import 'package:meet_your_mates/screens/Chat/chatSummaryList.dart';
 import 'package:meet_your_mates/screens/Home/home.dart';
 import 'package:meet_your_mates/screens/Profile/profile.dart';
-import 'package:meet_your_mates/screens/Projects/projects.dart';
+import 'package:meet_your_mates/screens/ProjectsProfessor/projectsProfessor.dart';
 import 'package:meet_your_mates/screens/SearchStudents/searchStudents.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
@@ -49,13 +49,15 @@ class _DashBoardProfessorState extends State<DashBoardProfessor> {
   ///=======================================================================================================================**/
   @override
   Widget build(BuildContext context) {
-    ProfessorProvider _professorProvider = Provider.of<ProfessorProvider>(context);
+    ProfessorProvider _professorProvider =
+        Provider.of<ProfessorProvider>(context);
 
     //StudentProvider _professorProvider = Provider.of<StudentProvider>(context);
     //SocketService socketService = new SocketService();
     Future<void> openSocketConnection() async {
-      Provider.of<SocketProvider>(context, listen: true)
-          .createSocketConnection(_professorProvider.professor.user.token, _professorProvider.professor.user.id);
+      Provider.of<SocketProvider>(context, listen: true).createSocketConnection(
+          _professorProvider.professor.user.token,
+          _professorProvider.professor.user.id);
     }
 
     PersistentTabController _controller;
@@ -70,7 +72,7 @@ class _DashBoardProfessorState extends State<DashBoardProfessor> {
         }),
         ChatSummaryList(),
         Home(),
-        Projects(),
+        ProjectsProfessor(),
         SearchStudents()
       ];
     }
@@ -117,7 +119,8 @@ class _DashBoardProfessorState extends State<DashBoardProfessor> {
         },
         child: Scaffold(
           appBar: PreferredSize(
-            preferredSize: Size.fromHeight(kAppBarHeight), // here the desired height
+            preferredSize:
+                Size.fromHeight(kAppBarHeight), // here the desired height
             child: AppBar(
               title: Text("Meet Your Mates"),
               backgroundColor: Colors.cyan,
@@ -139,9 +142,11 @@ class _DashBoardProfessorState extends State<DashBoardProfessor> {
             confineInSafeArea: true,
             backgroundColor: Colors.cyan[100],
             handleAndroidBackButtonPress: true,
-            resizeToAvoidBottomInset: true, // This needs to be true if you want to move up the screen when keyboard appears.
+            resizeToAvoidBottomInset:
+                true, // This needs to be true if you want to move up the screen when keyboard appears.
             stateManagement: true,
-            hideNavigationBarWhenKeyboardShows: true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument.
+            hideNavigationBarWhenKeyboardShows:
+                true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument.
             hideNavigationBar: _hideNavBar,
             decoration: NavBarDecoration(
               borderRadius: BorderRadius.circular(30.0),
@@ -160,7 +165,8 @@ class _DashBoardProfessorState extends State<DashBoardProfessor> {
               curve: Curves.ease,
               duration: Duration(milliseconds: 200),
             ),
-            navBarStyle: NavBarStyle.style15, // Choose the nav bar style with this property.
+            navBarStyle: NavBarStyle
+                .style15, // Choose the nav bar style with this property.
           )),
         ));
   }
