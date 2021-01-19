@@ -55,8 +55,9 @@ class _DashBoardStudentState extends State<DashBoardStudent> {
     //StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
     //SocketService socketService = new SocketService();
     Future<void> openSocketConnection() async {
-      Provider.of<SocketProvider>(context, listen: true)
-          .createSocketConnection(_studentProvider.student.user.token, _studentProvider.student.user.id);
+      Provider.of<SocketProvider>(context, listen: true).createSocketConnection(
+          _studentProvider.student.user.token,
+          _studentProvider.student.user.id);
     }
 
     PersistentTabController _controller;
@@ -121,7 +122,8 @@ class _DashBoardStudentState extends State<DashBoardStudent> {
         },
         child: Scaffold(
           appBar: PreferredSize(
-            preferredSize: Size.fromHeight(kAppBarHeight), // here the desired height
+            preferredSize:
+                Size.fromHeight(kAppBarHeight), // here the desired height
             child: AppBar(
               title: Text("Meet Your Mates"),
               backgroundColor: Colors.cyan,
@@ -143,10 +145,14 @@ class _DashBoardStudentState extends State<DashBoardStudent> {
             confineInSafeArea: true,
             backgroundColor: Colors.cyan[100],
             handleAndroidBackButtonPress: true,
-            resizeToAvoidBottomInset: true, // This needs to be true if you want to move up the screen when keyboard appears.
+            resizeToAvoidBottomInset:
+                true, // This needs to be true if you want to move up the screen when keyboard appears.
             stateManagement: true,
-            hideNavigationBarWhenKeyboardShows: true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument.
+            hideNavigationBarWhenKeyboardShows:
+                true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument.
             hideNavigationBar: _hideNavBar,
+            margin: EdgeInsets.all(10.0),
+            bottomScreenMargin: kBottomNavigationBarHeight + 30,
             decoration: NavBarDecoration(
               borderRadius: BorderRadius.circular(30.0),
               colorBehindNavBar: Colors.white,
@@ -164,7 +170,8 @@ class _DashBoardStudentState extends State<DashBoardStudent> {
               curve: Curves.ease,
               duration: Duration(milliseconds: 200),
             ),
-            navBarStyle: NavBarStyle.style15, // Choose the nav bar style with this property.
+            navBarStyle: NavBarStyle
+                .style15, // Choose the nav bar style with this property.
           )),
         ));
   }

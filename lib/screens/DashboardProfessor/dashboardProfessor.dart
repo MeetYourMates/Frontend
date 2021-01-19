@@ -150,7 +150,7 @@ class _DashBoardProfessorState extends State<DashBoardProfessor> {
                 true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument.
             hideNavigationBar: _hideNavBar,
             margin: EdgeInsets.all(10.0),
-            bottomScreenMargin: kBottomNavigationBarHeight,
+            bottomScreenMargin: kBottomNavigationBarHeight + 30,
             decoration: NavBarDecoration(
               borderRadius: BorderRadius.circular(30.0),
               colorBehindNavBar: Colors.white,
