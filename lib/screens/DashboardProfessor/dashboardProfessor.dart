@@ -114,28 +114,28 @@ class _DashBoardProfessorState extends State<DashBoardProfessor> {
     }
 
     return StatefulWrapper(
-        onInit: () {
-          //Connect to Socket
-          openSocketConnection();
-        },
-        child: Scaffold(
-          appBar: PreferredSize(
-            preferredSize:
-                Size.fromHeight(kAppBarHeight), // here the desired height
-            child: AppBar(
-              title: Text("Meet Your Mates"),
-              backgroundColor: Colors.cyan,
-              actions: <Widget>[
-                IconButton(
-                    icon: Icon(Icons.notifications_none_rounded),
-                    onPressed: () {
-                      //showSearch(context: context, delegate: DataSearch(listWords));
-                    })
-              ],
-            ),
+      onInit: () {
+        //Connect to Socket
+        openSocketConnection();
+      },
+      child: Scaffold(
+        appBar: PreferredSize(
+          preferredSize:
+              Size.fromHeight(kAppBarHeight), // here the desired height
+          child: AppBar(
+            title: Text("Meet Your Mates"),
+            backgroundColor: Colors.cyan,
+            actions: <Widget>[
+              IconButton(
+                  icon: Icon(Icons.notifications_none_rounded),
+                  onPressed: () {
+                    //showSearch(context: context, delegate: DataSearch(listWords));
+                  })
+            ],
           ),
-          body: SizedBox.expand(
-              child: PersistentTabView(
+        ),
+        body: SizedBox.expand(
+          child: PersistentTabView(
             context,
             controller: _controller,
             screens: _buildScreens(),
@@ -149,6 +149,8 @@ class _DashBoardProfessorState extends State<DashBoardProfessor> {
             hideNavigationBarWhenKeyboardShows:
                 true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument.
             hideNavigationBar: _hideNavBar,
+            margin: EdgeInsets.all(10.0),
+            bottomScreenMargin: kBottomNavigationBarHeight,
             decoration: NavBarDecoration(
               borderRadius: BorderRadius.circular(30.0),
               colorBehindNavBar: Colors.white,
@@ -168,7 +170,9 @@ class _DashBoardProfessorState extends State<DashBoardProfessor> {
             ),
             navBarStyle: NavBarStyle
                 .style15, // Choose the nav bar style with this property.
-          )),
-        ));
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -79,6 +79,11 @@ class _BodyState extends State<Body> {
                       ),
                     ),
                   ),
+                  floatingActionButton: FloatingActionButton(
+                    onPressed: () {},
+                    child: Icon(Icons.add),
+                    backgroundColor: Colors.cyan[400],
+                  ),
                 ),
               );
             }

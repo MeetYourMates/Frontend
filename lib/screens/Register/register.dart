@@ -57,7 +57,10 @@ class _RegisterState extends State<Register> {
 
     var loading = Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[CircularProgressIndicator(), Text(" Registering ... Please wait")],
+      children: <Widget>[
+        CircularProgressIndicator(),
+        Text(" Registering ... Please wait")
+      ],
     );
     var facebookAuth = () {
       //Not yet implemented
@@ -113,7 +116,8 @@ class _RegisterState extends State<Register> {
               physics: NeverScrollableScrollPhysics(),
               child: Container(
                 alignment: Alignment.center,
-                constraints: BoxConstraints.tightForFinite(width: 400, height: size.height * 0.95),
+                constraints: BoxConstraints.tightForFinite(
+                    width: 400, height: size.height * 0.95),
                 child: ReactiveForm(
                   formGroup: this.form,
                   child: Column(
@@ -143,7 +147,8 @@ class _RegisterState extends State<Register> {
                               hintText: "name",
                               border: InputBorder.none,
                             ),
-                            validationMessages: (control) => {'required': 'The name must not be empty'},
+                            validationMessages: (control) =>
+                                {'required': 'The name must not be empty'},
                           ),
                         ),
                       ),
@@ -163,8 +168,10 @@ class _RegisterState extends State<Register> {
                               hintText: "email",
                               border: InputBorder.none,
                             ),
-                            validationMessages: (control) =>
-                                {'required': 'The email must not be empty', 'email': 'The email value must be a valid email'},
+                            validationMessages: (control) => {
+                              'required': 'The email must not be empty',
+                              'email': 'The email value must be a valid email'
+                            },
                           ),
                         ),
                       ),
@@ -185,8 +192,11 @@ class _RegisterState extends State<Register> {
                               hintText: "password",
                               border: InputBorder.none,
                             ),
-                            validationMessages: (control) =>
-                                {'required': 'The password must not be empty', 'minLenght': 'The password must have at least 3 characters'},
+                            validationMessages: (control) => {
+                              'required': 'The password must not be empty',
+                              'minLenght':
+                                  'The password must have at least 3 characters'
+                            },
                           ),
                         ),
                       ),
@@ -196,6 +206,7 @@ class _RegisterState extends State<Register> {
                         child: TextFieldContainer(
                           child: ReactiveTextField(
                             formControlName: 'passwordConfirmation',
+                            obscureText: true,
                             autofocus: false,
                             cursorColor: kPrimaryColor,
                             decoration: InputDecoration(
@@ -206,14 +217,20 @@ class _RegisterState extends State<Register> {
                               hintText: "Retype Password",
                               border: InputBorder.none,
                             ),
-                            validationMessages: (control) => {'required': 'The password confirm field must not be empty'},
+                            validationMessages: (control) => {
+                              'required':
+                                  'The password confirm field must not be empty'
+                            },
                           ),
                         ),
                       ),
                       SizedBox(
                         width: size.width,
                         height: size.height * 0.08,
-                        child: auth.registeredInStatus == Status.Registering ? loading : RoundedButton(text: "REGISTER", press: doRegister),
+                        child: auth.registeredInStatus == Status.Registering
+                            ? loading
+                            : RoundedButton(
+                                text: "REGISTER", press: doRegister),
                       ),
                       SizedBox(
                         width: size.width,
@@ -231,7 +248,8 @@ class _RegisterState extends State<Register> {
                           child: AlreadyHaveAnAccountCheck(
                             login: false,
                             press: () {
-                              Navigator.pushReplacementNamed(context, RouteUri.login);
+                              Navigator.pushReplacementNamed(
+                                  context, RouteUri.login);
                             },
                           ),
                         ),
