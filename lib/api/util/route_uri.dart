@@ -23,4 +23,7 @@ class RouteUri {
   //* Search Students and Mates
   static const String searchMatesStudent = '/searchMatesStudent';
   static const String searchStudentsProfessor = '/searchStudentsProfessor';
+
+  //* Projects
+  static const String projectsProfessor = '/projectsProfessor';
 }
