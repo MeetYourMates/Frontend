@@ -9,6 +9,7 @@ import 'package:meet_your_mates/api/services/auth_service.dart';
 import 'package:meet_your_mates/api/services/professor_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/api/services/user_service.dart';
+import 'package:meet_your_mates/api/util/route_uri.dart';
 import 'package:meet_your_mates/api/util/shared_preference.dart';
 import 'package:meet_your_mates/components/rounded_button.dart';
 import 'package:meet_your_mates/components/text_field_container.dart';
@@ -48,7 +49,7 @@ class _ValidateState extends State<Validate> {
     AuthProvider auth = Provider.of<AuthProvider>(context, listen: true);
     var loading = Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[CircularProgressIndicator(), Text(" Checking ... Please wait")],
+      children: <Widget>[CircularProgressIndicator(), Text("Checking ... Please wait")],
     );
     //We need to check if the user is a professor or a student
     Future<void> checkValidation() async {
@@ -64,7 +65,7 @@ class _ValidateState extends State<Validate> {
           Student student = response['student'];
           Provider.of<StudentProvider>(context, listen: false).setStudentWithUserWithPassword(student);
           EasyLoading.dismiss().then((value) => {
-                Navigator.pushReplacementNamed(context, '/dashboardStudent'),
+                Navigator.pushReplacementNamed(context, RouteUri.dashboardStudent),
               });
           logger.d("Validated From SomeWhere Else!");
         } else if (response['status'] == 2) {
@@ -73,7 +74,7 @@ class _ValidateState extends State<Validate> {
           Provider.of<StudentProvider>(context, listen: false).setStudentWithUserWithPassword(student);
           //Navigator.pushReplacementNamed(context, '/getStartedStudent');
           EasyLoading.dismiss().then((value) => {
-                Navigator.pushReplacementNamed(context, '/getStartedStudent'),
+                Navigator.pushReplacementNamed(context, RouteUri.getStartedStudent),
               });
           logger.d("Validated but --> Let's Get Started not completed!");
         } else if (response['status'] == 3) {
@@ -83,16 +84,15 @@ class _ValidateState extends State<Validate> {
           Provider.of<ProfessorProvider>(context, listen: false).setProfessorWithUserWithPassword(professor);
           //Navigator.pushReplacementNamed(context, '/dashboardProfessor');
           EasyLoading.dismiss().then((value) => {
-                Navigator.pushReplacementNamed(context, '/dashboardProfessor'),
+                Navigator.pushReplacementNamed(context, RouteUri.dashboardProfessor),
               });
           logger.d("Logged In dashboard Professor!");
         } else if (response['status'] == 4) {
           //Validated but GetStarted Professor not Finished
           Professor professor = response['professor'];
           Provider.of<ProfessorProvider>(context, listen: false).setProfessorWithUserWithPassword(professor);
-          //Navigator.pushReplacementNamed(context, '/getStartedProfessor');
           EasyLoading.dismiss().then((value) => {
-                Navigator.pushReplacementNamed(context, '/getStartedProfessor'),
+                Navigator.pushReplacementNamed(context, RouteUri.getStartedProfessor),
               });
           logger.d("Logged In getStartedProfessor not completed!");
         } else {
@@ -238,7 +238,7 @@ class _ValidateState extends State<Validate> {
                         height: size.height * 0.08,
                         child: RoundedButton(
                           text: "Logout",
-                          press: () => {UserPreferences().removeUser(), Navigator.pushReplacementNamed(context, '/login')},
+                          press: () => {UserPreferences().removeUser(), Navigator.pushReplacementNamed(context, RouteUri.login)},
                         ),
                       ),
                       SizedBox(

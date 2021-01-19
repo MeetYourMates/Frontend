@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/universities.dart';
+import 'package:meet_your_mates/api/services/professor_service.dart';
 import 'package:meet_your_mates/api/services/start_service.dart';
-import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/api/util/route_uri.dart';
 import 'package:meet_your_mates/components/direct_options.dart';
 import 'package:meet_your_mates/components/error.dart';
@@ -77,12 +77,12 @@ class _BodyState extends State<Body> {
   ///*===================================================================================================
   @override
   Widget build(BuildContext context) {
-    StudentProvider _studentProvider = Provider.of<StudentProvider>(context, listen: false);
+    ProfessorProvider _professorProvider = Provider.of<ProfessorProvider>(context, listen: false);
     StartProvider _start = Provider.of<StartProvider>(context, listen: true);
     Future _fetchUniversities() async {
       return _memoizerUniversities.runOnce(() async {
         logger.d("_memoizerUniversities Executed");
-        Map<String, dynamic> result = await _start.getStartedData(_studentProvider.student.user.token);
+        Map<String, dynamic> result = await _start.getStartedData(_professorProvider.professor.user.token);
         return result;
       });
     }
@@ -144,17 +144,17 @@ class _BodyState extends State<Body> {
      *@param none
      *@return status bool
      *---------------------------------------------**/
-    Future<bool> enrollStudents() async {
+    Future<bool> enrollProfessor() async {
       bool enrollStatus = false;
 
       ///[For loop] and Not [ForEach] because stupid dart makes the [await call useless]
       ///and we loose [syncronicity] between the result and the code execution
       for (int i = 0; i < _subjects.length; i++) {
-        Map<String, dynamic> response = await _start.start(_subjects[i], _studentProvider.student.id, _university, _degree);
+        Map<String, dynamic> response = await _start.startProfessor(_subjects[i], _professorProvider.professor.id, _university, _degree);
         enrollStatus = enrollStatus || response['status'];
         if (response['status']) {
           //Correctly Enrolled
-          _studentProvider.setStudentWithUser(response['student']);
+          _professorProvider.setProfessorWithUser(response['professor']);
         }
         logger.d("Subjects Do Start stateBool: " + enrollStatus.toString());
         logger.d("Enrolling in Selected Subject $i");
@@ -187,13 +187,13 @@ class _BodyState extends State<Body> {
         ).then((value) {
           //Execute Enrollment
           //final bool enrollStatus = await enrollStudents();
-          enrollStudents().then((enrollStatus) {
+          enrollProfessor().then((enrollStatus) {
             //Enroll
             logger.d("enrollStudents Status: " + enrollStatus.toString());
             if (enrollStatus) {
               EasyLoading.dismiss().then((value) {
                 logger.d("Succesfully Enrolled and Launched Dashboard");
-                Navigator.pushReplacementNamed(context, RouteUri.dashboardStudent);
+                Navigator.pushReplacementNamed(context, RouteUri.dashboardProfessor);
               });
             } else {
               //Failed

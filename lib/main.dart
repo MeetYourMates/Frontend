@@ -10,20 +10,20 @@ import 'package:meet_your_mates/api/services/socket_service.dart';
 import 'package:meet_your_mates/api/services/start_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/api/services/user_service.dart';
+import 'package:meet_your_mates/api/util/route_uri.dart';
 import 'package:meet_your_mates/components/error.dart';
 import 'package:meet_your_mates/components/loading.dart';
-import 'package:meet_your_mates/screens/Dashboard/dashboardStudent.dart';
 import 'package:meet_your_mates/screens/DashboardProfessor/dashboardProfessor.dart';
-import 'package:meet_your_mates/screens/GetStarted/getstarted.dart';
+import 'package:meet_your_mates/screens/DashboardStudent/dashboardStudent.dart';
+import 'package:meet_your_mates/screens/GetStarted/getstarted_student.dart';
+import 'package:meet_your_mates/screens/GetStartedProfessor/getstarted_professor.dart';
 //Screens
 import 'package:meet_your_mates/screens/Login/login.dart';
 import 'package:meet_your_mates/screens/PasswordRecovery/changePassword.dart';
 import 'package:meet_your_mates/screens/PasswordRecovery/passwordRecovery.dart';
-import 'package:meet_your_mates/screens/Profile/edit_profile.dart';
-import 'package:meet_your_mates/screens/Profile/otherprofile.dart';
-import 'package:meet_your_mates/screens/Profile/profile.dart';
+import 'package:meet_your_mates/screens/ProfileProfessor/edit_profile_professor.dart';
+import 'package:meet_your_mates/screens/ProfileStudent/edit_profile_student.dart';
 import 'package:meet_your_mates/screens/Register/register.dart';
-import 'package:meet_your_mates/screens/SearchMates/searchMates.dart';
 import 'package:meet_your_mates/screens/Validate/validate.dart';
 import 'package:overlay_support/overlay_support.dart';
 //Utilities
@@ -73,7 +73,7 @@ class MyApp extends StatelessWidget {
     Future<int> _fetchLogin(String email, String password) async {
       print("AutoLogin Executed");
       //Check if Email contains estudiantat, if not then its probably of professor
-      if (email.contains('estudiantat')) {
+      if (email.contains('@estudiantat.upc.edu')) {
         return await _studentProvider.autoLogin(email, password);
       } else {
         return await _professorProvider.autoLogin(email, password);
@@ -134,14 +134,13 @@ class MyApp extends StatelessWidget {
                         return Validate();
                       } else if (snapshot2.data == 2) {
                         /// Redirect to [GetStarted Student]
-                        return GetStarted();
+                        return GetStartedStudent();
                       } else if (snapshot2.data == 3) {
                         /// Redirect to [DashBoard Professor]
                         return DashBoardProfessor();
                       } else if (snapshot2.data == 4) {
                         /// Redirect to [GetStarted Professor]
-                        /// //! TEMPERORY SUBSTITUTE FOR GETSTARTED PROFESSOR!
-                        return GetStarted();
+                        return GetStartedProfessor();
                       } else {
                         //Error in Autologgin --> Login probably -1
                         /// Redirect to [Login]
@@ -172,38 +171,22 @@ class MyApp extends StatelessWidget {
         /// else we try to connect to our Backend Server
         home: getFutureBuildWidget,
 
-        /* OfflineBuilder(
-          child: SizedBox.expand(
-            child: Container(
-              child: Text("Checking Connection..."),
-            ),
-          ),
-          connectivityBuilder:
-              (BuildContext context, ConnectivityResult connectivity, Widget child) {
-            if (connectivity == ConnectivityResult.none) {
-              return NoConnection();
-            } else {
-              return /
-              ;
-            }
-          },
-        ) */
         routes: {
-          '/dashboard': (context) => DashBoardStudent(),
-          '/login': (context) => Login(),
-          '/register': (context) => Register(),
-          '/validate': (context) => Validate(),
-          '/getStartedStudent': (context) => GetStarted(),
-          '/getStartedProfessor': (context) => GetStarted(), //! CHANGE HERE WITH GETSTARTED PROFESSOR!
-          '/dashboardProfessor': (context) => DashBoardProfessor(),
-          '/searchMates': (context) => SearchMates(),
-          '/passwordRecovery': (context) => PasswordRecovery(),
-          '/changePassword': (context) => ChangePassword(),
-          '/profile': (context) => Profile(
-                onTapLogOut: null,
-              ),
-          '/otherProfile': (context) => OtherProfile(),
-          '/editProfile': (context) => EditProfile(),
+          //* User Screens
+          RouteUri.login: (context) => Login(),
+          RouteUri.register: (context) => Register(),
+          RouteUri.validate: (context) => Validate(),
+          RouteUri.passwordRecovery: (context) => PasswordRecovery(),
+          RouteUri.changePassword: (context) => ChangePassword(),
+          //* All Else
+          RouteUri.dashboardStudent: (context) => DashBoardStudent(),
+          RouteUri.dashboardProfessor: (context) => DashBoardProfessor(),
+
+          RouteUri.getStartedStudent: (context) => GetStartedStudent(),
+          RouteUri.getStartedProfessor: (context) => GetStartedProfessor(),
+
+          RouteUri.editProfileStudent: (context) => EditProfileStudent(),
+          RouteUri.editProfileProfessor: (context) => EditProfileProfessor(),
         },
       ),
     );

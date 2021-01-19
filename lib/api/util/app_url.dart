@@ -22,7 +22,13 @@ class AppUrl {
   static const String getCourseStudents = baseURL + "/course/getStudents";
   static const String getStudentsAndCourses = baseURL + "/student/getStudentsAndCourses";
   static const String getProfessorCoursesAndStudents = baseURL + "/professor/getStudentsAndCourses";
-  static const String editProfile = baseURL + "/student/updateStudent";
+  static const String editProfileStudent = baseURL + "/student/updateStudent";
+  static const String editProfileProfessor = baseURL + "/professor/update";
   static const String editProfilePhoto = baseURL + "/student/StudentPhoto";
   static const String getProjects = baseURL + "/student/getStudentProjects/";
+  //Professors
+  static const String addsubjectsProfessor = baseURL + "/course/addProfessor";
+  //Meetings
+  static const String getMeeting = baseURL + "/meeting/get/";
+  static const String addMeeting = baseURL + "/meeting/addMeeting";
 }

@@ -60,9 +60,9 @@ class _BodyState extends State<Body> {
           case ConnectionState.waiting:
             return LoadingPage();
           default:
-            if (snapshot.hasError || snapshot.data.isEmpty)
+            if (snapshot.hasError || snapshot.data.isEmpty) {
               return ErrorShow(errorText: 'Error: ${snapshot.error}');
-            else {
+            } else {
               //No Error
               //DEVOLVEMOS EL WIDGET ENCARGADO DE MOSTRAR LA INFORMACIÓN
               return SafeArea(

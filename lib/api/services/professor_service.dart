@@ -36,6 +36,19 @@ class ProfessorProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  /// ================================================================================================
+  ///!   SHOULD ONLY BE USED WHEN PROFILE OF USER CHANGED BUT NOT PASSWORD. TO SET PROFESSOR USE SetProfessor
+  ///================================================================================================**/
+  void setProfessorWithUser(Professor professor) {
+    if (professor != null) {
+      String pass;
+      pass = _professor.user.password;
+      _professor = professor;
+      _professor.user.password = pass;
+      notifyListeners();
+    }
+  }
+
   /// ======================
   ///    KRUNAL
   ///========================**/
@@ -123,5 +136,32 @@ class ProfessorProvider with ChangeNotifier {
     }
     return res;
   }
+
+  /// ================================================================================================
+  ///!                                  Upload professor parameters
+  ///================================================================================================**/
+
+  Future<int> upload(Professor updated) async {
+    int res = -1;
+    logger.d("Trying to update student:");
+    try {
+      Response response = await put(
+        AppUrl.editProfileProfessor,
+        body: json.encode(updated.toJson()),
+        headers: {'Content-Type': 'application/json'},
+      );
+      if (response.statusCode == 200) {
+        logger.d("Professor updated:");
+        notifyListeners();
+        res = 0;
+      }
+    } catch (err) {
+      logger.e("Error updating Professor: " + err.toString());
+      res = -1;
+    }
+    return res;
+  }
+
+//*******************************************************/
   //***********************************KRUNAL***********************************************************/
 }

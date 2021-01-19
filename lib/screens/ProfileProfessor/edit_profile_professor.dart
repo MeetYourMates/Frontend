@@ -4,21 +4,22 @@ import 'package:file_picker/file_picker.dart';
 import "package:flutter/material.dart";
 import "package:flutter/widgets.dart";
 import 'package:logger/logger.dart';
+import 'package:meet_your_mates/api/models/professor.dart';
 import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/services/image_service.dart';
-import 'package:meet_your_mates/api/services/student_service.dart';
+import 'package:meet_your_mates/api/services/professor_service.dart';
 import 'package:provider/provider.dart';
 
-class EditProfile extends StatefulWidget {
+class EditProfileProfessor extends StatefulWidget {
   final String currentstudentId;
 
-  EditProfile({this.currentstudentId});
+  EditProfileProfessor({this.currentstudentId});
 
   @override
-  _EditProfileState createState() => _EditProfileState();
+  _EditProfileProfessorState createState() => _EditProfileProfessorState();
 }
 
-class _EditProfileState extends State<EditProfile> {
+class _EditProfileProfessorState extends State<EditProfileProfessor> {
   var logger = Logger();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = new GlobalKey<FormState>();
@@ -120,7 +121,7 @@ class _EditProfileState extends State<EditProfile> {
 
   @override
   Widget build(BuildContext context) {
-    StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
+    ProfessorProvider _professorProvider = Provider.of<ProfessorProvider>(context);
     ImagesProvider _imageProvider = Provider.of<ImagesProvider>(context);
 
     void _openFileExplorer() async {
@@ -134,28 +135,24 @@ class _EditProfileState extends State<EditProfile> {
 
     updateUser() {
       final form = _formKey.currentState;
-      Student updatedStu = _studentProvider.student;
+      Professor updatedProf = _professorProvider.professor;
       if (form.validate()) {
         if (displayNameController.text.length != 0) {
-          updatedStu.user.name = displayNameController.text;
+          updatedProf.user.name = displayNameController.text;
         }
         if (emailController.text.length != 0) {
-          updatedStu.user.email = emailController.text;
+          updatedProf.user.email = emailController.text;
         }
-        if ((passController.text == passConfController.text) &&
-            (passController.text.length != 0) &&
-            (passConfController.text.length != 0)) {
-          updatedStu.user.password = passController.text;
-        } else if ((passController.text != passConfController.text) &&
-            (passController.text.length != 0) &&
-            (passConfController.text.length != 0)) {
+        if ((passController.text == passConfController.text) && (passController.text.length != 0) && (passConfController.text.length != 0)) {
+          updatedProf.user.password = passController.text;
+        } else if ((passController.text != passConfController.text) && (passController.text.length != 0) && (passConfController.text.length != 0)) {
           logger.w("Password not match");
         }
         if (_imageFile != null) {
-          _imageProvider.uploadPhoto(_imageFile.path, updatedStu.id).then(
+          _imageProvider.uploadPhoto(_imageFile.path, updatedProf.id).then(
                 (res) => {
-                  updatedStu.user.picture = res,
-                  _studentProvider.upload(updatedStu).then(
+                  updatedProf.user.picture = res,
+                  _professorProvider.upload(updatedProf).then(
                     (response) {
                       logger.d("Sucesfully");
                     },
@@ -171,25 +168,6 @@ class _EditProfileState extends State<EditProfile> {
 
     return Scaffold(
       key: _scaffoldKey,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text(
-          "Edit Profile",
-          style: TextStyle(
-            color: Colors.black,
-          ),
-        ),
-        actions: <Widget>[
-          IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Icon(
-              Icons.done,
-              size: 30.0,
-              color: Colors.green,
-            ),
-          ),
-        ],
-      ),
       body: ListView(
         children: <Widget>[
           Container(
@@ -208,34 +186,49 @@ class _EditProfileState extends State<EditProfile> {
                       },
                       child: CircleAvatar(
                         radius: 50.0,
-                        backgroundImage:
-                            NetworkImage(_studentProvider.student.user.picture),
+                        backgroundImage: NetworkImage(_professorProvider.professor.user.picture),
                       ),
                     ),
                   ),
                   Padding(
                     padding: EdgeInsets.all(16.0),
                     child: Column(
-                      children: <Widget>[
-                        buildDisplayNameField(),
-                        buildEmailField(),
-                        buildPassField(),
-                        buildPassConfirmField()
-                      ],
+                      children: <Widget>[buildDisplayNameField(), buildEmailField(), buildPassField(), buildPassConfirmField()],
                     ),
                   ),
-                  RaisedButton(
-                    onPressed: () {
-                      updateUser();
-                    },
-                    child: Text(
-                      "Update Profile",
-                      style: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      RaisedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          "Cancel",
+                          style: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
-                    ),
+                      SizedBox(
+                        width: 18,
+                      ),
+                      RaisedButton(
+                        onPressed: () {
+                          updateUser();
+                        },
+                        child: Text(
+                          "Update",
+                          style: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
