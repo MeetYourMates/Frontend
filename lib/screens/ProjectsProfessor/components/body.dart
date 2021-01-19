@@ -9,6 +9,7 @@ import 'package:meet_your_mates/components/error.dart';
 import 'package:meet_your_mates/components/loading.dart';
 
 import 'package:meet_your_mates/screens/ProjectsProfessor/projectList.dart';
+import 'package:meet_your_mates/screens/ProjectsProfessor/addProject.dart';
 
 import 'package:provider/provider.dart';
 
@@ -80,7 +81,14 @@ class _BodyState extends State<Body> {
                     ),
                   ),
                   floatingActionButton: FloatingActionButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        new MaterialPageRoute(
+                          builder: (context) => new AddProject(),
+                        ),
+                      );
+                    },
                     child: Icon(Icons.add),
                     backgroundColor: Colors.cyan[400],
                   ),
