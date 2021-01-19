@@ -38,16 +38,6 @@ class _ProfileStudentState extends State<OtherProfileStudent> {
 
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          title: Text("Profile"),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.info),
-              color: Colors.white,
-              onPressed: () {},
-            )
-          ],
-        ),
         body: Background(
           child: SingleChildScrollView(
             child: Column(

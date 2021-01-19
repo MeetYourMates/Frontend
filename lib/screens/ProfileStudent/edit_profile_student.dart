@@ -167,25 +167,6 @@ class _EditProfileStudentState extends State<EditProfileStudent> {
 
     return Scaffold(
       key: _scaffoldKey,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text(
-          "Edit Profile",
-          style: TextStyle(
-            color: Colors.black,
-          ),
-        ),
-        actions: <Widget>[
-          IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Icon(
-              Icons.done,
-              size: 30.0,
-              color: Colors.green,
-            ),
-          ),
-        ],
-      ),
       body: ListView(
         children: <Widget>[
           Container(
@@ -214,18 +195,39 @@ class _EditProfileStudentState extends State<EditProfileStudent> {
                       children: <Widget>[buildDisplayNameField(), buildEmailField(), buildPassField(), buildPassConfirmField()],
                     ),
                   ),
-                  RaisedButton(
-                    onPressed: () {
-                      updateUser();
-                    },
-                    child: Text(
-                      "Update Profile",
-                      style: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      RaisedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          "Cancel",
+                          style: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
-                    ),
+                      SizedBox(
+                        width: 18,
+                      ),
+                      RaisedButton(
+                        onPressed: () {
+                          updateUser();
+                        },
+                        child: Text(
+                          "Update",
+                          style: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
