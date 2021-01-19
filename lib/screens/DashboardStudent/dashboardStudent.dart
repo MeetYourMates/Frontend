@@ -85,31 +85,36 @@ class _DashBoardStudentState extends State<DashBoardStudent> {
           icon: Icon(Icons.person),
           title: ("Profile"),
           activeColor: Colors.cyan,
-          inactiveColor: Colors.grey,
+          inactiveColor: Colors.black87,
+          activeColorAlternate: Colors.cyan[400],
         ),
         PersistentBottomNavBarItem(
           icon: Icon(Icons.chat_bubble),
           title: ("Chat"),
           activeColor: Colors.cyan,
-          inactiveColor: Colors.grey,
+          inactiveColor: Colors.black87,
+          activeColorAlternate: Colors.cyan[400],
         ),
         PersistentBottomNavBarItem(
-          icon: Icon(Icons.home, color: Colors.white),
+          icon: Icon(Icons.home),
           title: ("Home"),
           activeColor: Colors.cyan,
-          inactiveColor: Colors.grey,
+          inactiveColor: Colors.black87,
+          activeColorAlternate: Colors.cyan[400],
         ),
         PersistentBottomNavBarItem(
           icon: Icon(Icons.assignment_rounded),
           title: ("Projects"),
           activeColor: Colors.cyan,
-          inactiveColor: Colors.grey,
+          inactiveColor: Colors.black87,
+          activeColorAlternate: Colors.cyan[400],
         ),
         PersistentBottomNavBarItem(
           icon: Icon(Icons.search),
           title: ("Mates"),
           activeColor: Colors.cyan,
-          inactiveColor: Colors.grey,
+          inactiveColor: Colors.black87,
+          activeColorAlternate: Colors.cyan[400],
         ),
       ];
     }
@@ -140,17 +145,17 @@ class _DashBoardStudentState extends State<DashBoardStudent> {
           screens: _buildScreens(),
           items: _navBarsItems(),
           confineInSafeArea: true,
-          backgroundColor: Colors.cyan[100],
+          backgroundColor: Colors.grey[100],
           handleAndroidBackButtonPress: true,
           resizeToAvoidBottomInset: true, // This needs to be true if you want to move up the screen when keyboard appears.
           stateManagement: true,
           hideNavigationBarWhenKeyboardShows: true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument.
           hideNavigationBar: _hideNavBar,
-          margin: EdgeInsets.all(10.0),
-          bottomScreenMargin: kBottomNavigationBarHeight + 30,
+          margin: EdgeInsets.all(0.0),
+          bottomScreenMargin: kBottomNavigationBarHeight,
           decoration: NavBarDecoration(
-            borderRadius: BorderRadius.circular(30.0),
-            colorBehindNavBar: Colors.white,
+            borderRadius: BorderRadius.circular(0.0),
+            //colorBehindNavBar: Colors.cyan[100],
           ),
           popAllScreensOnTapOfSelectedTab: true,
           popActionScreens: PopActionScreensType.all,
@@ -165,7 +170,7 @@ class _DashBoardStudentState extends State<DashBoardStudent> {
             curve: Curves.ease,
             duration: Duration(milliseconds: 200),
           ),
-          navBarStyle: NavBarStyle.style15, // Choose the nav bar style with this property.
+          navBarStyle: NavBarStyle.style3, // Choose the nav bar style with this property.
         ),
       ),
     );
