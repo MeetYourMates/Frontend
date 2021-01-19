@@ -5,6 +5,7 @@ import 'package:http/http.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/courseAndStudents.dart';
 import 'package:meet_your_mates/api/models/professor.dart';
+import 'package:meet_your_mates/api/models/courseProjects.dart';
 import 'package:meet_your_mates/api/models/user.dart';
 import 'package:meet_your_mates/api/util/app_url.dart';
 import 'package:meet_your_mates/api/util/shared_preference.dart';
@@ -63,7 +64,8 @@ class ProfessorProvider with ChangeNotifier {
         logger.d("Courses retrieved:");
         //Convert from json List of Map to List of Student
         var decodedList = (json.decode(response.body) as List<dynamic>);
-        List<CourseAndStudents> courses = decodedList.map((i) => CourseAndStudents.fromJson(i)).toList();
+        List<CourseAndStudents> courses =
+            decodedList.map((i) => CourseAndStudents.fromJson(i)).toList();
         //Send back List of Students
         return courses;
       }
@@ -164,4 +166,34 @@ class ProfessorProvider with ChangeNotifier {
 
 //*******************************************************/
   //***********************************KRUNAL***********************************************************/
+
+//************************PEP****************************/
+  /// ================================================================================================
+  ///!                GET MY COURSES AND THEIR PROJECTS WITH MY PROFESSOR ID
+  ///                                  USED BY projectList (professor)
+  ///================================================================================================**/
+  Future<List<CourseProjects>> getCourseProjects(String id) async {
+    logger.d("Trying to get professor projects:");
+    try {
+      Response response = await get(
+        AppUrl.getCourseProjects + '/' + id,
+        headers: {'Content-Type': 'application/json'},
+      );
+      if (response.statusCode == 200) {
+        logger.d("Projects retrieved:");
+        //Convert from json List of Map to List of courseProjects
+        var decodedList = (json.decode(response.body) as List<dynamic>);
+        List<CourseProjects> courses =
+            decodedList.map((i) => CourseProjects.fromJson(i)).toList();
+        //Send back List of Courses and Projects
+        return courses;
+      }
+      return null;
+    } catch (err) {
+      logger.e("Error getting projects courses: " + err.toString());
+      return null;
+    }
+  }
+
+//*******************************************************/
 }

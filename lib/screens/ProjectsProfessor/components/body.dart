@@ -1,11 +1,15 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:meet_your_mates/api/models/courseAndStudents.dart';
-import 'package:meet_your_mates/api/services/student_service.dart';
+
+import 'package:meet_your_mates/api/models/courseProjects.dart';
+import 'package:meet_your_mates/api/services/professor_service.dart';
+
 import 'package:meet_your_mates/components/error.dart';
 import 'package:meet_your_mates/components/loading.dart';
+
 import 'package:meet_your_mates/screens/ProjectsProfessor/projectList.dart';
+
 import 'package:provider/provider.dart';
 
 import 'background.dart';
@@ -21,7 +25,7 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   var logger = Logger(level: Level.info);
 
-  StudentProvider _studentProvider;
+  ProfessorProvider _professorProvider;
 
   //Inicializa todo el FUTURE (debe inicializarse buera del build)
   @override
@@ -32,28 +36,26 @@ class _BodyState extends State<Body> {
   @override
   Widget build(BuildContext context) {
     //Consula los cursos de un estudiante (falta enviar id de estudiante como parametro)
-    Future<List<CourseAndStudents>> _getCourses() async {
-      _studentProvider = Provider.of<StudentProvider>(context, listen: false);
-      logger.d(_studentProvider.student);
-      List<CourseAndStudents> _courses =
-          await _studentProvider.getStudentCourses(_studentProvider.student.id);
-      logger.d("COURSES BE CAREFULL!!");
-      logger.d(_courses);
-      return _courses;
+    Future<List<CourseProjects>> _getProjects() async {
+      _professorProvider =
+          Provider.of<ProfessorProvider>(context, listen: false);
+      List<CourseProjects> _projects = await _professorProvider
+          .getCourseProjects(_professorProvider.professor.id);
+      return _projects;
     }
 
-    List<Widget> buildCourseList(List<CourseAndStudents> data) {
+    List<Widget> buildProjectList(List<CourseProjects> data) {
       List<Widget> _courses = [];
-      for (CourseAndStudents course in data) {
-        _courses.add(CourseList(
+      for (CourseProjects course in data) {
+        _courses.add(ProjectList(
           queryResult: course,
         ));
       }
       return _courses;
     }
 
-    /*return FutureBuilder<List<CourseAndStudents>>(
-      future: _getCourses(),
+    return FutureBuilder<List<CourseProjects>>(
+      future: _getProjects(),
       builder: (context, snapshot) {
         //REDO FUTURE BUILDER, AS THE OLD VERSION HAD THE TREE OF CONTEXT OUTSIDE DUE TO THE WAY IT RETURN!
         switch (snapshot.connectionState) {
@@ -69,11 +71,10 @@ class _BodyState extends State<Body> {
               return SafeArea(
                 child: Scaffold(
                   body: Background(
-                    //child: CourseList(_courseQueryResult),
                     child: Container(
                       child: SingleChildScrollView(
                         child: Column(
-                          children: buildCourseList(snapshot.data),
+                          children: buildProjectList(snapshot.data),
                         ),
                       ),
                     ),
@@ -83,7 +84,6 @@ class _BodyState extends State<Body> {
             }
         }
       },
-    );*/
-    return Text("OK");
+    );
   }
 }

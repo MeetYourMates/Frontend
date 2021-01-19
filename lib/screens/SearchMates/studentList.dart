@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/models/user.dart';
 
+/* DEPRECATED, KEEPING THIS WIDGET JUST IN CASE */
 class StudentList extends StatelessWidget {
   final List<Student> _queryResult = [];
   StudentList(queryResult) {
     this._queryResult.addAll(queryResult);
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    
     return ListView.builder(
       itemCount: _queryResult.length,
       shrinkWrap: true,
