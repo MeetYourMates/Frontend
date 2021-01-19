@@ -1,33 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:meet_your_mates/api/models/user.dart';
+import 'package:meet_your_mates/api/services/mate_provider.dart';
 import 'package:meet_your_mates/api/services/socket_service.dart';
-import 'package:meet_your_mates/api/services/student_service.dart';
-import 'package:meet_your_mates/api/util/shared_preference.dart';
+import 'package:meet_your_mates/screens/Chat/chatDetail.dart';
+import 'package:meet_your_mates/screens/Chat/chatDetail2.dart';
 import 'package:meet_your_mates/screens/Insignias/background.dart';
-import 'package:meet_your_mates/screens/Insignias/insignias.dart';
-import 'package:meet_your_mates/screens/Profile/edit_profile.dart';
-import 'package:meet_your_mates/screens/Trophies/trophies.dart';
+import 'package:meet_your_mates/screens/Insignias/insigniasmate.dart';
+import 'package:meet_your_mates/screens/Trophies/matetrophies.dart';
+import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
 
 import '../../api/services/auth_service.dart';
 
-class Profile extends StatefulWidget {
+class OtherProfileStudent extends StatefulWidget {
   @override
-  _ProfileState createState() => _ProfileState();
+  _ProfileStudentState createState() => _ProfileStudentState();
 }
 
-class _ProfileState extends State<Profile> {
+class _ProfileStudentState extends State<OtherProfileStudent> {
   final formKey = new GlobalKey<FormState>();
   var logger = Logger();
 
-  _ProfileState();
+  _ProfileStudentState();
 
   @override
   Widget build(BuildContext context) {
-    StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
-    AuthProvider _authProvider =
-        Provider.of<AuthProvider>(context, listen: false);
+    MateProvider _studentProvider = Provider.of<MateProvider>(context);
+    AuthProvider _authProvider = Provider.of<AuthProvider>(context, listen: false);
     double meanRating = 0;
     for (int i = 0; i < _studentProvider.student.ratings.length; i++) {
       meanRating = (meanRating + _studentProvider.student.ratings[i].stars);
@@ -44,7 +45,6 @@ class _ProfileState extends State<Profile> {
                 Header(
                   icon: _studentProvider.student.user.picture,
                 ),
-                editButton(context: context),
                 StackContainer(
                   username: _studentProvider.student.user.name,
                   email: _studentProvider.student.user.email,
@@ -64,8 +64,10 @@ class _ProfileState extends State<Profile> {
                 ),
                 ListView.builder(
                   physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) =>
-                      LogOutCard(authProvider: _authProvider),
+                  itemBuilder: (context, index) => SendMessage(
+                    authProvider: _authProvider,
+                    usr: _studentProvider.student.user,
+                  ),
                   shrinkWrap: true,
                   itemCount: 1,
                 ),
@@ -82,8 +84,7 @@ class StackContainer extends StatelessWidget {
   final String username;
   final String email;
 
-  const StackContainer({Key key, @required this.username, @required this.email})
-      : super(key: key);
+  const StackContainer({Key key, @required this.username, @required this.email}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -204,10 +205,7 @@ class InsigniaCard extends StatelessWidget {
             children: <Widget>[
               IconButton(
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      new MaterialPageRoute(
-                          builder: (context) => new Insignias()));
+                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new InsigniasMate()));
                 },
                 icon: Icon(
                   Icons.album_sharp,
@@ -264,10 +262,7 @@ class TrophiesCard extends StatelessWidget {
             children: <Widget>[
               IconButton(
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      new MaterialPageRoute(
-                          builder: (context) => new Trophies()));
+                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new TrophiesMate()));
                 },
                 icon: Icon(
                   Icons.amp_stories_rounded,
@@ -304,15 +299,41 @@ class TrophiesCard extends StatelessWidget {
   }
 }
 
-class LogOutCard extends StatelessWidget {
+class SendMessage extends StatelessWidget {
   final AuthProvider authProvider;
-  const LogOutCard({
-    Key key,
-    this.authProvider,
-  }) : super(key: key);
+  final User usr;
+  const SendMessage({Key key, this.authProvider, this.usr}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    SocketProvider socketProvider = Provider.of<SocketProvider>(context, listen: false);
+    // ignore: unused_element
+    void openChat(User user) {
+      //Search if This user is already a mate
+      int index = socketProvider.mates.usersList.indexOf(user);
+      //If yes --> Open ChatDetail with Chathistory
+      if (index != -1) {
+        pushNewScreen(
+          context,
+          screen: ChatDetailPage(
+            selectedIndex: index,
+          ),
+          withNavBar: false, // OPTIONAL VALUE. True by default.
+          pageTransitionAnimation: PageTransitionAnimation.cupertino,
+        );
+      } else {
+        //Else --> New Mate maybe --> Temporary ChatDetail or ChatDetail2!
+        socketProvider.tempMate = user;
+        socketProvider.askTempMateStatus(user.id);
+        Navigator.push(
+          context,
+          new MaterialPageRoute(
+            builder: (context) => new ChatDetailPage2(),
+          ),
+        );
+      }
+    }
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.0),
       child: Card(
@@ -326,14 +347,10 @@ class LogOutCard extends StatelessWidget {
             children: <Widget>[
               IconButton(
                 onPressed: () {
-                  UserPreferences().removeUser();
-                  authProvider.signOutGoogle();
-                  Provider.of<SocketProvider>(context, listen: false)
-                      .disconnectSocket();
-                  Navigator.pushReplacementNamed(context, '/login');
+                  openChat(usr);
                 },
                 icon: Icon(
-                  Icons.logout,
+                  Icons.chat_bubble,
                   size: 40.0,
                   color: Colors.blue,
                 ),
@@ -344,7 +361,7 @@ class LogOutCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Text(
-                    "LogOut",
+                    "Send Message",
                     style: TextStyle(
                       fontSize: 18.0,
                     ),
@@ -392,35 +409,4 @@ class RatingStars extends StatelessWidget {
       ),
     );
   }
-}
-
-Container editButton({BuildContext context}) {
-  return Container(
-    padding: EdgeInsets.only(top: 2.0),
-    child: FlatButton(
-      onPressed: () {
-        Navigator.push(context,
-            new MaterialPageRoute(builder: (context) => new EditProfile()));
-      },
-      child: Container(
-        width: 250.0,
-        height: 27.0,
-        child: Text(
-          "Edit Profile",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: Colors.blue,
-          border: Border.all(
-            color: Colors.blue,
-          ),
-          borderRadius: BorderRadius.circular(5.0),
-        ),
-      ),
-    ),
-  );
 }

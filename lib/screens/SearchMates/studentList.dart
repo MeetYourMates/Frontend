@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/models/user.dart';
 
+/* DEPRECATED, KEEPING THIS WIDGET JUST IN CASE */
 class StudentList extends StatelessWidget {
   final List<Student> _queryResult = [];
   StudentList(queryResult) {
@@ -26,7 +27,7 @@ class StudentList extends StatelessWidget {
                   ? _queryResult[index].degree
                   : "No Degree"),
               trailing: Icon(Icons.arrow_forward),
-              onTap: () {/* REDIRECCIONAR A PERFIL SELECCIONADO */}),
+              onTap: () {}),
         );
       },
     );

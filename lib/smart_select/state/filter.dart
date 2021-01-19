@@ -3,7 +3,6 @@ import 'package:flutter/widgets.dart';
 
 /// state of filter data
 class S2Filter extends ChangeNotifier {
-
   bool _activated = false;
 
   String _query;
@@ -63,5 +62,4 @@ class S2Filter extends ChangeNotifier {
     _query = val;
     notifyListeners();
   }
-
 }

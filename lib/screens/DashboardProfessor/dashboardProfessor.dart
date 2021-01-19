@@ -1,13 +1,16 @@
-import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
+import 'package:meet_your_mates/api/services/professor_service.dart';
 import 'package:meet_your_mates/api/services/socket_service.dart';
-import 'package:meet_your_mates/api/services/student_service.dart';
+import 'package:meet_your_mates/api/util/route_uri.dart';
 import 'package:meet_your_mates/components/statefull_wrapper.dart';
 import 'package:meet_your_mates/constants.dart';
 import 'package:meet_your_mates/screens/Chat/chatSummaryList.dart';
-import 'package:meet_your_mates/screens/Profile/profile.dart';
-import 'package:meet_your_mates/screens/Projects/projects.dart';
-import 'package:meet_your_mates/screens/SearchMates/searchMates.dart';
+import 'package:meet_your_mates/screens/Home/home.dart';
+import 'package:meet_your_mates/screens/ProjectsProfessor/projectsProfessor.dart';
+import 'package:meet_your_mates/screens/ProfileProfessor/profile_professor.dart';
+import 'package:meet_your_mates/screens/SearchStudents/searchStudents.dart';
+import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 //Services
 
@@ -17,13 +20,13 @@ import 'package:provider/provider.dart';
 
 //Models
 
-class DashBoard extends StatefulWidget {
+class DashBoardProfessor extends StatefulWidget {
   @override
-  _DashBoardState createState() => _DashBoardState();
+  _DashBoardProfessorState createState() => _DashBoardProfessorState();
 }
 
-class _DashBoardState extends State<DashBoard> {
-  int _currentIndex = 0;
+class _DashBoardProfessorState extends State<DashBoardProfessor> {
+  var logger = Logger(level: Level.debug);
   List usersList = [];
   PageController _pageController;
   //SocketService socketService;
@@ -47,13 +50,15 @@ class _DashBoardState extends State<DashBoard> {
   ///=======================================================================================================================**/
   @override
   Widget build(BuildContext context) {
-    StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
-    //StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
+    ProfessorProvider _professorProvider =
+        Provider.of<ProfessorProvider>(context);
+
+    //StudentProvider _professorProvider = Provider.of<StudentProvider>(context);
     //SocketService socketService = new SocketService();
     Future<void> openSocketConnection() async {
       Provider.of<SocketProvider>(context, listen: true).createSocketConnection(
-          _studentProvider.student.user.token,
-          _studentProvider.student.user.id);
+          _professorProvider.professor.user.token,
+          _professorProvider.professor.user.id);
     }
 
     PersistentTabController _controller;
@@ -62,11 +67,14 @@ class _DashBoardState extends State<DashBoard> {
 
     List<Widget> _buildScreens() {
       return [
-        Profile(),
+        ProfileProfessor(onTapLogOut: () {
+          logger.d("LogOut Pressed");
+          Navigator.popAndPushNamed(context, RouteUri.login);
+        }),
         ChatSummaryList(),
-        SearchMates(),
-        Projects(),
-        SearchMates()
+        Home(),
+        ProjectsProfessor(),
+        SearchStudents()
       ];
     }
 
@@ -98,7 +106,7 @@ class _DashBoardState extends State<DashBoard> {
         ),
         PersistentBottomNavBarItem(
           icon: Icon(Icons.search),
-          title: ("Mates"),
+          title: ("Students"),
           activeColor: Colors.cyan,
           inactiveColor: Colors.grey,
         ),
@@ -106,28 +114,28 @@ class _DashBoardState extends State<DashBoard> {
     }
 
     return StatefulWrapper(
-        onInit: () {
-          //Connect to Socket
-          openSocketConnection();
-        },
-        child: Scaffold(
-          appBar: PreferredSize(
-            preferredSize:
-                Size.fromHeight(kAppBarHeight), // here the desired height
-            child: AppBar(
-              title: Text("Meet Your Mates"),
-              backgroundColor: Colors.cyan,
-              actions: <Widget>[
-                IconButton(
-                    icon: Icon(Icons.notifications_none_rounded),
-                    onPressed: () {
-                      //showSearch(context: context, delegate: DataSearch(listWords));
-                    })
-              ],
-            ),
+      onInit: () {
+        //Connect to Socket
+        openSocketConnection();
+      },
+      child: Scaffold(
+        appBar: PreferredSize(
+          preferredSize:
+              Size.fromHeight(kAppBarHeight), // here the desired height
+          child: AppBar(
+            title: Text("Meet Your Mates"),
+            backgroundColor: Colors.cyan,
+            actions: <Widget>[
+              IconButton(
+                  icon: Icon(Icons.notifications_none_rounded),
+                  onPressed: () {
+                    //showSearch(context: context, delegate: DataSearch(listWords));
+                  })
+            ],
           ),
-          body: SizedBox.expand(
-              child: PersistentTabView(
+        ),
+        body: SizedBox.expand(
+          child: PersistentTabView(
             context,
             controller: _controller,
             screens: _buildScreens(),
@@ -141,6 +149,8 @@ class _DashBoardState extends State<DashBoard> {
             hideNavigationBarWhenKeyboardShows:
                 true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument.
             hideNavigationBar: _hideNavBar,
+            margin: EdgeInsets.all(10.0),
+            bottomScreenMargin: kBottomNavigationBarHeight + 30,
             decoration: NavBarDecoration(
               borderRadius: BorderRadius.circular(30.0),
               colorBehindNavBar: Colors.white,
@@ -160,7 +170,9 @@ class _DashBoardState extends State<DashBoard> {
             ),
             navBarStyle: NavBarStyle
                 .style15, // Choose the nav bar style with this property.
-          )),
-        ));
+          ),
+        ),
+      ),
+    );
   }
 }

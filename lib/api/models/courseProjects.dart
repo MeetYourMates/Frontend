@@ -31,11 +31,13 @@ class CourseProjects {
     return subjectNames;
   }
 
-  factory CourseProjects.fromJson(Map<String, dynamic> json) => CourseProjects(
-      id: json["_id"],
-      subjectName: json["subjectName"],
-      projects:
-          List<Project>.from(json["projects"].map((x) => Project.fromJson(x))));
+  factory CourseProjects.fromJson(Map<String, dynamic> json) {
+    List<Project> tmp1 = json["projects"] != null
+        ? List<Project>.from(json["projects"].map((x) => Project.fromJson(x)))
+        : [];
+    return CourseProjects(
+        id: json["_id"], subjectName: json["subjectName"], projects: tmp1);
+  }
 
   Map<String, dynamic> toJson() => {
         "_id": id,

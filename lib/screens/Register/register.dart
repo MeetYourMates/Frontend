@@ -4,6 +4,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:logger/logger.dart';
 //Services
 import 'package:meet_your_mates/api/services/auth_service.dart';
+import 'package:meet_your_mates/api/util/route_uri.dart';
 //Components
 import 'package:meet_your_mates/components/already_have_an_account_check.dart';
 import 'package:meet_your_mates/components/or_divider.dart';
@@ -56,7 +57,10 @@ class _RegisterState extends State<Register> {
 
     var loading = Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[CircularProgressIndicator(), Text(" Registering ... Please wait")],
+      children: <Widget>[
+        CircularProgressIndicator(),
+        Text(" Registering ... Please wait")
+      ],
     );
     var facebookAuth = () {
       //Not yet implemented
@@ -81,7 +85,7 @@ class _RegisterState extends State<Register> {
             if (response['status']) {
               //If status is ok than we make the user login and continue with the process
               EasyLoading.dismiss().then((value) => {
-                    Navigator.pushReplacementNamed(context, '/login'),
+                    Navigator.pushReplacementNamed(context, RouteUri.login),
                   });
             } else {
               EasyLoading.dismiss().then((value) => {
@@ -112,7 +116,8 @@ class _RegisterState extends State<Register> {
               physics: NeverScrollableScrollPhysics(),
               child: Container(
                 alignment: Alignment.center,
-                constraints: BoxConstraints.tightForFinite(width: 400, height: size.height * 0.95),
+                constraints: BoxConstraints.tightForFinite(
+                    width: 400, height: size.height * 0.95),
                 child: ReactiveForm(
                   formGroup: this.form,
                   child: Column(
@@ -189,7 +194,8 @@ class _RegisterState extends State<Register> {
                             ),
                             validationMessages: (control) => {
                               'required': 'The password must not be empty',
-                              'minLenght': 'The password must have at least 3 characters'
+                              'minLenght':
+                                  'The password must have at least 3 characters'
                             },
                           ),
                         ),
@@ -200,6 +206,7 @@ class _RegisterState extends State<Register> {
                         child: TextFieldContainer(
                           child: ReactiveTextField(
                             formControlName: 'passwordConfirmation',
+                            obscureText: true,
                             autofocus: false,
                             cursorColor: kPrimaryColor,
                             decoration: InputDecoration(
@@ -210,8 +217,10 @@ class _RegisterState extends State<Register> {
                               hintText: "Retype Password",
                               border: InputBorder.none,
                             ),
-                            validationMessages: (control) =>
-                                {'required': 'The password confirm field must not be empty'},
+                            validationMessages: (control) => {
+                              'required':
+                                  'The password confirm field must not be empty'
+                            },
                           ),
                         ),
                       ),
@@ -220,7 +229,8 @@ class _RegisterState extends State<Register> {
                         height: size.height * 0.08,
                         child: auth.registeredInStatus == Status.Registering
                             ? loading
-                            : RoundedButton(text: "REGISTER", press: doRegister),
+                            : RoundedButton(
+                                text: "REGISTER", press: doRegister),
                       ),
                       SizedBox(
                         width: size.width,
@@ -238,7 +248,8 @@ class _RegisterState extends State<Register> {
                           child: AlreadyHaveAnAccountCheck(
                             login: false,
                             press: () {
-                              Navigator.pushReplacementNamed(context, '/login');
+                              Navigator.pushReplacementNamed(
+                                  context, RouteUri.login);
                             },
                           ),
                         ),

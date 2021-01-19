@@ -4,22 +4,27 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 //Services
 import 'package:meet_your_mates/api/services/auth_service.dart';
 import 'package:meet_your_mates/api/services/image_service.dart';
+import 'package:meet_your_mates/api/services/mate_provider.dart';
+import 'package:meet_your_mates/api/services/professor_service.dart';
 import 'package:meet_your_mates/api/services/socket_service.dart';
 import 'package:meet_your_mates/api/services/start_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/api/services/user_service.dart';
+import 'package:meet_your_mates/api/util/route_uri.dart';
 import 'package:meet_your_mates/components/error.dart';
 import 'package:meet_your_mates/components/loading.dart';
-import 'package:meet_your_mates/screens/Dashboard/dashboard.dart';
-import 'package:meet_your_mates/screens/GetStarted/getstarted.dart';
+import 'package:meet_your_mates/screens/DashboardProfessor/dashboardProfessor.dart';
+import 'package:meet_your_mates/screens/DashboardStudent/dashboardStudent.dart';
+import 'package:meet_your_mates/screens/GetStarted/getstarted_student.dart';
+import 'package:meet_your_mates/screens/GetStartedProfessor/getstarted_professor.dart';
 //Screens
 import 'package:meet_your_mates/screens/Login/login.dart';
 import 'package:meet_your_mates/screens/PasswordRecovery/changePassword.dart';
 import 'package:meet_your_mates/screens/PasswordRecovery/passwordRecovery.dart';
-import 'package:meet_your_mates/screens/Profile/edit_profile.dart';
-import 'package:meet_your_mates/screens/Profile/profile.dart';
+import 'package:meet_your_mates/screens/ProfileProfessor/edit_profile_professor.dart';
+import 'package:meet_your_mates/screens/ProfileStudent/edit_profile_student.dart';
+import 'package:meet_your_mates/screens/ProjectsProfessor/projectsProfessor.dart';
 import 'package:meet_your_mates/screens/Register/register.dart';
-import 'package:meet_your_mates/screens/SearchMates/searchMates.dart';
 import 'package:meet_your_mates/screens/Validate/validate.dart';
 import 'package:overlay_support/overlay_support.dart';
 //Utilities
@@ -44,8 +49,10 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => ProfessorProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => StudentProvider()),
+        ChangeNotifierProvider(create: (_) => MateProvider()),
         ChangeNotifierProvider(create: (_) => StartProvider()),
         ChangeNotifierProvider(create: (_) => ImagesProvider()),
         ChangeNotifierProvider(create: (_) => SocketProvider()),
@@ -60,13 +67,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     /// Accessing the same Student Provider from the MultiProvider
-    StudentProvider _studentProvider =
-        Provider.of<StudentProvider>(context, listen: true);
+    StudentProvider _studentProvider = Provider.of<StudentProvider>(context, listen: true);
+    ProfessorProvider _professorProvider = Provider.of<ProfessorProvider>(context, listen: true);
 
     /// [_fetchLogin] Fetches AutoLogin Response
     Future<int> _fetchLogin(String email, String password) async {
       print("AutoLogin Executed");
-      return await _studentProvider.autoLogin(email, password);
+      //Check if Email contains estudiantat, if not then its probably of professor
+      if (email.contains('@estudiantat.upc.edu')) {
+        return await _studentProvider.autoLogin(email, password);
+      } else {
+        return await _professorProvider.autoLogin(email, password);
+      }
     }
 
     /// [_fetchPreferences] We fetch the preference from the storage and notify in future
@@ -96,15 +108,13 @@ class MyApp extends StatelessWidget {
               /// we ask server [_fetchlogin] if the user is still valid
               /// untill than we show something else to user.
               return FutureBuilder<int>(
-                future:
-                    _fetchLogin(snapshot.data.email, snapshot.data.password),
+                future: _fetchLogin(snapshot.data.email, snapshot.data.password),
                 builder: (context, snapshot2) {
                   switch (snapshot2.connectionState) {
                     case ConnectionState.none:
 
                       /// Show [ErrorScreen], as we are unable to get the response...
-                      return ErrorShow(
-                          errorText: "Cannot Connect to Server...");
+                      return ErrorShow(errorText: "Cannot Connect to Server...");
                     case ConnectionState.waiting:
 
                       /// Show [LoadingScreen], as we are waiting for the response...
@@ -116,14 +126,22 @@ class MyApp extends StatelessWidget {
                           errorText: snapshot2.error,
                         );
                       } else if (snapshot2.data == 0) {
-                        /// Redirect to [DashBoard]
-                        return DashBoard();
+                        /// Redirect to [DashBoard Student]
+                        return DashBoardStudent();
                       } else if (snapshot2.data == 1) {
-                        /// Redirect to [Validate]
+                        /// Redirect to [Validate Both Professor and Student]
+                        Provider.of<UserProvider>(context, listen: false).user.email = snapshot.data.email;
+                        Provider.of<UserProvider>(context, listen: false).user.password = snapshot.data.password;
                         return Validate();
                       } else if (snapshot2.data == 2) {
-                        /// Redirect to [GetStarted]
-                        return GetStarted();
+                        /// Redirect to [GetStarted Student]
+                        return GetStartedStudent();
+                      } else if (snapshot2.data == 3) {
+                        /// Redirect to [DashBoard Professor]
+                        return DashBoardProfessor();
+                      } else if (snapshot2.data == 4) {
+                        /// Redirect to [GetStarted Professor]
+                        return GetStartedProfessor();
                       } else {
                         //Error in Autologgin --> Login probably -1
                         /// Redirect to [Login]
@@ -154,33 +172,25 @@ class MyApp extends StatelessWidget {
         /// else we try to connect to our Backend Server
         home: getFutureBuildWidget,
 
-        /* OfflineBuilder(
-          child: SizedBox.expand(
-            child: Container(
-              child: Text("Checking Connection..."),
-            ),
-          ),
-          connectivityBuilder:
-              (BuildContext context, ConnectivityResult connectivity, Widget child) {
-            if (connectivity == ConnectivityResult.none) {
-              return NoConnection();
-            } else {
-              return /
-              ;
-            }
-          },
-        ) */
         routes: {
-          '/dashboard': (context) => DashBoard(),
-          '/login': (context) => Login(),
-          '/register': (context) => Register(),
-          '/validate': (context) => Validate(),
-          '/getStarted': (context) => GetStarted(),
-          '/searchMates': (context) => SearchMates(),
-          '/passwordRecovery': (context) => PasswordRecovery(),
-          '/changePassword': (context) => ChangePassword(),
-          '/profile': (context) => Profile(),
-          '/editProfile': (context) => EditProfile(),
+          //* User Screens
+          RouteUri.login: (context) => Login(),
+          RouteUri.register: (context) => Register(),
+          RouteUri.validate: (context) => Validate(),
+          RouteUri.passwordRecovery: (context) => PasswordRecovery(),
+          RouteUri.changePassword: (context) => ChangePassword(),
+          //* All Else
+          RouteUri.dashboardStudent: (context) => DashBoardStudent(),
+          RouteUri.dashboardProfessor: (context) => DashBoardProfessor(),
+
+          RouteUri.getStartedStudent: (context) => GetStartedStudent(),
+          RouteUri.getStartedProfessor: (context) => GetStartedProfessor(),
+
+          RouteUri.editProfileStudent: (context) => EditProfileStudent(),
+          RouteUri.editProfileProfessor: (context) => EditProfileProfessor(),
+
+          //* Project Screens
+          RouteUri.projectsProfessor: (context) => ProjectsProfessor(),
         },
       ),
     );

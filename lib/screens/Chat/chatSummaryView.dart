@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meet_your_mates/screens/Chat/chatDetail.dart';
+import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
 class ChatSummaryView extends StatelessWidget {
   static const Color textUnreadGreenColor = Color.fromARGB(255, 8, 211, 111);
@@ -23,13 +24,13 @@ class ChatSummaryView extends StatelessWidget {
   Widget build(BuildContext context) {
     var chatSummaryClicked = () {
       print("User Pressed: " + name);
-      Navigator.push(
+      pushNewScreen(
         context,
-        new MaterialPageRoute(
-          builder: (context) => new ChatDetailPage(
-            selectedIndex: viewIndex,
-          ),
+        screen: ChatDetailPage(
+          selectedIndex: viewIndex,
         ),
+        withNavBar: false, // OPTIONAL VALUE. True by default.
+        pageTransitionAnimation: PageTransitionAnimation.cupertino,
       );
     };
     return GestureDetector(
@@ -51,9 +52,7 @@ class ChatSummaryView extends StatelessWidget {
             ),
           ),
           subtitle: Text(
-            (mostRecentMessage != null && mostRecentMessage.isNotEmpty)
-                ? mostRecentMessage
-                : "No message",
+            (mostRecentMessage != null && mostRecentMessage.isNotEmpty) ? mostRecentMessage : "No message",
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
             style: TextStyle(

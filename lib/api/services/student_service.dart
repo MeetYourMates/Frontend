@@ -4,9 +4,11 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 import 'package:logger/logger.dart';
-import 'package:meet_your_mates/api/models/courseProjects.dart';
 import 'package:meet_your_mates/api/models/courseAndStudents.dart';
+import 'package:meet_your_mates/api/models/courseProjects.dart';
+import 'package:meet_your_mates/api/models/meeting.dart';
 import 'package:meet_your_mates/api/models/student.dart';
+import 'package:meet_your_mates/api/models/team.dart';
 import 'package:meet_your_mates/api/models/user.dart';
 import 'package:meet_your_mates/api/util/app_url.dart';
 import 'package:meet_your_mates/api/util/shared_preference.dart';
@@ -87,9 +89,10 @@ class StudentProvider with ChangeNotifier {
         //Not Validated
         try {
           Map responseData = jsonDecode(response.body);
-          _student = (Student.fromJson(responseData));
-          _student.user.password = password;
-          UserPreferences().saveUser(_student.user);
+          User userTmp2 = new User();
+          userTmp2 = (User.fromJson(responseData));
+          userTmp2.password = password;
+          UserPreferences().saveUser(userTmp2);
           res = 1;
         } catch (err) {
           logger.e("Error AutoLogin 203: " + err.toString());
@@ -116,16 +119,78 @@ class StudentProvider with ChangeNotifier {
     }
     return res;
   }
+
+  //Get reunions from Server
+  Future<List<Meeting>> getMeetings(String teamId) async {
+    logger.d("Getting ReunionsData!");
+    List<Meeting> res = [];
+    try {
+      Response response = await get(
+        AppUrl.getMeeting + teamId,
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(Duration(seconds: 10));
+      logger.d("Meeting Response:" + response.body);
+      if (response.statusCode == 200) {
+        //Logged In succesfully  from server
+        try {
+          Map responseData = jsonDecode(response.body);
+          Team team = (Team.fromJson(responseData));
+          res = team.meetings;
+          return res;
+        } catch (err) {
+          logger.e("Error Meeting 404: " + err.toString());
+          return res;
+        }
+      } else {
+        return res;
+      }
+    } catch (err) {
+      logger.e("Error Meeting: " + err.toString());
+      return res;
+    }
+  }
+
+  //Get reunions from Server
+  Future<Meeting> createMeeting(String teamId, Meeting meeting) async {
+    logger.d("Adding meeting!");
+    try {
+      Response response = await post(
+        AppUrl.addMeeting,
+        body: json.encode(meeting.toJson()),
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(Duration(seconds: 10));
+      logger.d("Meeting Response:" + response.body);
+      if (response.statusCode == 200) {
+        //Logged In succesfully  from server
+        try {
+          Map responseData = jsonDecode(response.body);
+          Meeting resMeeting = (Meeting.fromJson(responseData));
+          return resMeeting;
+        } catch (err) {
+          logger.e("Error creating Meeting 404: " + err.toString());
+          return meeting;
+        }
+      } else {
+        return meeting;
+      }
+    } catch (err) {
+      logger.e("Error creating Meeting: " + err.toString());
+      return meeting;
+    }
+  }
   //*********************************************************************/
 
   //************************POL****************************/
+  /// ================================================================================================
+  ///!                                  Uload student parameters
+  ///================================================================================================**/
 
   Future<int> upload(Student updated) async {
     int res = -1;
     logger.d("Trying to update student:");
     try {
       Response response = await put(
-        AppUrl.editProfile,
+        AppUrl.editProfileStudent,
         body: json.encode(updated.toJson()),
         headers: {'Content-Type': 'application/json'},
       );
@@ -166,6 +231,9 @@ class StudentProvider with ChangeNotifier {
   }
 
 //************************PEP****************************/
+  /// ================================================================================================
+  ///!                    THIS FUNCTION IS DEPRECATED, KEEP JUST IN CASE
+  ///================================================================================================**/
   Future<List<Student>> getCourseStudents() async {
     logger.d("Trying to get course students:");
     try {
@@ -192,6 +260,10 @@ class StudentProvider with ChangeNotifier {
 //*******************************************************/
 
 //************************PEP****************************/
+  /// ================================================================================================
+  ///!                    GET MY COURSES AND STUDENTS WITH MY STUDENT ID
+  ///                                  USED BY courseList
+  ///================================================================================================**/
   Future<List<CourseAndStudents>> getStudentCourses(String id) async {
     logger.d("Trying to get student courses:");
     try {
@@ -214,6 +286,7 @@ class StudentProvider with ChangeNotifier {
       return null;
     }
   }
+
 //*******************************************************/
 
 }
