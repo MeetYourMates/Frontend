@@ -1,21 +1,14 @@
-import 'package:meet_your_mates/api/models/insignia.dart';
 import 'package:flutter/material.dart';
-//Services
-
-//Utilities
-
-//Constants
-
+import 'package:meet_your_mates/api/models/insignia.dart';
+import 'package:meet_your_mates/api/services/mate_provider.dart';
 //Screens
 import 'package:meet_your_mates/screens/Login/background.dart';
 import 'package:provider/provider.dart';
-import 'package:meet_your_mates/api/services/mate_provider.dart';
 //Models
 
 //Components
 
 class InsigniasMate extends StatefulWidget {
- 
   @override
   _InsigniasState createState() => _InsigniasState();
 }
@@ -27,16 +20,6 @@ class _InsigniasState extends State<InsigniasMate> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          title: Text("Insignias"),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.info),
-              color: Colors.white,
-              onPressed: () {},
-            )
-          ],
-        ),
         body: Background(
           child: InsigniaList(),
         ),
@@ -54,7 +37,7 @@ class _InsigniaListState extends State<InsigniaList> {
   @override
   Widget build(BuildContext context) {
     MateProvider _mateProvider = Provider.of<MateProvider>(context);
-  
+
     List<Insignia> insignias = _mateProvider.student.insignias;
     return ListView.builder(
       physics: NeverScrollableScrollPhysics(),
@@ -76,28 +59,16 @@ class InsigniaCard extends StatelessWidget {
   final int requirement;
   final String logo;
 
-  const InsigniaCard(
-      {Key key,
-      @required this.hashtag,
-      @required this.date,
-      @required this.logo,
-      @required this.requirement})
-      : super(key: key);
+  const InsigniaCard({Key key, @required this.hashtag, @required this.date, @required this.logo, @required this.requirement}) : super(key: key);
 
   String timeAgo(DateTime d) {
     Duration diff = DateTime.now().difference(d);
-    if (diff.inDays > 365)
-      return "${(diff.inDays / 365).floor()} ${(diff.inDays / 365).floor() == 1 ? "year" : "years"} ago";
-    if (diff.inDays > 30)
-      return "${(diff.inDays / 30).floor()} ${(diff.inDays / 30).floor() == 1 ? "month" : "months"} ago";
-    if (diff.inDays > 7)
-      return "${(diff.inDays / 7).floor()} ${(diff.inDays / 7).floor() == 1 ? "week" : "weeks"} ago";
-    if (diff.inDays > 0)
-      return "${diff.inDays} ${diff.inDays == 1 ? "day" : "days"} ago";
-    if (diff.inHours > 0)
-      return "${diff.inHours} ${diff.inHours == 1 ? "hour" : "hours"} ago";
-    if (diff.inMinutes > 0)
-      return "${diff.inMinutes} ${diff.inMinutes == 1 ? "minute" : "minutes"} ago";
+    if (diff.inDays > 365) return "${(diff.inDays / 365).floor()} ${(diff.inDays / 365).floor() == 1 ? "year" : "years"} ago";
+    if (diff.inDays > 30) return "${(diff.inDays / 30).floor()} ${(diff.inDays / 30).floor() == 1 ? "month" : "months"} ago";
+    if (diff.inDays > 7) return "${(diff.inDays / 7).floor()} ${(diff.inDays / 7).floor() == 1 ? "week" : "weeks"} ago";
+    if (diff.inDays > 0) return "${diff.inDays} ${diff.inDays == 1 ? "day" : "days"} ago";
+    if (diff.inHours > 0) return "${diff.inHours} ${diff.inHours == 1 ? "hour" : "hours"} ago";
+    if (diff.inMinutes > 0) return "${diff.inMinutes} ${diff.inMinutes == 1 ? "minute" : "minutes"} ago";
     return "just now";
   }
 
@@ -135,10 +106,7 @@ class InsigniaCard extends StatelessWidget {
                   ),
                   SizedBox(height: 4.0),
                   Text(
-                    "Date: " +
-                        timeAgo(DateTime.parse(this.date)) +
-                        ", Requirement: " +
-                        this.requirement.toString(),
+                    "Date: " + timeAgo(DateTime.parse(this.date)) + ", Requirement: " + this.requirement.toString(),
                     style: TextStyle(
                       color: Colors.grey[700],
                       fontSize: 12.0,

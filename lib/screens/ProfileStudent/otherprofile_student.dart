@@ -325,11 +325,11 @@ class SendMessage extends StatelessWidget {
         //Else --> New Mate maybe --> Temporary ChatDetail or ChatDetail2!
         socketProvider.tempMate = user;
         socketProvider.askTempMateStatus(user.id);
-        Navigator.push(
+        pushNewScreen(
           context,
-          new MaterialPageRoute(
-            builder: (context) => new ChatDetailPage2(),
-          ),
+          screen: ChatDetailPage2(),
+          withNavBar: false, // OPTIONAL VALUE. True by default.
+          pageTransitionAnimation: PageTransitionAnimation.cupertino,
         );
       }
     }

@@ -72,7 +72,6 @@ class _MeetingsState extends State<Meetings> {
                     //Return a new ListTile with ReunionView and a click button to see Reunions details
                     return Card(
                       child: ListTile(
-                          leading: FlutterLogo(size: 56.0),
                           title: Text(meetings[index].name),
                           isThreeLine: true,
                           subtitle: Text(meetings[index].description),
@@ -106,7 +105,7 @@ class _MeetingsState extends State<Meetings> {
                   meetings.add(meeting);
                 },
               ),
-              withNavBar: false, // OPTIONAL VALUE. True by default.
+              withNavBar: true, // OPTIONAL VALUE. True by default.
               pageTransitionAnimation: PageTransitionAnimation.cupertino,
             );
           },

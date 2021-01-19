@@ -1,17 +1,12 @@
-import 'package:meet_your_mates/api/models/trophy.dart';
 import 'package:flutter/material.dart';
-//Services
-
-//Utilities
-
-//Constants
-import 'package:provider/provider.dart';
 import 'package:logger/logger.dart';
-//Screens
-import 'package:meet_your_mates/screens/Trophies/background.dart';
-
+import 'package:meet_your_mates/api/models/trophy.dart';
 //Models
 import 'package:meet_your_mates/api/services/mate_provider.dart';
+//Screens
+import 'package:meet_your_mates/screens/Trophies/background.dart';
+//Constants
+import 'package:provider/provider.dart';
 //Components
 
 class TrophiesMate extends StatefulWidget {
@@ -26,16 +21,6 @@ class _TrophiesState extends State<TrophiesMate> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          title: Text("Trophies"),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.info),
-              color: Colors.white,
-              onPressed: () {},
-            )
-          ],
-        ),
         body: Background(
           child: TrophyList(),
         ),
@@ -79,29 +64,17 @@ class TrophyCard extends StatelessWidget {
   final String logo;
   final String professor;
 
-  const TrophyCard(
-      {Key key,
-      @required this.title,
-      @required this.date,
-      @required this.logo,
-      @required this.difficulty,
-      @required this.professor})
+  const TrophyCard({Key key, @required this.title, @required this.date, @required this.logo, @required this.difficulty, @required this.professor})
       : super(key: key);
 
   String timeAgo(DateTime d) {
     Duration diff = DateTime.now().difference(d);
-    if (diff.inDays > 365)
-      return "${(diff.inDays / 365).floor()} ${(diff.inDays / 365).floor() == 1 ? "year" : "years"} ago";
-    if (diff.inDays > 30)
-      return "${(diff.inDays / 30).floor()} ${(diff.inDays / 30).floor() == 1 ? "month" : "months"} ago";
-    if (diff.inDays > 7)
-      return "${(diff.inDays / 7).floor()} ${(diff.inDays / 7).floor() == 1 ? "week" : "weeks"} ago";
-    if (diff.inDays > 0)
-      return "${diff.inDays} ${diff.inDays == 1 ? "day" : "days"} ago";
-    if (diff.inHours > 0)
-      return "${diff.inHours} ${diff.inHours == 1 ? "hour" : "hours"} ago";
-    if (diff.inMinutes > 0)
-      return "${diff.inMinutes} ${diff.inMinutes == 1 ? "minute" : "minutes"} ago";
+    if (diff.inDays > 365) return "${(diff.inDays / 365).floor()} ${(diff.inDays / 365).floor() == 1 ? "year" : "years"} ago";
+    if (diff.inDays > 30) return "${(diff.inDays / 30).floor()} ${(diff.inDays / 30).floor() == 1 ? "month" : "months"} ago";
+    if (diff.inDays > 7) return "${(diff.inDays / 7).floor()} ${(diff.inDays / 7).floor() == 1 ? "week" : "weeks"} ago";
+    if (diff.inDays > 0) return "${diff.inDays} ${diff.inDays == 1 ? "day" : "days"} ago";
+    if (diff.inHours > 0) return "${diff.inHours} ${diff.inHours == 1 ? "hour" : "hours"} ago";
+    if (diff.inMinutes > 0) return "${diff.inMinutes} ${diff.inMinutes == 1 ? "minute" : "minutes"} ago";
     return "just now";
   }
 
@@ -146,10 +119,7 @@ class TrophyCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "Date: " +
-                        timeAgo(DateTime.parse(this.date)) +
-                        ", difficulty: " +
-                        this.difficulty.toString(),
+                    "Date: " + timeAgo(DateTime.parse(this.date)) + ", difficulty: " + this.difficulty.toString(),
                     style: TextStyle(
                       color: Colors.grey[700],
                       fontSize: 12.0,
