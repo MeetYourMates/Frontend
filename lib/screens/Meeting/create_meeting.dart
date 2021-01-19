@@ -83,7 +83,8 @@ class _CreateMeetingState extends State<CreateMeeting> {
       }
     }
 
-    Size size = MediaQuery.of(context).size * 0.95;
+    Size size = MediaQuery.of(context).size;
+    size = new Size(size.width <= 400 ? size.width : 400, size.height);
     Widget _createReunionWidget = Center(
       child: SingleChildScrollView(
         physics: NeverScrollableScrollPhysics(),
@@ -97,12 +98,12 @@ class _CreateMeetingState extends State<CreateMeeting> {
               children: <Widget>[
                 SizedBox(
                   width: size.width,
-                  height: size.height * 0.20,
+                  height: size.height * 0.10,
                   child: FittedBox(
                     fit: BoxFit.contain,
                     child: Text(
-                      "Create a Reunion",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24, color: kPrimaryColor),
+                      "New Reunion",
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF004B55)),
                     ),
                   ),
                 ),
@@ -165,36 +166,61 @@ class _CreateMeetingState extends State<CreateMeeting> {
                 ),
                 SizedBox(
                   width: size.width,
-                  height: size.height * 0.12,
+                  height: size.height * 0.09,
                   child: Card(
                     child: ListTile(
-                        leading: Icon(
-                          Icons.map,
-                          color: kPrimaryColor,
-                        ),
-                        title: Text("Pick a location..."),
-                        trailing: Icon(
-                          Icons.add_location_alt_sharp,
-                          color: kPrimaryColor,
-                        ),
-                        onTap: () {
-                          //on Tap of this
-                          logger.d("Pick a location pressed...");
-                          pushNewScreen(
-                            context,
-                            screen: MapGoogle(),
-                            withNavBar: false, // OPTIONAL VALUE. True by default.
-                            pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                          );
-                        }),
+                      leading: Icon(
+                        Icons.map,
+                        color: kPrimaryColor,
+                      ),
+                      title: Text("Pick a location..."),
+                      trailing: Icon(
+                        Icons.add_location_alt_sharp,
+                        color: kPrimaryColor,
+                      ),
+                      onTap: () {
+                        //on Tap of this
+                        logger.d("Pick a location pressed...");
+                        pushNewScreen(
+                          context,
+                          screen: MapGoogle(),
+                          withNavBar: false, // OPTIONAL VALUE. True by default.
+                          pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                        );
+                      },
+                    ),
                   ),
                 ),
                 SizedBox(
                   width: size.width,
-                  height: size.height * 0.08,
-                  child: RoundedButton(
-                    text: "Create",
-                    press: createMeeting,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: SizedBox(
+                          height: size.height * 0.08,
+                          child: RoundedButton(
+                            text: "Cancel",
+                            press: () {
+                              //Exit
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: SizedBox(
+                          //width: size.width * 0.46,
+                          height: size.height * 0.08,
+                          child: RoundedButton(
+                            text: "Create",
+                            press: createMeeting,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 SizedBox(
