@@ -8,8 +8,8 @@ import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/components/rounded_button.dart';
 import 'package:meet_your_mates/components/text_field_container.dart';
 import 'package:meet_your_mates/constants.dart';
-import 'package:meet_your_mates/screens/Reunion/background.dart';
-import 'package:meet_your_mates/screens/Reunion/map_google.dart';
+import 'package:meet_your_mates/screens/Meeting/background.dart';
+import 'package:meet_your_mates/screens/Meeting/map_google.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 //Constants

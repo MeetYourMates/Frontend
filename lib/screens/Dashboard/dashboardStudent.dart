@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/services/socket_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
+import 'package:meet_your_mates/api/util/route_uri.dart';
 import 'package:meet_your_mates/components/statefull_wrapper.dart';
 import 'package:meet_your_mates/constants.dart';
 import 'package:meet_your_mates/screens/Chat/chatSummaryList.dart';
-import 'package:meet_your_mates/screens/Profile/profile.dart';
+import 'package:meet_your_mates/screens/Meeting/meetings.dart';
+import 'package:meet_your_mates/screens/ProfileStudent/profile_student.dart';
 import 'package:meet_your_mates/screens/Projects/projects.dart';
-import 'package:meet_your_mates/screens/Reunion/meetings.dart';
 import 'package:meet_your_mates/screens/SearchMates/searchMates.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
@@ -64,9 +65,9 @@ class _DashBoardStudentState extends State<DashBoardStudent> {
 
     List<Widget> _buildScreens() {
       return [
-        Profile(onTapLogOut: () {
+        ProfileStudent(onTapLogOut: () {
           logger.d("LogOut Pressed");
-          Navigator.popAndPushNamed(context, '/login');
+          Navigator.popAndPushNamed(context, RouteUri.login);
         }),
         ChatSummaryList(),
         Meetings(

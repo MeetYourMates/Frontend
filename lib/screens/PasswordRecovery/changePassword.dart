@@ -4,6 +4,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/services/auth_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
+import 'package:meet_your_mates/api/util/route_uri.dart';
 import 'package:meet_your_mates/components/rounded_button.dart';
 import 'package:meet_your_mates/components/text_field_container.dart';
 //Screens
@@ -61,8 +62,7 @@ class _ChangePasswordState extends State<ChangePassword> {
           String code = this.form.control('code').value;
           String password = this.form.control('password').value;
           //We need to send the server the email and than see
-          final Future<Map<String, dynamic>> successfulMessage =
-              auth.changePassword(code, email, password);
+          final Future<Map<String, dynamic>> successfulMessage = auth.changePassword(code, email, password);
           //Callback to message recieved after login auth
           successfulMessage.then(
             (response) {
@@ -70,7 +70,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                 //If the email does exist status = true
                 if (response['status']) {
                   // Send the User to Login
-                  Navigator.pushReplacementNamed(context, '/login');
+                  Navigator.pushReplacementNamed(context, RouteUri.login);
                 } else {
                   //If the email doesn't exist status = false
                   //flushbar
@@ -113,8 +113,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                           fit: BoxFit.contain,
                           child: Text(
                             "Reset Your Password?",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 24, color: kPrimaryColor),
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24, color: kPrimaryColor),
                           ),
                         ),
                       ),
@@ -169,8 +168,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                               hintText: "password",
                               border: InputBorder.none,
                             ),
-                            validationMessages: (control) =>
-                                {'required': 'The password field must not be empty'},
+                            validationMessages: (control) => {'required': 'The password field must not be empty'},
                           ),
                         ),
                       ),
@@ -190,8 +188,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                               hintText: "Retype Password",
                               border: InputBorder.none,
                             ),
-                            validationMessages: (control) =>
-                                {'required': 'The password confirm field must not be empty'},
+                            validationMessages: (control) => {'required': 'The password confirm field must not be empty'},
                           ),
                         ),
                       ),
@@ -219,7 +216,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                         child: RoundedButton(
                           text: "Cancel",
                           press: () => {
-                            Navigator.pushReplacementNamed(context, '/login'),
+                            Navigator.pushReplacementNamed(context, RouteUri.login),
                           },
                         ),
                       ),

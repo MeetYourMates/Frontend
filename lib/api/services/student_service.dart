@@ -190,7 +190,7 @@ class StudentProvider with ChangeNotifier {
     logger.d("Trying to update student:");
     try {
       Response response = await put(
-        AppUrl.editProfile,
+        AppUrl.editProfileStudent,
         body: json.encode(updated.toJson()),
         headers: {'Content-Type': 'application/json'},
       );

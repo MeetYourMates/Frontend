@@ -1,33 +1,34 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:meet_your_mates/api/models/user.dart';
-import 'package:meet_your_mates/api/services/mate_provider.dart';
 import 'package:meet_your_mates/api/services/socket_service.dart';
-import 'package:meet_your_mates/screens/Chat/chatDetail.dart';
-import 'package:meet_your_mates/screens/Chat/chatDetail2.dart';
+import 'package:meet_your_mates/api/services/student_service.dart';
+import 'package:meet_your_mates/api/util/shared_preference.dart';
 import 'package:meet_your_mates/screens/Insignias/background.dart';
-import 'package:meet_your_mates/screens/Insignias/insigniasmate.dart';
-import 'package:meet_your_mates/screens/Trophies/matetrophies.dart';
-import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
+import 'package:meet_your_mates/screens/Insignias/insignias.dart';
+import 'package:meet_your_mates/screens/ProfileStudent/edit_profile_student.dart';
+import 'package:meet_your_mates/screens/Trophies/trophies.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
 
 import '../../api/services/auth_service.dart';
 
-class OtherProfile extends StatefulWidget {
+class ProfileStudent extends StatefulWidget {
+  final Function onTapLogOut;
+  ProfileStudent({Key key, @required this.onTapLogOut}) : super(key: key);
   @override
-  _ProfileState createState() => _ProfileState();
+  _ProfileStudentState createState() => _ProfileStudentState();
 }
 
-class _ProfileState extends State<OtherProfile> {
+class _ProfileStudentState extends State<ProfileStudent> {
   final formKey = new GlobalKey<FormState>();
   var logger = Logger();
 
-  _ProfileState();
+  _ProfileStudentState();
 
   @override
   Widget build(BuildContext context) {
-    MateProvider _studentProvider = Provider.of<MateProvider>(context);
+    StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
     AuthProvider _authProvider = Provider.of<AuthProvider>(context, listen: false);
     double meanRating = 0;
     for (int i = 0; i < _studentProvider.student.ratings.length; i++) {
@@ -35,19 +36,9 @@ class _ProfileState extends State<OtherProfile> {
     }
 
     meanRating = meanRating / (_studentProvider.student.ratings.length + 1);
-    
+
     return SafeArea(
       child: Scaffold(
-         appBar: AppBar(
-          title: Text("Profile"),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.info),
-              color: Colors.white,
-              onPressed: () {},
-            )
-          ],
-        ),
         body: Background(
           child: SingleChildScrollView(
             child: Column(
@@ -55,6 +46,7 @@ class _ProfileState extends State<OtherProfile> {
                 Header(
                   icon: _studentProvider.student.user.picture,
                 ),
+                editButton(context: context),
                 StackContainer(
                   username: _studentProvider.student.user.name,
                   email: _studentProvider.student.user.email,
@@ -74,9 +66,9 @@ class _ProfileState extends State<OtherProfile> {
                 ),
                 ListView.builder(
                   physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) => SendMessage(
+                  itemBuilder: (context, index) => LogOutCard(
                     authProvider: _authProvider,
-                    usr: _studentProvider.student.user,
+                    onTap: widget.onTapLogOut,
                   ),
                   shrinkWrap: true,
                   itemCount: 1,
@@ -215,7 +207,7 @@ class InsigniaCard extends StatelessWidget {
             children: <Widget>[
               IconButton(
                 onPressed: () {
-                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new InsigniasMate()));
+                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new Insignias()));
                 },
                 icon: Icon(
                   Icons.album_sharp,
@@ -272,7 +264,7 @@ class TrophiesCard extends StatelessWidget {
             children: <Widget>[
               IconButton(
                 onPressed: () {
-                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new TrophiesMate()));
+                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new Trophies()));
                 },
                 icon: Icon(
                   Icons.amp_stories_rounded,
@@ -309,49 +301,17 @@ class TrophiesCard extends StatelessWidget {
   }
 }
 
-class SendMessage extends StatelessWidget {
+class LogOutCard extends StatelessWidget {
   final AuthProvider authProvider;
-  final User usr;
-  const SendMessage({Key key, this.authProvider, this.usr}) : super(key: key);
+  final Function onTap;
+  const LogOutCard({
+    Key key,
+    this.authProvider,
+    @required this.onTap,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    SocketProvider socketProvider = Provider.of<SocketProvider>(context, listen: false);
-    // ignore: unused_element
-    void openChat(User user) {
-      //Search if This user is already a mate
-      int index = socketProvider.mates.usersList.indexOf(user);
-      //If yes --> Open ChatDetail with Chathistory
-      if (index != -1) {
-        /* Navigator.push(
-          context,
-          new MaterialPageRoute(
-            builder: (context) => new ChatDetailPage(
-              selectedIndex: index,
-            ),
-          ),
-        ); */
-        pushNewScreen(
-          context,
-          screen: ChatDetailPage(
-            selectedIndex: index,
-          ),
-          withNavBar: false, // OPTIONAL VALUE. True by default.
-          pageTransitionAnimation: PageTransitionAnimation.cupertino,
-        );
-      } else {
-        //Else --> New Mate maybe --> Temporary ChatDetail or ChatDetail2!
-        socketProvider.tempMate = user;
-        socketProvider.askTempMateStatus(user.id);
-        Navigator.push(
-          context,
-          new MaterialPageRoute(
-            builder: (context) => new ChatDetailPage2(),
-          ),
-        );
-      }
-    }
-
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.0),
       child: Card(
@@ -365,10 +325,13 @@ class SendMessage extends StatelessWidget {
             children: <Widget>[
               IconButton(
                 onPressed: () {
-                  openChat(usr);
+                  UserPreferences().removeUser();
+                  authProvider.signOutGoogle();
+                  Provider.of<SocketProvider>(context, listen: false).disconnectSocket();
+                  onTap();
                 },
                 icon: Icon(
-                  Icons.chat_bubble,
+                  Icons.logout,
                   size: 40.0,
                   color: Colors.blue,
                 ),
@@ -379,7 +342,7 @@ class SendMessage extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Text(
-                    "Send Message",
+                    "LogOut",
                     style: TextStyle(
                       fontSize: 18.0,
                     ),
@@ -427,4 +390,34 @@ class RatingStars extends StatelessWidget {
       ),
     );
   }
+}
+
+Container editButton({BuildContext context}) {
+  return Container(
+    padding: EdgeInsets.only(top: 2.0),
+    child: FlatButton(
+      onPressed: () {
+        Navigator.push(context, new MaterialPageRoute(builder: (context) => new EditProfileStudent()));
+      },
+      child: Container(
+        width: 250.0,
+        height: 27.0,
+        child: Text(
+          "Edit Profile",
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: Colors.blue,
+          border: Border.all(
+            color: Colors.blue,
+          ),
+          borderRadius: BorderRadius.circular(5.0),
+        ),
+      ),
+    ),
+  );
 }

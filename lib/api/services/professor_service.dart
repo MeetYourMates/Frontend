@@ -63,8 +63,7 @@ class ProfessorProvider with ChangeNotifier {
         logger.d("Courses retrieved:");
         //Convert from json List of Map to List of Student
         var decodedList = (json.decode(response.body) as List<dynamic>);
-        List<CourseAndStudents> courses =
-            decodedList.map((i) => CourseAndStudents.fromJson(i)).toList();
+        List<CourseAndStudents> courses = decodedList.map((i) => CourseAndStudents.fromJson(i)).toList();
         //Send back List of Students
         return courses;
       }
@@ -137,5 +136,32 @@ class ProfessorProvider with ChangeNotifier {
     }
     return res;
   }
+
+  /// ================================================================================================
+  ///!                                  Upload professor parameters
+  ///================================================================================================**/
+
+  Future<int> upload(Professor updated) async {
+    int res = -1;
+    logger.d("Trying to update student:");
+    try {
+      Response response = await put(
+        AppUrl.editProfileProfessor,
+        body: json.encode(updated.toJson()),
+        headers: {'Content-Type': 'application/json'},
+      );
+      if (response.statusCode == 200) {
+        logger.d("Professor updated:");
+        notifyListeners();
+        res = 0;
+      }
+    } catch (err) {
+      logger.e("Error updating Professor: " + err.toString());
+      res = -1;
+    }
+    return res;
+  }
+
+//*******************************************************/
   //***********************************KRUNAL***********************************************************/
 }

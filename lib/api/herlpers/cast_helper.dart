@@ -1,4 +1,4 @@
-class Helper {
+class CastHelper {
   static T tryCast<T>(dynamic x, {T fallback}) {
     try {
       return (x as T);

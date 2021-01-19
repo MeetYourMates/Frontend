@@ -9,6 +9,7 @@ import 'package:meet_your_mates/api/services/auth_service.dart';
 import 'package:meet_your_mates/api/services/professor_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/api/services/user_service.dart';
+import 'package:meet_your_mates/api/util/route_uri.dart';
 import 'package:meet_your_mates/api/util/shared_preference.dart';
 import 'package:meet_your_mates/components/rounded_button.dart';
 import 'package:meet_your_mates/components/text_field_container.dart';
@@ -48,59 +49,50 @@ class _ValidateState extends State<Validate> {
     AuthProvider auth = Provider.of<AuthProvider>(context, listen: true);
     var loading = Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        CircularProgressIndicator(),
-        Text("Checking ... Please wait")
-      ],
+      children: <Widget>[CircularProgressIndicator(), Text("Checking ... Please wait")],
     );
     //We need to check if the user is a professor or a student
     Future<void> checkValidation() async {
       logger.d("Check Validation Called");
       //Check if Server Validated, if True than retrieve Student
       User user = Provider.of<UserProvider>(context, listen: false).user;
-      final Future<Map<String, dynamic>> successfulMessage =
-          auth.login(user.email, user.password);
+      final Future<Map<String, dynamic>> successfulMessage = auth.login(user.email, user.password);
       //Callback to message recieved after login auth
       successfulMessage.then((response) {
         if (response['status'] == 0) {
           //Validation Completed & Somehow GetStarted too!
 
           Student student = response['student'];
-          Provider.of<StudentProvider>(context, listen: false)
-              .setStudentWithUserWithPassword(student);
+          Provider.of<StudentProvider>(context, listen: false).setStudentWithUserWithPassword(student);
           EasyLoading.dismiss().then((value) => {
-                Navigator.pushReplacementNamed(context, '/dashboardStudent'),
+                Navigator.pushReplacementNamed(context, RouteUri.dashboardStudent),
               });
           logger.d("Validated From SomeWhere Else!");
         } else if (response['status'] == 2) {
           //Let's Get Started not completed
           Student student = response['student'];
-          Provider.of<StudentProvider>(context, listen: false)
-              .setStudentWithUserWithPassword(student);
+          Provider.of<StudentProvider>(context, listen: false).setStudentWithUserWithPassword(student);
           //Navigator.pushReplacementNamed(context, '/getStartedStudent');
           EasyLoading.dismiss().then((value) => {
-                Navigator.pushReplacementNamed(context, '/getStartedStudent'),
+                Navigator.pushReplacementNamed(context, RouteUri.getStartedStudent),
               });
           logger.d("Validated but --> Let's Get Started not completed!");
         } else if (response['status'] == 3) {
           //Validated and getStarted completed Dashboard Professor
           Professor professor = response['professor'];
           //Provider.of<StudentProvider>(context, listen: false).setPassword(student.user.password);
-          Provider.of<ProfessorProvider>(context, listen: false)
-              .setProfessorWithUserWithPassword(professor);
+          Provider.of<ProfessorProvider>(context, listen: false).setProfessorWithUserWithPassword(professor);
           //Navigator.pushReplacementNamed(context, '/dashboardProfessor');
           EasyLoading.dismiss().then((value) => {
-                Navigator.pushReplacementNamed(context, '/dashboardProfessor'),
+                Navigator.pushReplacementNamed(context, RouteUri.dashboardProfessor),
               });
           logger.d("Logged In dashboard Professor!");
         } else if (response['status'] == 4) {
           //Validated but GetStarted Professor not Finished
           Professor professor = response['professor'];
-          Provider.of<ProfessorProvider>(context, listen: false)
-              .setProfessorWithUserWithPassword(professor);
-          //Navigator.pushReplacementNamed(context, '/getStartedProfessor');
+          Provider.of<ProfessorProvider>(context, listen: false).setProfessorWithUserWithPassword(professor);
           EasyLoading.dismiss().then((value) => {
-                Navigator.pushReplacementNamed(context, '/getStartedProfessor'),
+                Navigator.pushReplacementNamed(context, RouteUri.getStartedProfessor),
               });
           logger.d("Logged In getStartedProfessor not completed!");
         } else {
@@ -132,8 +124,7 @@ class _ValidateState extends State<Validate> {
           logger.d("Valid Form 2 $code");
           auth.validateCode(code).then(
             (response) {
-              logger
-                  .d("Validate Code then--> " + response['status'].toString());
+              logger.d("Validate Code then--> " + response['status'].toString());
               if (response['status']) {
                 checkValidation();
               } else {
@@ -172,8 +163,7 @@ class _ValidateState extends State<Validate> {
               physics: NeverScrollableScrollPhysics(),
               child: Container(
                 alignment: Alignment.center,
-                constraints: BoxConstraints.tightForFinite(
-                    width: 400, height: size.height * 0.64),
+                constraints: BoxConstraints.tightForFinite(width: 400, height: size.height * 0.64),
                 child: ReactiveForm(
                   formGroup: this.form,
                   child: Column(
@@ -186,10 +176,7 @@ class _ValidateState extends State<Validate> {
                           fit: BoxFit.contain,
                           child: Text(
                             "We are close to end!",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 24,
-                                color: kPrimaryColor),
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24, color: kPrimaryColor),
                           ),
                         ),
                       ),
@@ -200,8 +187,7 @@ class _ValidateState extends State<Validate> {
                           fit: BoxFit.contain,
                           child: Text(
                             "Introduce the code that we just send to you email",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16),
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                           ),
                         ),
                       ),
@@ -223,10 +209,8 @@ class _ValidateState extends State<Validate> {
                             ),
                             validationMessages: (control) => {
                               'required': 'The code must not be empty',
-                              'maxLength':
-                                  'The code can only be 7 characters long',
-                              'minLength':
-                                  'The code has to be atleast 7 characters long'
+                              'maxLength': 'The code can only be 7 characters long',
+                              'minLength': 'The code has to be atleast 7 characters long'
                             },
                           ),
                         ),
@@ -254,10 +238,7 @@ class _ValidateState extends State<Validate> {
                         height: size.height * 0.08,
                         child: RoundedButton(
                           text: "Logout",
-                          press: () => {
-                            UserPreferences().removeUser(),
-                            Navigator.pushReplacementNamed(context, '/login')
-                          },
+                          press: () => {UserPreferences().removeUser(), Navigator.pushReplacementNamed(context, RouteUri.login)},
                         ),
                       ),
                       SizedBox(
