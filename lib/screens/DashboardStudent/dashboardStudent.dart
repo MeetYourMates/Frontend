@@ -60,7 +60,7 @@ class _DashBoardStudentState extends State<DashBoardStudent> {
     }
 
     PersistentTabController _controller;
-    _controller = PersistentTabController(initialIndex: 0);
+    _controller = PersistentTabController(initialIndex: 2);
     bool _hideNavBar = false;
 
     List<Widget> _buildScreens() {
@@ -115,57 +115,57 @@ class _DashBoardStudentState extends State<DashBoardStudent> {
     }
 
     return StatefulWrapper(
-        onInit: () {
-          //Connect to Socket
-          openSocketConnection();
-        },
-        child: Scaffold(
-          appBar: PreferredSize(
-            preferredSize: Size.fromHeight(kAppBarHeight), // here the desired height
-            child: AppBar(
-              title: Text("Meet Your Mates"),
-              backgroundColor: Colors.cyan,
-              actions: <Widget>[
-                IconButton(
-                    icon: Icon(Icons.notifications_none_rounded),
-                    onPressed: () {
-                      //showSearch(context: context, delegate: DataSearch(listWords));
-                    })
-              ],
-            ),
+      onInit: () {
+        //Connect to Socket
+        openSocketConnection();
+      },
+      child: Scaffold(
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(kAppBarHeight), // here the desired height
+          child: AppBar(
+            title: Text("Meet Your Mates"),
+            backgroundColor: Colors.cyan,
+            actions: <Widget>[
+              IconButton(
+                  icon: Icon(Icons.notifications_none_rounded),
+                  onPressed: () {
+                    //showSearch(context: context, delegate: DataSearch(listWords));
+                  })
+            ],
           ),
-          body: SizedBox.expand(
-              child: PersistentTabView(
-            context,
-            controller: _controller,
-            screens: _buildScreens(),
-            items: _navBarsItems(),
-            confineInSafeArea: true,
-            backgroundColor: Colors.cyan[100],
-            handleAndroidBackButtonPress: true,
-            resizeToAvoidBottomInset: true, // This needs to be true if you want to move up the screen when keyboard appears.
-            stateManagement: true,
-            hideNavigationBarWhenKeyboardShows: true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument.
-            hideNavigationBar: _hideNavBar,
-            decoration: NavBarDecoration(
-              borderRadius: BorderRadius.circular(30.0),
-              colorBehindNavBar: Colors.white,
-            ),
-            popAllScreensOnTapOfSelectedTab: true,
-            popActionScreens: PopActionScreensType.all,
-            itemAnimationProperties: ItemAnimationProperties(
-              // Navigation Bar's items animation properties.
-              duration: Duration(milliseconds: 200),
-              curve: Curves.ease,
-            ),
-            screenTransitionAnimation: ScreenTransitionAnimation(
-              // Screen transition animation on change of selected tab.
-              animateTabTransition: true,
-              curve: Curves.ease,
-              duration: Duration(milliseconds: 200),
-            ),
-            navBarStyle: NavBarStyle.style15, // Choose the nav bar style with this property.
-          )),
-        ));
+        ),
+        body: PersistentTabView(
+          context,
+          controller: _controller,
+          screens: _buildScreens(),
+          items: _navBarsItems(),
+          confineInSafeArea: true,
+          backgroundColor: Colors.cyan[100],
+          handleAndroidBackButtonPress: true,
+          resizeToAvoidBottomInset: true, // This needs to be true if you want to move up the screen when keyboard appears.
+          stateManagement: true,
+          hideNavigationBarWhenKeyboardShows: true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument.
+          hideNavigationBar: _hideNavBar,
+          decoration: NavBarDecoration(
+            borderRadius: BorderRadius.circular(30.0),
+            colorBehindNavBar: Colors.white,
+          ),
+          popAllScreensOnTapOfSelectedTab: true,
+          popActionScreens: PopActionScreensType.all,
+          itemAnimationProperties: ItemAnimationProperties(
+            // Navigation Bar's items animation properties.
+            duration: Duration(milliseconds: 200),
+            curve: Curves.ease,
+          ),
+          screenTransitionAnimation: ScreenTransitionAnimation(
+            // Screen transition animation on change of selected tab.
+            animateTabTransition: true,
+            curve: Curves.ease,
+            duration: Duration(milliseconds: 200),
+          ),
+          navBarStyle: NavBarStyle.style15, // Choose the nav bar style with this property.
+        ),
+      ),
+    );
   }
 }
