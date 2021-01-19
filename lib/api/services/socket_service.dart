@@ -17,7 +17,7 @@ class SocketProvider with ChangeNotifier {
   Users mates = new Users(usersList: []);
   User tempMate = new User();
   List<String> usersOnline = <String>[];
-  Logger logger = Logger(level: Level.debug);
+  Logger logger = Logger(level: Level.error);
   String myId;
 
   //! DON'T DELETE!
@@ -40,7 +40,7 @@ class SocketProvider with ChangeNotifier {
   //get getStreammessages => {streamMessages.stream};
   bool createSocketConnection(String token, String myId) {
     this.myId = myId;
-    logger.e("createSocketConnection" + token);
+    logger.d("createSocketConnection" + token);
     try {
       // Configure socket transports must be sepecified
       socket = IO.io(AppUrl.baseURL, <String, dynamic>{
