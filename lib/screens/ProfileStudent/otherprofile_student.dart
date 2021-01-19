@@ -14,16 +14,16 @@ import 'package:smooth_star_rating/smooth_star_rating.dart';
 
 import '../../api/services/auth_service.dart';
 
-class OtherProfile extends StatefulWidget {
+class OtherProfileStudent extends StatefulWidget {
   @override
-  _ProfileState createState() => _ProfileState();
+  _ProfileStudentState createState() => _ProfileStudentState();
 }
 
-class _ProfileState extends State<OtherProfile> {
+class _ProfileStudentState extends State<OtherProfileStudent> {
   final formKey = new GlobalKey<FormState>();
   var logger = Logger();
 
-  _ProfileState();
+  _ProfileStudentState();
 
   @override
   Widget build(BuildContext context) {
@@ -35,19 +35,9 @@ class _ProfileState extends State<OtherProfile> {
     }
 
     meanRating = meanRating / (_studentProvider.student.ratings.length + 1);
-    
+
     return SafeArea(
       child: Scaffold(
-         appBar: AppBar(
-          title: Text("Profile"),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.info),
-              color: Colors.white,
-              onPressed: () {},
-            )
-          ],
-        ),
         body: Background(
           child: SingleChildScrollView(
             child: Column(
@@ -323,14 +313,6 @@ class SendMessage extends StatelessWidget {
       int index = socketProvider.mates.usersList.indexOf(user);
       //If yes --> Open ChatDetail with Chathistory
       if (index != -1) {
-        /* Navigator.push(
-          context,
-          new MaterialPageRoute(
-            builder: (context) => new ChatDetailPage(
-              selectedIndex: index,
-            ),
-          ),
-        ); */
         pushNewScreen(
           context,
           screen: ChatDetailPage(

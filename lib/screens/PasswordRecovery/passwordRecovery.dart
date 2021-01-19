@@ -6,6 +6,7 @@ import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/models/user.dart';
 import 'package:meet_your_mates/api/services/auth_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
+import 'package:meet_your_mates/api/util/route_uri.dart';
 import 'package:meet_your_mates/components/rounded_button.dart';
 import 'package:meet_your_mates/components/text_field_container.dart';
 //Screens
@@ -72,7 +73,7 @@ class _PasswordRecoveryState extends State<PasswordRecovery> {
                   student.user = usr;
                   //We have the email in our student for further use in change password
                   Provider.of<StudentProvider>(context, listen: false).setStudentWithUser(student);
-                  Navigator.pushReplacementNamed(context, '/changePassword');
+                  Navigator.pushReplacementNamed(context, RouteUri.changePassword);
                 } else {
                   //If the email doesn't exist status = false
                   //flushbar
@@ -99,11 +100,10 @@ class _PasswordRecoveryState extends State<PasswordRecovery> {
       children: <Widget>[
         FlatButton(
           padding: EdgeInsets.all(0.0),
-          child: Text("Already Have Code?",
-              style: TextStyle(color: kPrimaryColor, fontWeight: FontWeight.w500, fontSize: 24)),
+          child: Text("Already Have Code?", style: TextStyle(color: kPrimaryColor, fontWeight: FontWeight.w500, fontSize: 24)),
           onPressed: () {
             //Future
-            Navigator.pushReplacementNamed(context, '/changePassword');
+            Navigator.pushReplacementNamed(context, RouteUri.changePassword);
           },
         )
       ],
@@ -131,8 +131,7 @@ class _PasswordRecoveryState extends State<PasswordRecovery> {
                           fit: BoxFit.contain,
                           child: Text(
                             "Forgot Your Password?",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 24, color: kPrimaryColor),
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24, color: kPrimaryColor),
                           ),
                         ),
                       ),
@@ -163,10 +162,8 @@ class _PasswordRecoveryState extends State<PasswordRecovery> {
                               hintText: "email",
                               border: InputBorder.none,
                             ),
-                            validationMessages: (control) => {
-                              'required': 'The email must not be empty',
-                              'email': 'The email value must be a valid email'
-                            },
+                            validationMessages: (control) =>
+                                {'required': 'The email must not be empty', 'email': 'The email value must be a valid email'},
                           ),
                         ),
                       ),
@@ -202,7 +199,7 @@ class _PasswordRecoveryState extends State<PasswordRecovery> {
                         child: RoundedButton(
                           text: "Cancel",
                           press: () => {
-                            Navigator.pushReplacementNamed(context, '/login'),
+                            Navigator.pushReplacementNamed(context, RouteUri.login),
                           },
                         ),
                       ),

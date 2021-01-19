@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/services/professor_service.dart';
 import 'package:meet_your_mates/api/services/socket_service.dart';
+import 'package:meet_your_mates/api/util/route_uri.dart';
 import 'package:meet_your_mates/components/statefull_wrapper.dart';
 import 'package:meet_your_mates/constants.dart';
 import 'package:meet_your_mates/screens/Chat/chatSummaryList.dart';
 import 'package:meet_your_mates/screens/Home/home.dart';
-import 'package:meet_your_mates/screens/Profile/profile.dart';
 import 'package:meet_your_mates/screens/ProjectsProfessor/projectsProfessor.dart';
+import 'package:meet_your_mates/screens/ProfileProfessor/profile_professor.dart';
 import 'package:meet_your_mates/screens/SearchStudents/searchStudents.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
@@ -66,9 +67,9 @@ class _DashBoardProfessorState extends State<DashBoardProfessor> {
 
     List<Widget> _buildScreens() {
       return [
-        Profile(onTapLogOut: () {
+        ProfileProfessor(onTapLogOut: () {
           logger.d("LogOut Pressed");
-          Navigator.popAndPushNamed(context, '/login');
+          Navigator.popAndPushNamed(context, RouteUri.login);
         }),
         ChatSummaryList(),
         Home(),

@@ -32,14 +32,6 @@ class ChatSummaryView extends StatelessWidget {
         withNavBar: false, // OPTIONAL VALUE. True by default.
         pageTransitionAnimation: PageTransitionAnimation.cupertino,
       );
-      /* Navigator.push(
-        context,
-        new MaterialPageRoute(
-          builder: (context) => new ChatDetailPage(
-            selectedIndex: viewIndex,
-          ),
-        ),
-      ); */
     };
     return GestureDetector(
       onTap: chatSummaryClicked,

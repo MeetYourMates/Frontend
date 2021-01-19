@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:meet_your_mates/api/models/courseAndStudents.dart';
 import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/services/mate_provider.dart';
-import 'package:meet_your_mates/screens/Profile/otherprofile.dart';
+import 'package:meet_your_mates/screens/ProfileStudent/otherprofile_student.dart';
 import 'package:provider/provider.dart';
 
 class CourseList extends StatelessWidget {
@@ -60,7 +60,7 @@ class CourseList extends StatelessWidget {
                     Navigator.push(
                       context,
                       new MaterialPageRoute(
-                        builder: (context) => new OtherProfile(),
+                        builder: (context) => new OtherProfileStudent(),
                       ),
                     );
                   }),

@@ -6,7 +6,10 @@
    <application
         android:label="meet_your_mates"
         android:usesCleartextTraffic="true"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        >
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyCUdDT5cFgIAiMD2t-7Ao1EzCknUKWr8MI"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

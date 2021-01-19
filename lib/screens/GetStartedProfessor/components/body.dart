@@ -7,8 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/universities.dart';
-import 'package:meet_your_mates/api/services/start_service.dart';
 import 'package:meet_your_mates/api/services/professor_service.dart';
+import 'package:meet_your_mates/api/services/start_service.dart';
+import 'package:meet_your_mates/api/util/route_uri.dart';
 import 'package:meet_your_mates/components/direct_options.dart';
 import 'package:meet_your_mates/components/error.dart';
 import 'package:meet_your_mates/components/loading.dart';
@@ -43,11 +44,9 @@ class _BodyState extends State<Body> {
   /// [ValueNotifier] Value Notifier with Initial Values which only rebuilds the
   /// widgets it is used
   //ValueNotifier<List<String>> universityNames = ValueNotifier(["Select your University:"]);
-  ValueNotifier<List<String>> facultyNames =
-      ValueNotifier(["Select your Faculty:"]);
+  ValueNotifier<List<String>> facultyNames = ValueNotifier(["Select your Faculty:"]);
   List<String> universityNames = ["Select your University:"];
-  ValueNotifier<List<String>> degreeNames =
-      ValueNotifier(["Select your Degree:"]);
+  ValueNotifier<List<String>> degreeNames = ValueNotifier(["Select your Degree:"]);
   ValueNotifier<List<Map<String, dynamic>>> _choicesSubjects = ValueNotifier([
     {"id": "Test", "name": "test", "group": "test"}
   ]);
@@ -78,14 +77,12 @@ class _BodyState extends State<Body> {
   ///*===================================================================================================
   @override
   Widget build(BuildContext context) {
-    ProfessorProvider _professorProvider =
-        Provider.of<ProfessorProvider>(context, listen: false);
+    ProfessorProvider _professorProvider = Provider.of<ProfessorProvider>(context, listen: false);
     StartProvider _start = Provider.of<StartProvider>(context, listen: true);
     Future _fetchUniversities() async {
       return _memoizerUniversities.runOnce(() async {
         logger.d("_memoizerUniversities Executed");
-        Map<String, dynamic> result = await _start
-            .getStartedData(_professorProvider.professor.user.token);
+        Map<String, dynamic> result = await _start.getStartedData(_professorProvider.professor.user.token);
         return result;
       });
     }
@@ -98,10 +95,7 @@ class _BodyState extends State<Body> {
      *---------------------------------------------**/
     Row loading = Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        CircularProgressIndicator(),
-        Text("We are getting you enrolled ... Please wait")
-      ],
+      children: <Widget>[CircularProgressIndicator(), Text("We are getting you enrolled ... Please wait")],
     );
 
     /*----------------------------------------------
@@ -125,16 +119,13 @@ class _BodyState extends State<Body> {
      *@return null
      *---------------------------------------------**/
     Null Function(String degreeId) loadchoicesSubjects = (String degreeId) {
-      final Future<Map<String, dynamic>> successfulMessage =
-          _start.getSubjectData(degreeId);
+      final Future<Map<String, dynamic>> successfulMessage = _start.getSubjectData(degreeId);
       //Callback to message recieved after login auth
       successfulMessage.then((response) {
         if (response['status']) {
           _choicesSubjects.value.clear();
           _choicesSubjects.value = response['subjects'];
-          EasyLoading.dismiss().then((value) => {
-                logger.d("_choicesSubjects" + _choicesSubjects.value.toString())
-              });
+          EasyLoading.dismiss().then((value) => {logger.d("_choicesSubjects" + _choicesSubjects.value.toString())});
         } else {
           EasyLoading.dismiss().then((value) => {
                 Flushbar(
@@ -159,11 +150,7 @@ class _BodyState extends State<Body> {
       ///[For loop] and Not [ForEach] because stupid dart makes the [await call useless]
       ///and we loose [syncronicity] between the result and the code execution
       for (int i = 0; i < _subjects.length; i++) {
-        Map<String, dynamic> response = await _start.startProfessor(
-            _subjects[i],
-            _professorProvider.professor.id,
-            _university,
-            _degree);
+        Map<String, dynamic> response = await _start.startProfessor(_subjects[i], _professorProvider.professor.id, _university, _degree);
         enrollStatus = enrollStatus || response['status'];
         if (response['status']) {
           //Correctly Enrolled
@@ -206,7 +193,7 @@ class _BodyState extends State<Body> {
             if (enrollStatus) {
               EasyLoading.dismiss().then((value) {
                 logger.d("Succesfully Enrolled and Launched Dashboard");
-                Navigator.pushReplacementNamed(context, '/dashboardProfessor');
+                Navigator.pushReplacementNamed(context, RouteUri.dashboardProfessor);
               });
             } else {
               //Failed
@@ -218,8 +205,7 @@ class _BodyState extends State<Body> {
           });
         });
       } else {
-        doFlushbar(
-            "You must choose your universtity, faculty, degree and subjects first...");
+        doFlushbar("You must choose your universtity, faculty, degree and subjects first...");
       }
     }
 
@@ -238,13 +224,8 @@ class _BodyState extends State<Body> {
       onItemSelected: (value) => {
         _university = value,
         logger.d("University Changed: " + value),
-        if (_university != "Select your University:" &&
-            _university != null &&
-            _university.isNotEmpty)
-          {
-            facultyNames.value =
-                universities.getUniversityByName(_university).getFacultyNames()
-          }
+        if (_university != "Select your University:" && _university != null && _university.isNotEmpty)
+          {facultyNames.value = universities.getUniversityByName(_university).getFacultyNames()}
       },
     );
     /*----------------------------------------------
@@ -260,33 +241,24 @@ class _BodyState extends State<Body> {
         return DirectOptions(
           key: UniqueKey(),
           title: "Faculty",
-          sizeDirectSelect:
-              new Size(widget.size.width, widget.size.height * 0.08),
+          sizeDirectSelect: new Size(widget.size.width, widget.size.height * 0.08),
           sizeText: new Size(widget.size.width, widget.size.height * 0.06),
           elements: _facultNames,
-          isEnabled: (_university != "Select your University:" &&
-              _university != null &&
-              _university.isNotEmpty),
+          isEnabled: (_university != "Select your University:" && _university != null && _university.isNotEmpty),
           onItemSelected: (value) => {
             _faculty = value,
             logger.d("Faculty Changed: " + value),
             _choicesSubjects.value.clear(),
-            if (_faculty != "Select your Faculty:" &&
-                _faculty != null &&
-                _faculty.isNotEmpty)
+            if (_faculty != "Select your Faculty:" && _faculty != null && _faculty.isNotEmpty)
               {
                 //Clearing current degreeList and adding new Data
-                degreeNames.value = universities
-                    .getUniversityByName(_university)
-                    .getFacultyByName(_faculty)
-                    .getDegreeNames()
+                degreeNames.value = universities.getUniversityByName(_university).getFacultyByName(_faculty).getDegreeNames()
               }
           },
         );
       },
       valueListenable: facultyNames,
-      child: ErrorShow(
-          errorText: "Unexpected error occured, Please Restart the App"),
+      child: ErrorShow(errorText: "Unexpected error occured, Please Restart the App"),
     );
     /*----------------------------------------------
      **              degreeDirectOptions
@@ -300,40 +272,29 @@ class _BodyState extends State<Body> {
         // is updated.
         return DirectOptions(
           title: "Degree",
-          sizeDirectSelect:
-              new Size(widget.size.width, widget.size.height * 0.08),
+          sizeDirectSelect: new Size(widget.size.width, widget.size.height * 0.08),
           sizeText: new Size(widget.size.width, widget.size.height * 0.06),
           elements: _degreeNames,
-          isEnabled: (_faculty != "Select your Faculty:" &&
-              _faculty != null &&
-              _faculty.isNotEmpty),
+          isEnabled: (_faculty != "Select your Faculty:" && _faculty != null && _faculty.isNotEmpty),
           onItemSelected: (value) => {
             _degree = value,
-            if (_degree != "Select your Degree:" &&
-                _degree != null &&
-                _degree.isNotEmpty)
+            if (_degree != "Select your Degree:" && _degree != null && _degree.isNotEmpty)
               {
                 EasyLoading.show(
                   status: 'loading...',
                   maskType: EasyLoadingMaskType.black,
                 ),
                 //Here we make a request to server for Subjects
-                loadchoicesSubjects(universities
-                    .getUniversityByName(_university)
-                    .getFacultyByName(_faculty)
-                    .getDegreeByName(_degree)
-                    .id)
+                loadchoicesSubjects(universities.getUniversityByName(_university).getFacultyByName(_faculty).getDegreeByName(_degree).id)
               }
           },
         );
       },
       valueListenable: degreeNames,
-      child: ErrorShow(
-          errorText: "Unexpected error occured, Please Restart the App"),
+      child: ErrorShow(errorText: "Unexpected error occured, Please Restart the App"),
     );
     Widget subjectMultipleOption = ValueListenableBuilder(
-      builder: (BuildContext context, List<Map<String, dynamic>> _subjsList,
-          Widget child) {
+      builder: (BuildContext context, List<Map<String, dynamic>> _subjsList, Widget child) {
         // This builder will only get called when the _counter
         // is updated.
         bool isActive = validateAll();
@@ -346,16 +307,14 @@ class _BodyState extends State<Body> {
               title: "Subjects",
               elements: _subjsList,
               onSelected: (value) => {_subjects = value},
-              sizeMultiSelect:
-                  new Size(widget.size.width, widget.size.height * 0.08),
+              sizeMultiSelect: new Size(widget.size.width, widget.size.height * 0.08),
               sizeText: new Size(widget.size.width, widget.size.height * 0.06),
             ),
           ),
         );
       },
       valueListenable: _choicesSubjects,
-      child: ErrorShow(
-          errorText: "Unexpected error occured, Please Restart the App"),
+      child: ErrorShow(errorText: "Unexpected error occured, Please Restart the App"),
     );
     //Local Temperory Variable
     //List<String> temp = <String>[];
@@ -384,9 +343,7 @@ class _BodyState extends State<Body> {
                 //universityNames.value.remove("Select your University:");
                 logger.d("Load Universities: " + universityNames.toString());
               } else {
-                return ErrorShow(
-                    errorText:
-                        "Unexpected error. Unable to Retrieve Universities");
+                return ErrorShow(errorText: "Unexpected error. Unable to Retrieve Universities");
               }
               return SafeArea(
                 child: Background(
@@ -394,8 +351,7 @@ class _BodyState extends State<Body> {
                     physics: NeverScrollableScrollPhysics(),
                     child: Container(
                       alignment: Alignment.center,
-                      constraints: BoxConstraints.tightForFinite(
-                          width: 600, height: widget.size.height * 0.95),
+                      constraints: BoxConstraints.tightForFinite(width: 600, height: widget.size.height * 0.95),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
@@ -431,8 +387,7 @@ class _BodyState extends State<Body> {
                             height: widget.size.height * 0.01,
                             child: FittedBox(
                               fit: BoxFit.contain,
-                              child:
-                                  SizedBox(height: 6, width: widget.size.width),
+                              child: SizedBox(height: 6, width: widget.size.width),
                             ),
                           ),
                           /**============================================
@@ -441,13 +396,12 @@ class _BodyState extends State<Body> {
                           SizedBox(
                             width: widget.size.width,
                             height: widget.size.height * 0.08,
-                            child:
-                                _start.enrolledStatus == Status.GettingEnrolled
-                                    ? loading
-                                    : RoundedButton(
-                                        text: "START",
-                                        press: doStart,
-                                      ),
+                            child: _start.enrolledStatus == Status.GettingEnrolled
+                                ? loading
+                                : RoundedButton(
+                                    text: "START",
+                                    press: doStart,
+                                  ),
                           ),
                         ],
                       ),

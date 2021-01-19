@@ -13,6 +13,7 @@ import 'package:meet_your_mates/api/services/auth_service.dart';
 import 'package:meet_your_mates/api/services/professor_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/api/services/user_service.dart';
+import 'package:meet_your_mates/api/util/route_uri.dart';
 //Components
 import 'package:meet_your_mates/components/already_have_an_account_check.dart';
 import 'package:meet_your_mates/components/rounded_button.dart';
@@ -62,7 +63,7 @@ class _LoginState extends State<Login> {
         child: GestureDetector(
       onTap: () {
         //Future
-        Navigator.pushReplacementNamed(context, '/passwordRecovery');
+        Navigator.pushReplacementNamed(context, RouteUri.passwordRecovery);
       },
       child: Text(
         "Forgot password?",
@@ -95,33 +96,33 @@ class _LoginState extends State<Login> {
                 Student student = response['student'];
                 //Provider.of<StudentProvider>(context, listen: false).setPassword(student.user.password);
                 Provider.of<StudentProvider>(context, listen: false).setStudentWithUserWithPassword(student);
-                Navigator.pushReplacementNamed(context, '/dashboardStudent');
+                Navigator.pushReplacementNamed(context, RouteUri.dashboardStudent);
                 logger.d("Logged In Succesfull!");
               } else if (response['status'] == 1) {
                 //Not Validated
                 User user = response['user'];
                 //Provider.of<StudentProvider>(context, listen: false).setPassword(student.user.password);
                 Provider.of<UserProvider>(context, listen: false).setUser(user);
-                Navigator.pushReplacementNamed(context, '/validate');
+                Navigator.pushReplacementNamed(context, RouteUri.validate);
                 logger.d("Logged In Not Validated!");
               } else if (response['status'] == 2) {
                 //Let's Get Started not completed
                 Student student = response['student'];
                 Provider.of<StudentProvider>(context, listen: false).setStudentWithUserWithPassword(student);
-                Navigator.pushReplacementNamed(context, '/getStartedStudent');
+                Navigator.pushReplacementNamed(context, RouteUri.getStartedStudent);
                 logger.d("Logged In Let's Get Started not completed!");
               } else if (response['status'] == 3) {
                 //Validated and getStarted completed Dashboard Professor
                 Professor professor = response['professor'];
                 //Provider.of<StudentProvider>(context, listen: false).setPassword(student.user.password);
                 Provider.of<ProfessorProvider>(context, listen: false).setProfessorWithUserWithPassword(professor);
-                Navigator.pushReplacementNamed(context, '/dashboardProfessor');
+                Navigator.pushReplacementNamed(context, RouteUri.dashboardProfessor);
                 logger.d("Logged In dashboard Professor!");
               } else if (response['status'] == 4) {
                 //Validated but GetStarted Professor not Finished
                 Professor professor = response['professor'];
                 Provider.of<ProfessorProvider>(context, listen: false).setProfessorWithUserWithPassword(professor);
-                Navigator.pushReplacementNamed(context, '/getStartedProfessor');
+                Navigator.pushReplacementNamed(context, RouteUri.getStartedProfessor);
                 logger.d("Logged In getStartedProfessor not completed!");
               } else {
                 logger.d("Logged In Failed: " + response['message'].toString());
@@ -161,13 +162,13 @@ class _LoginState extends State<Login> {
               //Login Correct
               Student student = response2['student'];
               Provider.of<StudentProvider>(context, listen: false).setStudentWithUser(student);
-              Navigator.pushReplacementNamed(context, '/dashboard');
+              Navigator.pushReplacementNamed(context, RouteUri.dashboardStudent);
               logger.d("Logged In Succesfull!");
             } else if (response2['status'] == 2) {
               //Let's Get Started not completed
               Student student = response2['student'];
               Provider.of<StudentProvider>(context, listen: false).setStudentWithUser(student);
-              Navigator.pushReplacementNamed(context, '/getStarted');
+              Navigator.pushReplacementNamed(context, RouteUri.getStartedStudent);
               logger.d("Logged In Let's Get Started not completed!");
             } else {
               logger.d("Logged In Failed: " + response2['message'].toString());
@@ -188,13 +189,13 @@ class _LoginState extends State<Login> {
               //Login Correct
               Student student = response2['student'];
               Provider.of<StudentProvider>(context, listen: false).setStudentWithUser(student);
-              Navigator.pushReplacementNamed(context, '/dashboard');
+              Navigator.pushReplacementNamed(context, RouteUri.dashboardStudent);
               logger.d("Logged In Succesfull!");
             } else if (response2['status'] == 2) {
               //Let's Get Started not completed
               Student student = response2['student'];
               Provider.of<StudentProvider>(context, listen: false).setStudentWithUser(student);
-              Navigator.pushReplacementNamed(context, '/getStarted');
+              Navigator.pushReplacementNamed(context, RouteUri.dashboardStudent);
               logger.d("Logged In Let's Get Started not completed!");
             } else {
               logger.d("Logged In Failed: " + response2['message'].toString());
@@ -307,7 +308,7 @@ class _LoginState extends State<Login> {
                           fit: BoxFit.contain,
                           child: AlreadyHaveAnAccountCheck(
                             press: () {
-                              Navigator.pushReplacementNamed(context, '/register');
+                              Navigator.pushReplacementNamed(context, RouteUri.register);
                             },
                           ),
                         ),
