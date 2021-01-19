@@ -1,6 +1,6 @@
+import "dart:io";
 import 'dart:math';
 import 'dart:ui';
-import "dart:io";
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
@@ -40,6 +40,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     inputTextStyle = inputTextStyle ?? TextStyle(fontSize: 16.0, color: Colors.black87);
     super.initState();
   }
+
   @override
   void dispose() {
     super.dispose();
@@ -47,77 +48,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
   Logger logger = new Logger(level: Level.error);
 //
-  void showModal() {
-    showModalBottomSheet(
-        context: context,
-        builder: (context) {
-          Size size = MediaQuery.of(context).size;
-          return Container(
-            //constraints:
-            //BoxConstraints.tightForFinite(width: size.width, height: size.height * 0.5),
-            color: Color(0xff737373),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(topRight: Radius.circular(20), topLeft: Radius.circular(20)),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Expanded(
-                    flex: 2,
-                    child: SizedBox(
-                      height: 4,
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Center(
-                      child: Container(
-                        width: size.width * 0.30,
-                        color: Colors.grey.shade200,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: SizedBox(
-                      height: 1,
-                    ),
-                  ),
-                  Flexible(
-                    flex: 96,
-                    child: ListView.builder(
-                      itemCount: menuItems.length,
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return Container(
-                          //padding: EdgeInsets.only(top: 10, bottom: 10),
-                          child: ListTile(
-                            leading: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(30),
-                                color: menuItems[index].color.shade50,
-                              ),
-                              child: Icon(
-                                menuItems[index].icons,
-                                color: menuItems[index].color.shade400,
-                              ),
-                            ),
-                            title: Text(menuItems[index].text),
-                            onTap: sendImage,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +66,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       print("Message Sent: " + value);
       socketProvider.sendPrivateMessage(_studentProvider.student.user.id, chatUser.id, value, widget.selectedIndex, null);
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-    };
+    }
 
     Future<void> sendImage() async {
       Random rand = new Random();
@@ -146,19 +76,88 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       if (result != null) {
         File _imageFile = File(result.files.single.path);
         imageProvider.uploadPhoto(_imageFile.path, id).then(
-                (res) => {
-                  socketProvider.sendPrivateMessage(_studentProvider.student.user.id, chatUser.id, null, widget.selectedIndex, res),
+              (res) => {
+                socketProvider.sendPrivateMessage(_studentProvider.student.user.id, chatUser.id, null, widget.selectedIndex, res),
                 _scrollController.jumpTo(_scrollController.position.maxScrollExtent),
-                  logger.d("Sent image")
-
-        });
-        int c = 1;
+                logger.d("Sent image")
+              },
+            );
       } else {
         // User canceled the picker
       }
     }
 
-
+    void showModal() {
+      showModalBottomSheet(
+          context: context,
+          builder: (context) {
+            Size size = MediaQuery.of(context).size;
+            return Container(
+              //constraints:
+              //BoxConstraints.tightForFinite(width: size.width, height: size.height * 0.5),
+              color: Color(0xff737373),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(topRight: Radius.circular(20), topLeft: Radius.circular(20)),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 2,
+                      child: SizedBox(
+                        height: 4,
+                      ),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: Center(
+                        child: Container(
+                          width: size.width * 0.30,
+                          color: Colors.grey.shade200,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: SizedBox(
+                        height: 1,
+                      ),
+                    ),
+                    Flexible(
+                      flex: 96,
+                      child: ListView.builder(
+                        itemCount: menuItems.length,
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          return Container(
+                            //padding: EdgeInsets.only(top: 10, bottom: 10),
+                            child: ListTile(
+                              leading: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(30),
+                                  color: menuItems[index].color.shade50,
+                                ),
+                                child: Icon(
+                                  menuItems[index].icons,
+                                  color: menuItems[index].color.shade400,
+                                ),
+                              ),
+                              title: Text(menuItems[index].text),
+                              onTap: sendImage,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          });
+    }
 
     /**========================================================================
      *                CHAT VIEW FOR A CERTAIN USER!
