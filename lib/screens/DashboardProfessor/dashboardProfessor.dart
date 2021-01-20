@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:meet_your_mates/api/services/appbar_service.dart';
 import 'package:meet_your_mates/api/services/professor_service.dart';
 import 'package:meet_your_mates/api/services/socket_service.dart';
 import 'package:meet_your_mates/api/util/route_uri.dart';
@@ -29,14 +30,14 @@ class _DashBoardProfessorState extends State<DashBoardProfessor> {
   var logger = Logger(level: Level.debug);
   List usersList = [];
   PageController _pageController;
+  ProfessorProvider _professorProvider;
+  AppBarProvider _appBarProvider;
+  ValueNotifier<String> listentabletTitle = ValueNotifier<String>("Meets Your Mates");
   //SocketService socketService;
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
-    //Socket Start
-    //socketService.createSocketConnection();
-    //socketService = Injector.instance.get<SocketService>();
   }
 
   @override
@@ -50,19 +51,34 @@ class _DashBoardProfessorState extends State<DashBoardProfessor> {
   ///=======================================================================================================================**/
   @override
   Widget build(BuildContext context) {
-    ProfessorProvider _professorProvider = Provider.of<ProfessorProvider>(context);
+    _professorProvider = Provider.of<ProfessorProvider>(context);
+    _appBarProvider = Provider.of<AppBarProvider>(context);
+    PersistentTabController _controller;
+    _controller = PersistentTabController(initialIndex: 2);
+    bool _hideNavBar = false;
 
-    //StudentProvider _professorProvider = Provider.of<StudentProvider>(context);
-    //SocketService socketService = new SocketService();
+    /// Opens Socket Connection for User Chat
     Future<void> openSocketConnection() async {
       Provider.of<SocketProvider>(context, listen: true)
           .createSocketConnection(_professorProvider.professor.user.token, _professorProvider.professor.user.id);
     }
 
-    PersistentTabController _controller;
-    _controller = PersistentTabController(initialIndex: 0);
-    bool _hideNavBar = false;
+    /// Listens to external events from other screens, when the title changes
+    /// in AppBarService, executes this function.
+    _appBarProvider.addListener(() {
+      listentabletTitle.value = _appBarProvider.title;
+      logger.i("Changing appBar Title!");
+    });
 
+    ///Listens to Navigation Bottom Bar, when user taps. AppBar Title Changes.
+    _controller.addListener(() {
+      List<String> _list = ["Profile", "Chat", "Home", "Projects", "Mates"];
+      listentabletTitle.value = _list[_controller.index];
+    });
+
+    /// Build Screens for the Bottom Navigation Bar, remember this screens are only built once
+    /// After than, they are reused. Thus if the screen is a statefull widget, anything
+    /// that is outside the build will only be executed once.
     List<Widget> _buildScreens() {
       return [
         ProfileProfessor(onTapLogOut: () {
@@ -76,6 +92,7 @@ class _DashBoardProfessorState extends State<DashBoardProfessor> {
       ];
     }
 
+    /// Bottom Navigation Bar Items, such as the icon and the text.
     List<PersistentBottomNavBarItem> _navBarsItems() {
       return [
         PersistentBottomNavBarItem(
@@ -124,16 +141,27 @@ class _DashBoardProfessorState extends State<DashBoardProfessor> {
       child: Scaffold(
         appBar: PreferredSize(
           preferredSize: Size.fromHeight(kAppBarHeight), // here the desired height
-          child: AppBar(
-            title: Text("Meet Your Mates"),
-            backgroundColor: Colors.cyan,
-            actions: <Widget>[
-              IconButton(
-                  icon: Icon(Icons.notifications_none_rounded),
-                  onPressed: () {
-                    //showSearch(context: context, delegate: DataSearch(listWords));
-                  })
-            ],
+          child: ValueListenableBuilder(
+            builder: (BuildContext context, String value, Widget child) {
+              // This builder will only get called when the _counter
+              // is updated.
+              return AppBar(
+                title: Text(value),
+                backgroundColor: Colors.cyan,
+                actions: <Widget>[
+                  IconButton(
+                      icon: Icon(Icons.notifications_none_rounded),
+                      onPressed: () {
+                        //showSearch(context: context, delegate: DataSearch(listWords));
+                      })
+                ],
+              );
+            },
+            valueListenable: listentabletTitle,
+            // The child parameter is most helpful if the child is
+            // expensive to build and does not depend on the value from
+            // the notifier.
+            child: Container(),
           ),
         ),
         body: PersistentTabView(

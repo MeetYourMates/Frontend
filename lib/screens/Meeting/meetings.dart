@@ -2,6 +2,7 @@ import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/meeting.dart';
+import 'package:meet_your_mates/api/services/appbar_service.dart';
 //Models
 import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/components/error.dart';
@@ -107,7 +108,10 @@ class _MeetingsState extends State<Meetings> {
               ),
               withNavBar: true, // OPTIONAL VALUE. True by default.
               pageTransitionAnimation: PageTransitionAnimation.cupertino,
-            );
+            ).then((value) => {
+                  //? To set the original Launching Screen appBarTitle, in this case we are coming back to meetings
+                  Provider.of<AppBarProvider>(context, listen: false).setTitle("Meetings")
+                });
           },
           child: Icon(Icons.add),
           backgroundColor: kPrimaryColor,

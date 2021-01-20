@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:meet_your_mates/api/services/appbar_service.dart';
 import 'package:meet_your_mates/api/services/socket_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/api/util/route_uri.dart';
 import 'package:meet_your_mates/components/statefull_wrapper.dart';
 import 'package:meet_your_mates/constants.dart';
 import 'package:meet_your_mates/screens/Chat/chatSummaryList.dart';
-import 'package:meet_your_mates/screens/Meeting/meetings.dart';
+import 'package:meet_your_mates/screens/Home/home.dart';
 import 'package:meet_your_mates/screens/ProfileStudent/profile_student.dart';
 import 'package:meet_your_mates/screens/Projects/projects.dart';
 import 'package:meet_your_mates/screens/SearchMates/searchMates.dart';
@@ -34,11 +35,11 @@ class _DashBoardStudentState extends State<DashBoardStudent> {
   void initState() {
     super.initState();
     _pageController = PageController();
-    //Socket Start
-    //socketService.createSocketConnection();
-    //socketService = Injector.instance.get<SocketService>();
   }
 
+  ValueNotifier<String> listentabletTitle = ValueNotifier<String>("Meets Your Mates");
+  AppBarProvider _appBarProvider;
+  StudentProvider _studentProvider;
   @override
   void dispose() {
     _pageController.dispose();
@@ -50,19 +51,34 @@ class _DashBoardStudentState extends State<DashBoardStudent> {
   ///=======================================================================================================================**/
   @override
   Widget build(BuildContext context) {
-    StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
-
-    //StudentProvider _studentProvider = Provider.of<StudentProvider>(context);
-    //SocketService socketService = new SocketService();
-    Future<void> openSocketConnection() async {
-      Provider.of<SocketProvider>(context, listen: true)
-          .createSocketConnection(_studentProvider.student.user.token, _studentProvider.student.user.id);
-    }
-
+    _studentProvider = Provider.of<StudentProvider>(context);
+    _appBarProvider = Provider.of<AppBarProvider>(context, listen: true);
     PersistentTabController _controller;
     _controller = PersistentTabController(initialIndex: 2);
     bool _hideNavBar = false;
 
+    /// Opens Socket Connection for User Chat
+    Future<void> openSocketConnection() async {
+      Provider.of<SocketProvider>(context, listen: false)
+          .createSocketConnection(_studentProvider.student.user.token, _studentProvider.student.user.id);
+    }
+
+    /// Listens to external events from other screens, when the title changes
+    /// in AppBarService, executes this function.
+    _appBarProvider.addListener(() {
+      listentabletTitle.value = _appBarProvider.title;
+      logger.i("Changing appBar Title!");
+    });
+
+    ///Listens to Navigation Bottom Bar, when user taps. AppBar Title Changes.
+    _controller.addListener(() {
+      List<String> _list = ["Profile", "Chat", "Home", "Projects", "Mates"];
+      listentabletTitle.value = _list[_controller.index];
+    });
+
+    /// Build Screens for the Bottom Navigation Bar, remember this screens are only built once
+    /// After than, they are reused. Thus if the screen is a statefull widget, anything
+    /// that is outside the build will only be executed once.
     List<Widget> _buildScreens() {
       return [
         ProfileStudent(onTapLogOut: () {
@@ -70,15 +86,16 @@ class _DashBoardStudentState extends State<DashBoardStudent> {
           Navigator.popAndPushNamed(context, RouteUri.login);
         }),
         ChatSummaryList(),
-        Meetings(
+        /* Meetings(
           teamId: '600069c5e508bd526c8d2b71',
-        ),
-        /* Home(), */
+        ), */
+        Home(),
         Projects(),
         SearchMates()
       ];
     }
 
+    /// Bottom Navigation Bar Items, such as the icon and the text.
     List<PersistentBottomNavBarItem> _navBarsItems() {
       return [
         PersistentBottomNavBarItem(
@@ -127,16 +144,27 @@ class _DashBoardStudentState extends State<DashBoardStudent> {
       child: Scaffold(
         appBar: PreferredSize(
           preferredSize: Size.fromHeight(kAppBarHeight), // here the desired height
-          child: AppBar(
-            title: Text("Meet Your Mates"),
-            backgroundColor: Colors.cyan,
-            actions: <Widget>[
-              IconButton(
-                  icon: Icon(Icons.notifications_none_rounded),
-                  onPressed: () {
-                    //showSearch(context: context, delegate: DataSearch(listWords));
-                  })
-            ],
+          child: ValueListenableBuilder(
+            builder: (BuildContext context, String value, Widget child) {
+              // This builder will only get called when the _counter
+              // is updated.
+              return AppBar(
+                title: Text(value),
+                backgroundColor: Colors.cyan,
+                actions: <Widget>[
+                  IconButton(
+                      icon: Icon(Icons.notifications_none_rounded),
+                      onPressed: () {
+                        //showSearch(context: context, delegate: DataSearch(listWords));
+                      })
+                ],
+              );
+            },
+            valueListenable: listentabletTitle,
+            // The child parameter is most helpful if the child is
+            // expensive to build and does not depend on the value from
+            // the notifier.
+            child: Container(),
           ),
         ),
         body: PersistentTabView(

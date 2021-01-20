@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/meeting.dart';
+import 'package:meet_your_mates/api/services/appbar_service.dart';
 //Models
 import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/components/rounded_button.dart';
@@ -29,6 +30,13 @@ class _CreateMeetingState extends State<CreateMeeting> {
   /// [logger] to logg all of the logs in console prettily!
   var logger = Logger(level: Level.debug);
   String dateTimeVal;
+  @override
+  void initState() {
+    super.initState();
+    new Future.delayed(Duration.zero, () {
+      Provider.of<AppBarProvider>(context, listen: false).setTitle("New Meeting");
+    });
+  }
 
   /// [Reactive Form]
   final form = FormGroup({
@@ -85,6 +93,7 @@ class _CreateMeetingState extends State<CreateMeeting> {
 
     Size size = MediaQuery.of(context).size;
     size = new Size(size.width <= 400 ? size.width : 400, size.height);
+
     Widget _createReunionWidget = Center(
       child: SingleChildScrollView(
         physics: NeverScrollableScrollPhysics(),
@@ -96,17 +105,6 @@ class _CreateMeetingState extends State<CreateMeeting> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                SizedBox(
-                  width: size.width,
-                  height: size.height * 0.10,
-                  child: FittedBox(
-                    fit: BoxFit.contain,
-                    child: Text(
-                      "New Reunion",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF004B55)),
-                    ),
-                  ),
-                ),
                 SizedBox(
                   width: size.width,
                   height: size.height * 0.12,
@@ -237,7 +235,6 @@ class _CreateMeetingState extends State<CreateMeeting> {
         ),
       ),
     );
-
     return SafeArea(
       child: Scaffold(
         body: Background(
