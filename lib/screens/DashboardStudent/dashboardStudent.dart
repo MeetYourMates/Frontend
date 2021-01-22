@@ -7,7 +7,7 @@ import 'package:meet_your_mates/api/util/route_uri.dart';
 import 'package:meet_your_mates/components/statefull_wrapper.dart';
 import 'package:meet_your_mates/constants.dart';
 import 'package:meet_your_mates/screens/Chat/chatSummaryList.dart';
-import 'package:meet_your_mates/screens/Home/home.dart';
+import 'package:meet_your_mates/screens/Meeting/meetings.dart';
 import 'package:meet_your_mates/screens/ProfileStudent/profile_student.dart';
 import 'package:meet_your_mates/screens/Projects/projects.dart';
 import 'package:meet_your_mates/screens/SearchMates/searchMates.dart';
@@ -28,7 +28,7 @@ class DashBoardStudent extends StatefulWidget {
 
 class _DashBoardStudentState extends State<DashBoardStudent> {
   List usersList = [];
-  var logger = Logger(level: Level.debug);
+  Logger logger = Logger(level: Level.debug);
   PageController _pageController;
   //SocketService socketService;
   @override
@@ -86,10 +86,10 @@ class _DashBoardStudentState extends State<DashBoardStudent> {
           Navigator.popAndPushNamed(context, RouteUri.login);
         }),
         ChatSummaryList(),
-        /* Meetings(
+        Meetings(
           teamId: '600069c5e508bd526c8d2b71',
-        ), */
-        Home(),
+        ),
+        /* Home(), */
         Projects(),
         SearchMates()
       ];
