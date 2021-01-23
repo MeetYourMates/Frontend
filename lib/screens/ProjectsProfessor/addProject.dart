@@ -13,7 +13,11 @@ import 'package:meet_your_mates/screens/ProjectsProfessor/components/background.
 import 'package:meet_your_mates/screens/ProjectsProfessor/components/dropDown.dart';
 
 class AddProject extends StatefulWidget {
-  const AddProject();
+  final List<CourseProjects> courseProjects;
+
+  const AddProject({
+    this.courseProjects,
+  });
 
   @override
   _AddProjectState createState() => _AddProjectState();
@@ -22,6 +26,8 @@ class AddProject extends StatefulWidget {
 class _AddProjectState extends State<AddProject> {
   String _myActivity;
   String _myActivityResult;
+
+  ProfessorProvider _professorProvider;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -122,18 +128,11 @@ class _AddProjectState extends State<AddProject> {
             });
           },
           dataSource: [
-            {
-              "display": "DummySubject1",
-              "value": "DummySubject1",
-            },
-            {
-              "display": "DummySubject2",
-              "value": "DummySubject2",
-            },
-            {
-              "display": "DummySubject3",
-              "value": "DummySubject3",
-            },
+            for (CourseProjects course in widget.courseProjects)
+              {
+                "display": course.subjectName,
+                "value": course.subjectName,
+              }
           ],
           textField: 'display',
           valueField: 'value',
