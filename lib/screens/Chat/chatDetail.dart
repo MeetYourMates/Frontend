@@ -77,7 +77,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         File _imageFile = File(result.files.single.path);
         imageProvider.uploadPhoto(_imageFile.path, id).then(
               (res) => {
-                socketProvider.sendPrivateMessage(_studentProvider.student.user.id, chatUser.id, null, widget.selectedIndex, res),
+                socketProvider.sendPrivateMessage(_studentProvider.student.user.id, chatUser.id, "this message has an image", widget.selectedIndex, res),
                 _scrollController.jumpTo(_scrollController.position.maxScrollExtent),
                 logger.d("Sent image")
               },

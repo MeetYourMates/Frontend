@@ -8,7 +8,18 @@ class ChatBubble extends StatefulWidget {
   ChatBubble({@required this.chatMessage, @required this.myId});
   @override
   _ChatBubbleState createState() => _ChatBubbleState();
+
+  Widget buildBubble () {
+    if (this.chatMessage.image != null) {
+      return Image.network(this.chatMessage.image);
+    }
+    else {
+      return Text(this.chatMessage.text);
+    }
+  }
 }
+
+
 
 class _ChatBubbleState extends State<ChatBubble> {
   @override
@@ -27,7 +38,7 @@ class _ChatBubbleState extends State<ChatBubble> {
                 (widget.myId == widget.chatMessage.senderId ? Colors.grey.shade200 : Colors.white),
           ),
           padding: EdgeInsets.all(10),
-          child: Text(widget.chatMessage.text),
+          child: widget.buildBubble(),
         ),
       ),
     );
