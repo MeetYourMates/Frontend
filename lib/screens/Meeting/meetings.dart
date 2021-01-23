@@ -1,4 +1,5 @@
 import 'package:async/async.dart';
+import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/meeting.dart';
@@ -76,7 +77,7 @@ class _MeetingsState extends State<Meetings> {
                           title: Text(meetings[index].name),
                           isThreeLine: true,
                           subtitle: Text(meetings[index].description),
-                          trailing: Text(meetings[index].date),
+                          trailing: Text(new DateFormat('hh:mm dd-MM-y').format(DateTime.fromMillisecondsSinceEpoch(meetings[index].date))),
                           onTap: () {
                             //on Tap of this
                             logger.d("Pressed Meeting");

@@ -2,7 +2,7 @@ class Meeting {
   String id;
   String name;
   String description;
-  String date;
+  int date;
   List<num> location;
   Meeting({this.id, this.name, this.description, this.date, this.location});
   factory Meeting.fromJson(Map<String, dynamic> responseData) {

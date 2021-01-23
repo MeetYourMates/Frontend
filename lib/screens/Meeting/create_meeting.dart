@@ -1,6 +1,8 @@
+import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:latlong/latlong.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/meeting.dart';
 import 'package:meet_your_mates/api/services/appbar_service.dart';
@@ -31,6 +33,7 @@ class _CreateMeetingState extends State<CreateMeeting> {
   /// [logger] to logg all of the logs in console prettily!
   var logger = Logger(level: Level.debug);
   String dateTimeVal;
+  LatLng location;
   @override
   void initState() {
     super.initState();
@@ -61,32 +64,79 @@ class _CreateMeetingState extends State<CreateMeeting> {
     // ignore: unused_element
     Future<Meeting> _addMeeting() async {
       logger.d("_memoizer Reunions Executed");
-      meeting.date = dateTimeVal;
+      //meeting.date = dateTimeVal;
       Meeting result = await _studentProvider.createMeeting(widget.teamId, meeting);
       return result;
     }
 
     void createMeeting() {
       //Check Form
-      if (form.valid && dateTimeVal != null) {
+      if (form.valid) {
         //Create Meeting --> Future
-        EasyLoading.show(
-          status: 'loading...',
-          maskType: EasyLoadingMaskType.black,
-        ).then((value) {
-          _addMeeting().then((resultMeeting) {
-            //If succesfull run onCreated
-            EasyLoading.dismiss().then((value) {
-              if (resultMeeting.id != null) {
-                meeting = resultMeeting;
-                widget.onCreated(resultMeeting);
+        if (dateTimeVal != null) {
+          if (this.location != null) {
+            //All checked
+            //"2021-01-23 09:03"
+            DateTime now = DateTime.parse(dateTimeVal);
+            meeting.date = now.millisecondsSinceEpoch;
+            //this._latitude, this._longitude
+            //-90.0,90.0,_latitude && -180.0,180.0,_longitude Limits
+            meeting.location = [this.location.latitude, this.location.longitude];
+            EasyLoading.show(
+              status: 'loading...',
+              maskType: EasyLoadingMaskType.black,
+            ).then((value) {
+              _addMeeting().then((resultMeeting) {
+                //If succesfull run onCreated
+                EasyLoading.dismiss().then((value) {
+                  if (resultMeeting.id != null) {
+                    meeting = resultMeeting;
+                    widget.onCreated(resultMeeting);
+                  } else {
+                    toast("Please try creating meeting again...");
+                  }
+                });
+                //Else show user error, unable to create-->Try again!
+              });
+            });
+          } else {
+            showOkCancelAlertDialog(
+              context: context,
+              title: 'Create Meeting',
+              message: 'Do wish to create a meeting without location?',
+              okLabel: 'Yes',
+              cancelLabel: 'No',
+              defaultType: OkCancelAlertDefaultType.cancel,
+            ).then((result) {
+              logger.i(result);
+              if (OkCancelResult.ok == result) {
+                // User wants to use Create the Meeting without location
+                EasyLoading.show(
+                  status: 'loading...',
+                  maskType: EasyLoadingMaskType.black,
+                ).then((value) {
+                  _addMeeting().then((resultMeeting) {
+                    //If succesfull run onCreated
+                    EasyLoading.dismiss().then((value) {
+                      if (resultMeeting.id != null) {
+                        meeting = resultMeeting;
+                        widget.onCreated(resultMeeting);
+                        Navigator.of(context).pop();
+                      } else {
+                        toast("Please try creating meeting again...");
+                      }
+                    });
+                    //Else show user error, unable to create-->Try again!
+                  });
+                });
               } else {
-                toast("Please try creating meeting again...");
+                // Let User pick a location
               }
             });
-            //Else show user error, unable to create-->Try again!
-          });
-        });
+          }
+        } else {
+          toast("Please Pick a date and time...");
+        }
       } else {
         toast("Please form completly...");
       }
@@ -100,12 +150,11 @@ class _CreateMeetingState extends State<CreateMeeting> {
         physics: NeverScrollableScrollPhysics(),
         child: Container(
           alignment: Alignment.center,
-          constraints: BoxConstraints.tightForFinite(width: 400, height: size.height * 0.95),
+          /* constraints: BoxConstraints.loose(new), */
           child: ReactiveForm(
             formGroup: this.form,
             child: Column(
-              mainAxisAlignment = MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              /* crossAxisAlignment: CrossAxisAlignment.center, */
               children: <Widget>[
                 SizedBox(
                   width: size.width,
@@ -150,18 +199,19 @@ class _CreateMeetingState extends State<CreateMeeting> {
                   child: DateTimePicker(
                     type: DateTimePickerType.dateTimeSeparate,
                     dateMask: 'd MMM, yyyy',
+                    //"2021-01-23 09:03"
                     initialValue: DateTime.now().toString(),
                     firstDate: DateTime(2021),
                     lastDate: DateTime(2100),
                     icon: Icon(Icons.event),
                     dateLabelText: 'Date',
-                    timeLabelText: "Hour",
-                    onChanged: (val) => {dateTimeVal = val},
+                    timeLabelText: "Time",
+                    onChanged: (val) => {logger.i(val), dateTimeVal = val},
                     validator: (val) {
                       dateTimeVal = val;
                       return null;
                     },
-                    onSaved: (val) => {dateTimeVal = val},
+                    onSaved: (val) => {logger.i(val), dateTimeVal = val},
                   ),
                 ),
                 SizedBox(
@@ -187,6 +237,7 @@ class _CreateMeetingState extends State<CreateMeeting> {
                             onLocationPicked: (location) {
                               // Only called if the user selected a location
                               logger.i("Location Picked: " + location.toString());
+                              this.location = location;
                             },
                           ),
                           withNavBar: false, // OPTIONAL VALUE. True by default.
