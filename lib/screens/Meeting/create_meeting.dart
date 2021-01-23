@@ -104,6 +104,7 @@ class _CreateMeetingState extends State<CreateMeeting> {
           child: ReactiveForm(
             formGroup: this.form,
             child: Column(
+              mainAxisAlignment = MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 SizedBox(
@@ -182,7 +183,12 @@ class _CreateMeetingState extends State<CreateMeeting> {
                         logger.d("Pick a location pressed...");
                         pushNewScreen(
                           context,
-                          screen: /* MapGoogle() */ MapLeaflet(),
+                          screen: MapLeaflet(
+                            onLocationPicked: (location) {
+                              // Only called if the user selected a location
+                              logger.i("Location Picked: " + location.toString());
+                            },
+                          ),
                           withNavBar: false, // OPTIONAL VALUE. True by default.
                           pageTransitionAnimation: PageTransitionAnimation.cupertino,
                         );
