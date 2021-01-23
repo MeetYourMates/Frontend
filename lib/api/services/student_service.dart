@@ -151,16 +151,17 @@ class StudentProvider with ChangeNotifier {
   }
 
   //Get reunions from Server
-  Future<Meeting> createMeeting(String teamId, Meeting meeting) async {
+  Future<Meeting> createMeeting(Meeting meeting) async {
     logger.d("Adding meeting!");
+    String meet = json.encode(meeting.toJson());
     try {
       Response response = await post(
         AppUrl.addMeeting,
-        body: json.encode(meeting.toJson()),
+        body: meet,
         headers: {'Content-Type': 'application/json'},
       ).timeout(Duration(seconds: 10));
       logger.d("Meeting Response:" + response.body);
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         //Logged In succesfully  from server
         try {
           Map responseData = jsonDecode(response.body);
@@ -218,8 +219,7 @@ class StudentProvider with ChangeNotifier {
         logger.d("Projects retrieved:");
         //Convert from json List of Map to List
         var decodedList = (json.decode(response.body) as List<dynamic>);
-        List<CourseProjects> projects =
-            decodedList.map((i) => CourseProjects.fromJson(i)).toList();
+        List<CourseProjects> projects = decodedList.map((i) => CourseProjects.fromJson(i)).toList();
         //Send back List of Projects
         return projects;
       }
@@ -238,16 +238,14 @@ class StudentProvider with ChangeNotifier {
     logger.d("Trying to get course students:");
     try {
       Response response = await get(
-        AppUrl.getCourseStudents +
-            '/464951543030303032303230', //HABRÁ QUE PASAR EL ID COMO PARÁMETRO
+        AppUrl.getCourseStudents + '/464951543030303032303230', //HABRÁ QUE PASAR EL ID COMO PARÁMETRO
         headers: {'Content-Type': 'application/json'},
       );
       if (response.statusCode == 200) {
         logger.d("Student retrieved:");
         //Convert from json List of Map to List of Student
         var decodedList = (json.decode(response.body) as List<dynamic>);
-        List<Student> students =
-            decodedList.map((i) => Student.fromJson(i)).toList();
+        List<Student> students = decodedList.map((i) => Student.fromJson(i)).toList();
         //Send back List of Students
         return students;
       }
@@ -275,8 +273,7 @@ class StudentProvider with ChangeNotifier {
         logger.d("Courses retrieved:");
         //Convert from json List of Map to List of Student
         var decodedList = (json.decode(response.body) as List<dynamic>);
-        List<CourseAndStudents> courses =
-            decodedList.map((i) => CourseAndStudents.fromJson(i)).toList();
+        List<CourseAndStudents> courses = decodedList.map((i) => CourseAndStudents.fromJson(i)).toList();
         //Send back List of Students
         return courses;
       }

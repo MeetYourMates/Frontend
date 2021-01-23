@@ -1,6 +1,7 @@
 import 'package:async/async.dart';
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:latlong/latlong.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/meeting.dart';
 import 'package:meet_your_mates/api/services/appbar_service.dart';
@@ -11,6 +12,8 @@ import 'package:meet_your_mates/components/loading.dart';
 import 'package:meet_your_mates/constants.dart';
 import 'package:meet_your_mates/screens/Meeting/background.dart';
 import 'package:meet_your_mates/screens/Meeting/create_meeting.dart';
+import 'package:meet_your_mates/screens/Meeting/show_map_leaflet.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 //Constants
 import 'package:provider/provider.dart';
@@ -37,6 +40,7 @@ class _MeetingsState extends State<Meetings> {
   Widget build(BuildContext context) {
     /// Accessing the same Student Provider from the MultiProvider
     StudentProvider _studentProvider = Provider.of<StudentProvider>(context, listen: true);
+    AppBarProvider _appBarProvider = Provider.of<AppBarProvider>(context, listen: false);
     List<Meeting> meetings = [];
 
     /// [_fetchReunions] We fetch the reunions from the server and notify in future
@@ -81,6 +85,26 @@ class _MeetingsState extends State<Meetings> {
                           onTap: () {
                             //on Tap of this
                             logger.d("Pressed Meeting");
+                            //Check if the current meeting has location, if it does than show map else don't show a toast!
+                            if (meetings[index].location.isNotEmpty) {
+                              //As location available, show the map with marker as location of the current meeting
+                              pushNewScreen(
+                                context,
+                                screen: ShowMapLeaflet(
+                                  //BDD always store location as latitude, longitude!
+                                  location: new LatLng(meetings[index].location[0], meetings[index].location[1]),
+                                ),
+                                withNavBar: true, // OPTIONAL VALUE. True by default.
+                                pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                              ).then(
+                                (value) => {
+                                  //? To set the original Launching Screen appBarTitle, in this case we are coming back to meetings
+                                  _appBarProvider.setTitle("Meetings"),
+                                },
+                              );
+                            } else {
+                              toast("No location available for this meeting...", duration: new Duration(milliseconds: 800));
+                            }
                           }),
                     );
                   },
@@ -111,7 +135,7 @@ class _MeetingsState extends State<Meetings> {
               pageTransitionAnimation: PageTransitionAnimation.cupertino,
             ).then((value) => {
                   //? To set the original Launching Screen appBarTitle, in this case we are coming back to meetings
-                  Provider.of<AppBarProvider>(context, listen: false).setTitle("Meetings")
+                  _appBarProvider.setTitle("Meetings")
                 });
           },
           child: Icon(Icons.add),

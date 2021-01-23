@@ -63,9 +63,14 @@ class _CreateMeetingState extends State<CreateMeeting> {
     /// [_fetchReunions] We fetch the reunions from the server and notify in future
     // ignore: unused_element
     Future<Meeting> _addMeeting() async {
-      logger.d("_memoizer Reunions Executed");
+      logger.d("Creating a new Meeting");
       //meeting.date = dateTimeVal;
-      Meeting result = await _studentProvider.createMeeting(widget.teamId, meeting);
+      DateTime now = DateTime.parse(dateTimeVal);
+      meeting.date = now.millisecondsSinceEpoch;
+      meeting.teamId = widget.teamId;
+      meeting.name = this.form.control('name').value;
+      meeting.description = this.form.control('description').value;
+      Meeting result = await _studentProvider.createMeeting(meeting);
       return result;
     }
 
@@ -77,8 +82,7 @@ class _CreateMeetingState extends State<CreateMeeting> {
           if (this.location != null) {
             //All checked
             //"2021-01-23 09:03"
-            DateTime now = DateTime.parse(dateTimeVal);
-            meeting.date = now.millisecondsSinceEpoch;
+
             //this._latitude, this._longitude
             //-90.0,90.0,_latitude && -180.0,180.0,_longitude Limits
             meeting.location = [this.location.latitude, this.location.longitude];
@@ -92,6 +96,8 @@ class _CreateMeetingState extends State<CreateMeeting> {
                   if (resultMeeting.id != null) {
                     meeting = resultMeeting;
                     widget.onCreated(resultMeeting);
+                    //Exit
+                    Navigator.of(context).pop();
                   } else {
                     toast("Please try creating meeting again...");
                   }
@@ -121,6 +127,7 @@ class _CreateMeetingState extends State<CreateMeeting> {
                       if (resultMeeting.id != null) {
                         meeting = resultMeeting;
                         widget.onCreated(resultMeeting);
+                        //Exit
                         Navigator.of(context).pop();
                       } else {
                         toast("Please try creating meeting again...");
