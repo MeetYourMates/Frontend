@@ -68,6 +68,11 @@ class _AddProjectState extends State<AddProject> {
     );
   }
 
+  /// ================================================================================================
+  ///!                DisplayNumber not used anymore
+  ///             keeping definition of the widget just i case
+  ///            implementation of the widget inside build() commented
+  ///================================================================================================**/
   Column buildDisplayNumberField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,11 +153,15 @@ class _AddProjectState extends State<AddProject> {
         setState(() {
           _selectedSubjectResult = _selectedSubject;
         });
-        if (displayNameController.text.length != 0 &&
-            int.parse(displayNumberController.text) > 0) {
+        if (displayNameController.text.length !=
+                0 /*&&
+            int.parse(displayNumberController.text) > 0*/
+            ) {
           project = new Project(
-              name: displayNameController.text,
-              numberStudents: int.parse(displayNumberController.text));
+              name: displayNameController
+                  .text /*,
+              numberStudents: int.parse(displayNumberController.text)*/
+              );
         }
         _professorProvider.addProject(project, _selectedSubjectResult).then(
           (response) {
@@ -229,7 +238,7 @@ class _AddProjectState extends State<AddProject> {
                             children: <Widget>[
                               buildDisplaySubjectField(),
                               buildDisplayNameField(),
-                              buildDisplayNumberField(),
+                              //buildDisplayNumberField(),
                             ],
                           ),
                         ),
