@@ -1,10 +1,14 @@
+import "dart:io";
+import 'dart:math';
 import 'dart:ui';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/send_menu_items.dart';
 import 'package:meet_your_mates/api/models/user.dart';
+import 'package:meet_your_mates/api/services/image_service.dart';
 import 'package:meet_your_mates/api/services/socket_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/screens/Chat/ChatInput/chatInput.dart';
@@ -44,76 +48,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
   Logger logger = new Logger(level: Level.error);
 //
-  void showModal() {
-    showModalBottomSheet(
-        context: context,
-        builder: (context) {
-          Size size = MediaQuery.of(context).size;
-          return Container(
-            //constraints:
-            //BoxConstraints.tightForFinite(width: size.width, height: size.height * 0.5),
-            color: Color(0xff737373),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(topRight: Radius.circular(20), topLeft: Radius.circular(20)),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Expanded(
-                    flex: 2,
-                    child: SizedBox(
-                      height: 4,
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Center(
-                      child: Container(
-                        width: size.width * 0.30,
-                        color: Colors.grey.shade200,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: SizedBox(
-                      height: 1,
-                    ),
-                  ),
-                  Flexible(
-                    flex: 96,
-                    child: ListView.builder(
-                      itemCount: menuItems.length,
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return Container(
-                          //padding: EdgeInsets.only(top: 10, bottom: 10),
-                          child: ListTile(
-                            leading: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(30),
-                                color: menuItems[index].color.shade50,
-                              ),
-                              child: Icon(
-                                menuItems[index].icons,
-                                color: menuItems[index].color.shade400,
-                              ),
-                            ),
-                            title: Text(menuItems[index].text),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -121,6 +55,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) => {_scrollController.jumpTo(_scrollController.position.maxScrollExtent)});
     //var textValue = "";
     SocketProvider socketProvider = Provider.of<SocketProvider>(context, listen: true);
+    ImagesProvider imageProvider = Provider.of<ImagesProvider>(context);
     User chatUser = socketProvider.mates.usersList[widget.selectedIndex];
 
     /// [_studentProvider] StudentProvider Instance of a singleton
@@ -129,8 +64,99 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     ///[sendMessage] Function to send message to server and also save the message into local List of Messages(No LocalStorage!)
     Future<void> sendMessage(String value) async {
       print("Message Sent: " + value);
-      socketProvider.sendPrivateMessage(_studentProvider.student.user.id, chatUser.id, value, widget.selectedIndex);
+      socketProvider.sendPrivateMessage(_studentProvider.student.user.id, chatUser.id, value, widget.selectedIndex, null);
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    }
+
+    Future<void> sendImage() async {
+      Random rand = new Random();
+      int randNum = rand.nextInt(9999999);
+      String id = randNum.toString();
+      FilePickerResult result = await FilePicker.platform.pickFiles();
+      if (result != null) {
+        File _imageFile = File(result.files.single.path);
+        imageProvider.uploadPhoto(_imageFile.path, id).then(
+              (res) => {
+                socketProvider.sendPrivateMessage(_studentProvider.student.user.id, chatUser.id, "this message has an image", widget.selectedIndex, res),
+                _scrollController.jumpTo(_scrollController.position.maxScrollExtent),
+                logger.d("Sent image")
+              },
+            );
+      } else {
+        // User canceled the picker
+      }
+    }
+
+    void showModal() {
+      showModalBottomSheet(
+          context: context,
+          builder: (context) {
+            Size size = MediaQuery.of(context).size;
+            return Container(
+              //constraints:
+              //BoxConstraints.tightForFinite(width: size.width, height: size.height * 0.5),
+              color: Color(0xff737373),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(topRight: Radius.circular(20), topLeft: Radius.circular(20)),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 2,
+                      child: SizedBox(
+                        height: 4,
+                      ),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: Center(
+                        child: Container(
+                          width: size.width * 0.30,
+                          color: Colors.grey.shade200,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: SizedBox(
+                        height: 1,
+                      ),
+                    ),
+                    Flexible(
+                      flex: 96,
+                      child: ListView.builder(
+                        itemCount: menuItems.length,
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          return Container(
+                            //padding: EdgeInsets.only(top: 10, bottom: 10),
+                            child: ListTile(
+                              leading: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(30),
+                                  color: menuItems[index].color.shade50,
+                                ),
+                                child: Icon(
+                                  menuItems[index].icons,
+                                  color: menuItems[index].color.shade400,
+                                ),
+                              ),
+                              title: Text(menuItems[index].text),
+                              onTap: sendImage,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          });
     }
 
     /**========================================================================

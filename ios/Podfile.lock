@@ -6,9 +6,6 @@ PODS:
     - AppAuth/ExternalUserAgent (= 1.4.0)
   - AppAuth/Core (1.4.0)
   - AppAuth/ExternalUserAgent (1.4.0)
-  - connectivity (0.0.1):
-    - Flutter
-    - Reachability
   - DKImagePickerController/Core (4.3.2):
     - DKImagePickerController/ImageDataManager
     - DKImagePickerController/Resource
@@ -109,7 +106,6 @@ PODS:
   - nanopb/decode (1.30906.0)
   - nanopb/encode (1.30906.0)
   - PromisesObjC (1.2.12)
-  - Reachability (3.2)
   - SDWebImage (5.10.1):
     - SDWebImage/Core (= 5.10.1)
   - SDWebImage/Core (5.10.1)
@@ -119,7 +115,6 @@ PODS:
 
 DEPENDENCIES:
   - another_flushbar (from `.symlinks/plugins/another_flushbar/ios`)
-  - connectivity (from `.symlinks/plugins/connectivity/ios`)
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
@@ -143,15 +138,12 @@ SPEC REPOS:
     - GTMSessionFetcher
     - nanopb
     - PromisesObjC
-    - Reachability
     - SDWebImage
     - SwiftyGif
 
 EXTERNAL SOURCES:
   another_flushbar:
     :path: ".symlinks/plugins/another_flushbar/ios"
-  connectivity:
-    :path: ".symlinks/plugins/connectivity/ios"
   file_picker:
     :path: ".symlinks/plugins/file_picker/ios"
   firebase_auth:
@@ -168,7 +160,6 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   another_flushbar: 3bb0a50768cc547ba9dd82cbb92129bf5ca7440c
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
-  connectivity: c4130b2985d4ef6fd26f9702e886bd5260681467
   DKImagePickerController: b5eb7f7a388e4643264105d648d01f727110fc3d
   DKPhotoGallery: fdfad5125a9fdda9cc57df834d49df790dbb4179
   file_picker: 3e6c3790de664ccf9b882732d9db5eaf6b8d4eb1
@@ -187,7 +178,6 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: b3503b20a988c4e20cc189aa798fd18220133f52
   nanopb: 59317e09cf1f1a0af72f12af412d54edf52603fc
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
-  Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SDWebImage: f66a16b95183b92ed6b965ad21d33167bc07612d
   shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
   SwiftyGif: e466e86c660d343357ab944a819a101c4127cb40

@@ -2,9 +2,9 @@ class Message {
   String senderId;
   String recipientId;
   String text;
-  String picture;
+  String image;
   String createdAt;
-  Message({this.senderId, this.recipientId, this.text, this.picture, this.createdAt});
+  Message({this.senderId, this.recipientId, this.text, this.image, this.createdAt});
 
   factory Message.fromJson(Map<String, dynamic> responseData) {
     return Message(
@@ -12,7 +12,7 @@ class Message {
         recipientId: responseData['recipientId'],
         text: responseData['text'],
         createdAt: responseData['createdAt'],
-        picture: responseData['picture']);
+        image: responseData['image']);
   }
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
@@ -20,7 +20,7 @@ class Message {
     data['recipientId'] = this.recipientId;
     data['text'] = this.text;
     data['createdAt'] = this.createdAt;
-    data['picture'] = this.picture;
+    data['image'] = this.image;
     return data;
   }
 
@@ -35,6 +35,6 @@ class Message {
         " createdAt: " +
         (createdAt == null ? "NULL" : createdAt) +
         " token:" +
-        (picture == null ? "NULL" : picture);
+        (image == null ? "NULL" : image);
   }
 }
