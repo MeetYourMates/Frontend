@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import "package:flutter/material.dart";
 import "package:flutter/widgets.dart";
 import 'package:logger/logger.dart';
@@ -156,7 +154,7 @@ class _AddProjectState extends State<AddProject> {
               name: displayNameController.text,
               numberStudents: int.parse(displayNumberController.text));
         }
-        _professorProvider.addProject(project).then(
+        _professorProvider.addProject(project, _selectedSubjectResult).then(
           (response) {
             if (response == 0)
               logger.d("Project added succesfully");

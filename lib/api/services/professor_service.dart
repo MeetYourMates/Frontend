@@ -203,12 +203,14 @@ class ProfessorProvider with ChangeNotifier {
   ///!                ADD NEW PROJECT TO TO THE SUBJECT
   ///
   ///================================================================================================**/
-  Future<int> addProject(Project project) async {
+  Future<int> addProject(Project project, String _id) async {
     logger.d("Trying to add new project:");
     try {
+      var req = project.toJson();
+      req["id"] = _id;
       Response response = await post(
         AppUrl.addProject,
-        body: json.encode(project.toJson()),
+        body: json.encode(req),
         headers: {'Content-Type': 'application/json'},
       );
       if (response.statusCode == 201) {

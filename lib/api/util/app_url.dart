@@ -37,5 +37,5 @@ class AppUrl {
   //Projects
   static const String getCourseProjects =
       baseURL + "/professor/getCourseProjects";
-  static const String addProject = baseURL + "/course/addProject";
+  static const String addProject = baseURL + "/project/add";
 }
