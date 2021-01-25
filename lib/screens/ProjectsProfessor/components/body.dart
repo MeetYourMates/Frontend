@@ -85,7 +85,8 @@ class _BodyState extends State<Body> {
                       Navigator.push(
                         context,
                         new MaterialPageRoute(
-                          builder: (context) => new AddProject(),
+                          builder: (context) =>
+                              new AddProject(courseProjects: snapshot.data),
                         ),
                       );
                     },

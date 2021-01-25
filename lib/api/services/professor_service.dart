@@ -6,6 +6,7 @@ import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/courseAndStudents.dart';
 import 'package:meet_your_mates/api/models/professor.dart';
 import 'package:meet_your_mates/api/models/courseProjects.dart';
+import 'package:meet_your_mates/api/models/project.dart';
 import 'package:meet_your_mates/api/models/user.dart';
 import 'package:meet_your_mates/api/util/app_url.dart';
 import 'package:meet_your_mates/api/util/shared_preference.dart';
@@ -196,4 +197,32 @@ class ProfessorProvider with ChangeNotifier {
   }
 
 //*******************************************************/
+
+//************************PEP****************************/
+  /// ================================================================================================
+  ///!                ADD NEW PROJECT TO TO THE SUBJECT
+  ///
+  ///================================================================================================**/
+  Future<int> addProject(Project project, String _id) async {
+    logger.d("Trying to add new project:");
+    try {
+      var req = project.toJson();
+      req["id"] = _id;
+      Response response = await post(
+        AppUrl.addProject,
+        body: json.encode(req),
+        headers: {'Content-Type': 'application/json'},
+      );
+      if (response.statusCode == 201) {
+        logger.d("Project added");
+        return 0;
+      } else
+        return -2;
+    } catch (err) {
+      logger.e("Error adding new project: " + err.toString());
+      return -1;
+    }
+  }
+
+  ///*******************************************************/
 }
