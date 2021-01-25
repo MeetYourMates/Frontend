@@ -3,8 +3,11 @@ import 'dart:io';
 import "package:flutter/material.dart";
 import "package:flutter/widgets.dart";
 import 'package:logger/logger.dart';
+import 'package:flutter/services.dart';
 
+import 'package:meet_your_mates/api/models/project.dart';
 import 'package:meet_your_mates/api/services/professor_service.dart';
+
 import 'package:provider/provider.dart';
 
 import 'package:meet_your_mates/api/models/courseProjects.dart';
@@ -24,10 +27,10 @@ class AddProject extends StatefulWidget {
 }
 
 class _AddProjectState extends State<AddProject> {
-  String _myActivity;
-  String _myActivityResult;
+  var logger = Logger();
 
-  ProfessorProvider _professorProvider;
+  String _selectedSubject;
+  String _selectedSubjectResult;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -38,18 +41,8 @@ class _AddProjectState extends State<AddProject> {
 
   void initState() {
     super.initState();
-    _myActivity = '';
-    _myActivityResult = '';
-  }
-
-  _saveForm() {
-    var form = _formKey.currentState;
-    if (form.validate()) {
-      form.save();
-      setState(() {
-        _myActivityResult = _myActivity;
-      });
-    }
+    _selectedSubject = '';
+    _selectedSubjectResult = '';
   }
 
   Column buildDisplayNameField() {
@@ -95,6 +88,7 @@ class _AddProjectState extends State<AddProject> {
             errorText: _displayNameValid ? null : "Number invalid",
           ),
           keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         ),
         Padding(
           padding: EdgeInsets.only(bottom: 15.0),
@@ -116,22 +110,22 @@ class _AddProjectState extends State<AddProject> {
         ),
         DropDownFormField(
           hintText: 'Please choose one',
-          value: _myActivity,
+          value: _selectedSubject,
           onSaved: (value) {
             setState(() {
-              _myActivity = value;
+              _selectedSubject = value;
             });
           },
           onChanged: (value) {
             setState(() {
-              _myActivity = value;
+              _selectedSubject = value;
             });
           },
           dataSource: [
             for (CourseProjects course in widget.courseProjects)
               {
                 "display": course.subjectName,
-                "value": course.subjectName,
+                "value": course.id,
               }
           ],
           textField: 'display',
@@ -146,6 +140,36 @@ class _AddProjectState extends State<AddProject> {
 
   @override
   Widget build(BuildContext context) {
+    ProfessorProvider _professorProvider =
+        Provider.of<ProfessorProvider>(context);
+
+    _saveForm() {
+      final form = _formKey.currentState;
+      if (form.validate()) {
+        Project project;
+        setState(() {
+          _selectedSubjectResult = _selectedSubject;
+        });
+        if (displayNameController.text.length != 0 &&
+            int.parse(displayNumberController.text) > 0) {
+          project = new Project(
+              name: displayNameController.text,
+              numberStudents: int.parse(displayNumberController.text));
+        }
+        _professorProvider.addProject(project).then(
+          (response) {
+            if (response == 0)
+              logger.d("Project added succesfully");
+            else if (response == -1)
+              logger.d("Error adding project");
+            else if (response == -2) logger.d("Unexpected return code");
+          },
+        );
+        Navigator.pop(context);
+        form.save();
+      }
+    }
+
     return SafeArea(
       child: Scaffold(
         body: Background(
@@ -198,6 +222,9 @@ class _AddProjectState extends State<AddProject> {
                             bottom: 8.0,
                           ),
                         ),
+                        /*
+                        *   Form inputs
+                        */
                         Padding(
                           padding: EdgeInsets.all(16.0),
                           child: Column(
@@ -207,6 +234,45 @@ class _AddProjectState extends State<AddProject> {
                               buildDisplayNumberField(),
                             ],
                           ),
+                        ),
+                        /*
+                        *   Form buttons
+                        */
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            RaisedButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: Text(
+                                "Cancel",
+                                style: TextStyle(
+                                  color: Colors.cyan[400],
+                                  fontSize: 20.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              color: Colors.white,
+                            ),
+                            SizedBox(
+                              width: 18,
+                            ),
+                            RaisedButton(
+                              onPressed: () {
+                                _saveForm();
+                              },
+                              child: Text(
+                                "Update",
+                                style: TextStyle(
+                                  color: Colors.cyan[400],
+                                  fontSize: 20.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              color: Colors.white,
+                            ),
+                          ],
                         ),
                       ],
                     ),

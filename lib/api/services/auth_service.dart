@@ -63,7 +63,10 @@ class AuthProvider with ChangeNotifier {
     } catch (err) {
       //Cannot Even Send a request -->Probably No connection
       res = -1;
-      return result = {'status': res, 'message': "Cannot make Request, connect to Internet!"};
+      return result = {
+        'status': res,
+        'message': "Cannot make Request, connect to Internet!"
+      };
     }
     //NEW WAY
     if (response.statusCode == 200) {
@@ -74,20 +77,30 @@ class AuthProvider with ChangeNotifier {
           authenticatedStudent = Student.fromJson(responseData);
           authenticatedStudent.user.password = password;
           UserPreferences().saveUser(authenticatedStudent.user);
-          logger.d("User in Shared Preferences: " + authenticatedStudent.user.toString());
+          logger.d("User in Shared Preferences: " +
+              authenticatedStudent.user.toString());
           _loggedInStatus = Status.LoggedIn;
           notifyListeners();
           res = 0;
-          result = {'status': res, 'message': _loggedInStatus, 'student': authenticatedStudent};
+          result = {
+            'status': res,
+            'message': _loggedInStatus,
+            'student': authenticatedStudent
+          };
         } else {
           authenticatedProfessor = Professor.fromJson(responseData);
           authenticatedProfessor.user.password = password;
           UserPreferences().saveUser(authenticatedProfessor.user);
-          logger.d("User in Shared Preferences: " + authenticatedProfessor.user.toString());
+          logger.d("User in Shared Preferences: " +
+              authenticatedProfessor.user.toString());
           _loggedInStatus = Status.LoggedIn;
           notifyListeners();
           res = 3;
-          result = {'status': res, 'message': _loggedInStatus, 'professor': authenticatedProfessor};
+          result = {
+            'status': res,
+            'message': _loggedInStatus,
+            'professor': authenticatedProfessor
+          };
         }
       } catch (err) {
         res = -1;
@@ -119,23 +132,36 @@ class AuthProvider with ChangeNotifier {
           authenticatedStudent = Student.fromJson(responseData);
           authenticatedStudent.user.password = password;
           UserPreferences().saveUser(authenticatedStudent.user);
-          logger.d("User in Shared Preferences: " + authenticatedStudent.user.toString());
+          logger.d("User in Shared Preferences: " +
+              authenticatedStudent.user.toString());
           _loggedInStatus = Status.NotCompleted;
           notifyListeners();
           res = 2;
-          result = {'status': res, 'message': _loggedInStatus, 'student': authenticatedStudent};
+          result = {
+            'status': res,
+            'message': _loggedInStatus,
+            'student': authenticatedStudent
+          };
         } else {
           authenticatedProfessor = Professor.fromJson(responseData);
           authenticatedProfessor.user.password = password;
           UserPreferences().saveUser(authenticatedProfessor.user);
-          logger.d("User in Shared Preferences: " + authenticatedProfessor.user.toString());
+          logger.d("User in Shared Preferences: " +
+              authenticatedProfessor.user.toString());
           _loggedInStatus = Status.NotCompleted;
           notifyListeners();
           res = 4;
-          result = {'status': res, 'message': _loggedInStatus, 'professor': authenticatedProfessor};
+          result = {
+            'status': res,
+            'message': _loggedInStatus,
+            'professor': authenticatedProfessor
+          };
         }
       } catch (err) {
-        result = {'status': res, 'message': "Failed To Login!--> Error: " + err.toString()};
+        result = {
+          'status': res,
+          'message': "Failed To Login!--> Error: " + err.toString()
+        };
         _loggedInStatus = Status.NotLoggedIn;
         notifyListeners();
         res = -1;
@@ -170,7 +196,8 @@ class AuthProvider with ChangeNotifier {
     return result;
   }
 
-  Future<Map<String, dynamic>> changePassword(String code, String email, String pass) async {
+  Future<Map<String, dynamic>> changePassword(
+      String code, String email, String pass) async {
     var result;
     logger.d("change Password: email: $email");
     _recoveryStatus = Status.Sending;
@@ -197,15 +224,22 @@ class AuthProvider with ChangeNotifier {
     return result;
   }
 
-  Future<Map<String, dynamic>> register(String email, String password, String name) async {
+  Future<Map<String, dynamic>> register(
+      String email, String password, String name) async {
     var result;
 
-    final Map<String, dynamic> registerData = {'email': email, 'password': password, 'name': name};
+    final Map<String, dynamic> registerData = {
+      'email': email,
+      'password': password,
+      'name': name
+    };
 
     _registeredInStatus = Status.Registering;
     notifyListeners();
     try {
-      Response response = await post(AppUrl.register, body: json.encode(registerData), headers: {'Content-Type': 'application/json'});
+      Response response = await post(AppUrl.register,
+          body: json.encode(registerData),
+          headers: {'Content-Type': 'application/json'});
 
       if (response.statusCode == 201) {
         User newUser = new User(id: null, email: email, password: password);
@@ -259,9 +293,17 @@ class AuthProvider with ChangeNotifier {
       User authenticatedStudent = User.fromJson(responseData);
 
       UserPreferences().saveUser(authenticatedStudent);
-      result = {'status': true, 'message': 'Successfully registered', 'data': authenticatedStudent};
+      result = {
+        'status': true,
+        'message': 'Successfully registered',
+        'data': authenticatedStudent
+      };
     } else {
-      result = {'status': false, 'message': 'Registration failed', 'data': responseData};
+      result = {
+        'status': false,
+        'message': 'Registration failed',
+        'data': responseData
+      };
     }
 
     return result;
@@ -276,15 +318,23 @@ class AuthProvider with ChangeNotifier {
 
   Future<UserDetails> signInGoogle() async {
     try {
-      final firebaseAuth.FirebaseAuth _firebaseAuth = firebaseAuth.FirebaseAuth.instance;
+      final firebaseAuth.FirebaseAuth _firebaseAuth =
+          firebaseAuth.FirebaseAuth.instance;
       final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
       final firebaseAuth.AuthCredential credential =
-          firebaseAuth.GoogleAuthProvider.credential(accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
-      firebaseAuth.UserCredential userDetails = await _firebaseAuth.signInWithCredential(credential);
+          firebaseAuth.GoogleAuthProvider.credential(
+              accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+      firebaseAuth.UserCredential userDetails =
+          await _firebaseAuth.signInWithCredential(credential);
       print("UserEmail 305: " + userDetails.user.email);
-      UserDetails details = new UserDetails(userDetails.user.uid, userDetails.user.displayName, userDetails.user.photoURL, userDetails.user.email);
+      UserDetails details = new UserDetails(
+          userDetails.user.uid,
+          userDetails.user.displayName,
+          userDetails.user.photoURL,
+          userDetails.user.email);
       //Added New
       signedInWithGoogle = true;
       return details;
@@ -299,7 +349,8 @@ class AuthProvider with ChangeNotifier {
     return 0;
   }
 
-  Future<Map<String, dynamic>> registerWithGoogle(Student registeredGoogle) async {
+  Future<Map<String, dynamic>> registerWithGoogle(
+      Student registeredGoogle) async {
     var result;
     _registeredInStatus = Status.Registering;
     notifyListeners();
@@ -313,7 +364,10 @@ class AuthProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 201) {
-        User newUser = new User(id: null, email: registeredGoogle.user.email, password: registeredGoogle.user.password);
+        User newUser = new User(
+            id: null,
+            email: registeredGoogle.user.email,
+            password: registeredGoogle.user.password);
         UserPreferences().saveUser(newUser);
         _registeredInStatus = Status.Registered;
         notifyListeners();
