@@ -37,7 +37,7 @@ class DropDownFormField extends FormField<dynamic> {
       : super(
           onSaved: onSaved,
           validator: validator,
-          autovalidate: autovalidate,
+          autovalidateMode: AutovalidateMode.always,
           initialValue: value == '' ? null : value,
           builder: (FormFieldState<dynamic> state) {
             return Container(
