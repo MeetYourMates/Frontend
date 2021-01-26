@@ -40,7 +40,6 @@ class _ProfileStudentState extends State<RateOtherStudent> {
     }
 
     meanRating = meanRating / (_studentProvider.student.ratings.length + 1);
-
     return SafeArea(
       child: Scaffold(
         body: Background(
@@ -403,7 +402,6 @@ class RatingStars extends StatelessWidget {
       @required this.studentProvider,
       @required this.mateProvider})
       : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -421,7 +419,7 @@ class RatingStars extends StatelessWidget {
                   isReadOnly: false,
                   onRated: (v) {
                     Rating rated = new Rating();
-                    rated.stars = 5;
+                    rated.stars = v.round().toInt();
                     rated.ratedBy = studentProvider.student.user.id;
                     rated.date = DateTime.now().toIso8601String();
                     studentProvider.rate(mateProvider.student, rated);

@@ -15,6 +15,7 @@ import 'package:meet_your_mates/api/util/app_url.dart';
 import 'package:meet_your_mates/api/util/shared_preference.dart';
 
 import '../models/rating.dart';
+import '../models/team.dart';
 
 class StudentProvider with ChangeNotifier {
   Student _student = new Student();
@@ -246,6 +247,52 @@ class StudentProvider with ChangeNotifier {
     } catch (err) {
       logger.e(err);
       return -1;
+    }
+  }
+
+  /// ================================================================================================
+  ///!                                  Verify if a stundet is in your team
+  ///================================================================================================**/
+//*******************************************************/
+  Future<int> verifyTeam(String idStu, String idmate) async {
+    try {
+      List<Team> teams;
+      List<Team> teamsMate;
+      Response response = await get(
+        AppUrl.getTeams + idStu,
+        headers: {'Content-Type': 'application/json'},
+      );
+      logger.i(response.statusCode);
+      if (response.statusCode == 200) {
+        logger.d("Projects retrieved:");
+        //Convert from json List of Map to List
+        var decodedList = (json.decode(response.body) as List<dynamic>);
+        teams = decodedList.map((i) => Team.fromJson(i)).toList();
+        //Send back List of Projects
+        Response res = await get(
+          AppUrl.getTeams + idmate,
+          headers: {'Content-Type': 'application/json'},
+        );
+        if (res.statusCode == 200) {
+          var decodedList = (json.decode(res.body) as List<dynamic>);
+          teamsMate = decodedList.map((i) => Team.fromJson(i)).toList();
+          bool teamFounded = false;
+          teams.forEach((team) {
+            teamsMate.forEach((mateTeam) {
+              if (team.name == mateTeam.name) teamFounded = true;
+            });
+          });
+          if (teamFounded) {
+            return 0;
+          } else
+            return null;
+        } else
+          return null;
+      } else
+        return null;
+    } catch (err) {
+      logger.e("Error getting projects: " + err.toString());
+      return null;
     }
   }
 
