@@ -40,4 +40,5 @@ class AppUrl {
   static const String addProject = baseURL + "/project/add";
   static const String getInvitations = baseURL + "/team/invitations/";
   static const String acceptOrRejectInv = baseURL + "/team/invitations/";
+  static const String joinTeam = baseURL + "/team/";
 }

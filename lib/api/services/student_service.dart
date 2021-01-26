@@ -371,4 +371,23 @@ class StudentProvider with ChangeNotifier {
     }
 
   }
+  Future<String> JoinTeam(String id) async {
+    try {
+      String json = '{"studentId":'+'"'+this.student.id+'"}';
+      Response response = await post(
+          AppUrl.joinTeam + id,
+        headers: {'Content-Type': 'application/json'},
+        body: json
+      );
+      if (response.statusCode == 201) {
+        logger.d("joined team");
+        return "joined";
+      }
+    }
+    catch (err) {
+      logger.e("Error getting into team: " + err.toString());
+      return null;
+    }
+
+  }
 }
