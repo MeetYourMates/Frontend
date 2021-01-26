@@ -11,6 +11,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
 
+import 'background.dart';
 import 'newTask.dart';
 
 class TaskPage extends StatelessWidget {
@@ -66,132 +67,134 @@ class _taskPageState extends State<taskPage> {
     }
 
     return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          AppBar(
-            backgroundColor: Colors.cyan,
-            elevation: 0,
-            title: Text(
-              "Task",
-              style: TextStyle(fontSize: 30),
-            ),
-            actions: <Widget>[
-              // ignore: missing_required_param
-              IconButton(
-                  icon: Icon(Icons.add_circle),
-                  onPressed: () {
-                    openNewTask();
-                  }),
-            ],
-          ),
-          Container(
-            height: 70,
-            color: Colors.cyan,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        changeFilter("today");
-                      },
-                      child: Text(
-                        "Today",
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Container(
-                      height: 4,
-                      width: 120,
-                      color: (filterType == "today")
-                          ? Colors.white
-                          : Colors.transparent,
-                    )
-                  ],
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        changeFilter("monthly");
-                      },
-                      child: Text(
-                        "Monthly",
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Container(
-                      height: 4,
-                      width: 120,
-                      color: (filterType == "monthly")
-                          ? Colors.white
-                          : Colors.transparent,
-                    )
-                  ],
-                )
+      body: Background(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AppBar(
+              backgroundColor: Colors.cyan,
+              elevation: 0,
+              title: Text(
+                "Task",
+                style: TextStyle(fontSize: 30),
+              ),
+              actions: <Widget>[
+                // ignore: missing_required_param
+                IconButton(
+                    icon: Icon(Icons.add_circle),
+                    onPressed: () {
+                      openNewTask();
+                    }),
               ],
             ),
-          ),
-          (filterType == "monthly")
-              ? TableCalendar(
-                  calendarController: ctrlr,
-                  startingDayOfWeek: StartingDayOfWeek.monday,
-                  initialCalendarFormat: CalendarFormat.week,
-                )
-              : Container(),
-          Container(
-            padding: EdgeInsets.all(20),
-            child: Text(
-              "Today ${monthNames[today.month - 1]}, ${today.day}/${today.year}",
-              style: TextStyle(fontSize: 18, color: Colors.grey),
+            Container(
+              height: 70,
+              color: Colors.cyan,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          changeFilter("today");
+                        },
+                        child: Text(
+                          "Today",
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        height: 4,
+                        width: 120,
+                        color: (filterType == "today")
+                            ? Colors.white
+                            : Colors.transparent,
+                      )
+                    ],
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          changeFilter("monthly");
+                        },
+                        child: Text(
+                          "Monthly",
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        height: 4,
+                        width: 120,
+                        color: (filterType == "monthly")
+                            ? Colors.white
+                            : Colors.transparent,
+                      )
+                    ],
+                  )
+                ],
+              ),
             ),
-          ),
-          Expanded(
-            flex: 8,
-            child: FutureBuilder<dynamic>(
-              future: _fetchTasks(),
-              builder: (context, snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.none:
-                  case ConnectionState.waiting:
-                    return LoadingPage();
-                  default:
-                    if (snapshot.hasError)
-                      return ErrorShow(errorText: 'Error: ${snapshot.error}');
-                    else if ((snapshot.hasData)) {
-                      taskList = snapshot.data;
-                      taskNames.clear();
-                      taskDates.clear();
-                      taskNames.addAll(taskList.getTaskNames());
-                      taskDates.addAll(taskList.getTaskDates());
-                      logger.d("Load Tasks: " + taskList.toString());
-                      return ListView.builder(
-                        physics: ClampingScrollPhysics(),
-                        itemBuilder: (context, index) => TaskCard(
-                            name: taskNames[index], date: taskDates[index]),
-                        shrinkWrap: true,
-                        itemCount: taskList.tasks.length,
-                      );
-                    } else {
-                      return ErrorShow(
-                          errorText:
-                              "Unexpected error. Unable to Retrieve Tasks");
-                    }
-                }
-              },
+            (filterType == "monthly")
+                ? TableCalendar(
+                    calendarController: ctrlr,
+                    startingDayOfWeek: StartingDayOfWeek.monday,
+                    initialCalendarFormat: CalendarFormat.week,
+                  )
+                : Container(),
+            Container(
+              padding: EdgeInsets.all(20),
+              child: Text(
+                "Today ${monthNames[today.month - 1]}, ${today.day}/${today.year}",
+                style: TextStyle(fontSize: 18, color: Colors.grey),
+              ),
             ),
-          ),
-        ],
+            Expanded(
+              flex: 8,
+              child: FutureBuilder<dynamic>(
+                future: _fetchTasks(),
+                builder: (context, snapshot) {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.none:
+                    case ConnectionState.waiting:
+                      return LoadingPage();
+                    default:
+                      if (snapshot.hasError)
+                        return ErrorShow(errorText: 'Error: ${snapshot.error}');
+                      else if ((snapshot.hasData)) {
+                        taskList = snapshot.data;
+                        taskNames.clear();
+                        taskDates.clear();
+                        taskNames.addAll(taskList.getTaskNames());
+                        taskDates.addAll(taskList.getTaskDates());
+                        logger.d("Load Tasks: " + taskList.toString());
+                        return ListView.builder(
+                          physics: ClampingScrollPhysics(),
+                          itemBuilder: (context, index) => TaskCard(
+                              name: taskNames[index], date: taskDates[index]),
+                          shrinkWrap: true,
+                          itemCount: taskList.tasks.length,
+                        );
+                      } else {
+                        return ErrorShow(
+                            errorText:
+                                "Unexpected error. Unable to Retrieve Tasks");
+                      }
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

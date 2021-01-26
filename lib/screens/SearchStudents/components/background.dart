@@ -20,7 +20,7 @@ class Background extends StatelessWidget {
             top: 0,
             left: 0,
             child: Image.asset(
-              "assets/images/blue-background.jpg",
+              "assets/images/green-background.jpg",
               width: size.width,
             ),
           ),

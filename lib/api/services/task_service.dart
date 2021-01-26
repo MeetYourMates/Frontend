@@ -25,6 +25,7 @@ class TaskProvider with ChangeNotifier {
         headers: {'Content-Type': 'application/json'},
       );
       if (response.statusCode == 200) {
+        notifyListeners();
         logger.d("Tasks retrieved:");
         Map responseData = jsonDecode(response.body);
         //Convert from json List of Map to List
@@ -40,28 +41,50 @@ class TaskProvider with ChangeNotifier {
   }
 
   //Add Task
-  Future<bool> createTask(Task task) async {
+  Future<Map<String, dynamic>> createTask(
+      String name, String description, String date, String teamId) async {
     logger.d("Adding meeting!");
-    String taskCreate = json.encode(task.toJson());
+    var result;
+    Response response;
+    String json = '{"teamId":"' +
+        teamId +
+        '","name":"' +
+        name +
+        '","description":"' +
+        description +
+        '","deadline":"' +
+        date +
+        '"}';
     try {
-      Response response = await post(
+      response = await post(
         AppUrl.addTask,
-        body: taskCreate,
+        body: json,
         headers: {'Content-Type': 'application/json'},
       ).timeout(Duration(seconds: 10));
       if (response.statusCode == 201) {
+        notifyListeners();
         //Logged In succesfully  from server
         logger.d("Task Added");
-        return true;
+        result = {
+          'status': true,
+          'message': 'Successful',
+        };
+      } else {
+        notifyListeners();
+        result = {'status': false, 'message': "Failed to add task"};
       }
-      return false;
+      return result;
     } catch (err) {
       logger.e("Error adding task: " + err.toString());
+      notifyListeners();
+      result = {'status': false, 'message': "Failed"};
+      return result;
     }
   }
 
-  Future completeTask(bool comp, String taskId) async {
+  Future<Map<String, dynamic>> completeTask(bool comp, String taskId) async {
     logger.d("Adding meeting!");
+    var result;
     String json =
         '{ "taskId" :' + taskId + ',"complete" : ' + comp.toString() + '}';
     try {
@@ -71,11 +94,24 @@ class TaskProvider with ChangeNotifier {
         headers: {'Content-Type': 'application/json'},
       ).timeout(Duration(seconds: 10));
       if (response.statusCode == 201) {
+        notifyListeners();
         //Logged In succesfully  from server
+        result = {
+          'status': true,
+          'message': 'Successful',
+        };
         logger.d("Task Complete");
+        return result;
+      } else {
+        notifyListeners();
+        result = {'status': false, 'message': "Failed to complete task"};
       }
+      return result;
     } catch (err) {
       logger.e("Error completing task: " + err.toString());
+      notifyListeners();
+      result = {'status': false, 'message': "Failed"};
+      return result;
     }
   }
 }
