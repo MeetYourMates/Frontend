@@ -10,8 +10,12 @@ import 'package:meet_your_mates/api/models/meeting.dart';
 import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/models/team.dart';
 import 'package:meet_your_mates/api/models/user.dart';
+import 'package:meet_your_mates/api/models/rating.dart';
 import 'package:meet_your_mates/api/util/app_url.dart';
 import 'package:meet_your_mates/api/util/shared_preference.dart';
+
+import '../models/rating.dart';
+import '../models/team.dart';
 
 class StudentProvider with ChangeNotifier {
   Student _student = new Student();
@@ -234,7 +238,7 @@ class StudentProvider with ChangeNotifier {
 
   //************************POL****************************/
   /// ================================================================================================
-  ///!                                  Uload student parameters
+  ///!                                  Upload student parameters
   ///================================================================================================**/
 
   Future<int> upload(Student updated) async {
@@ -258,6 +262,91 @@ class StudentProvider with ChangeNotifier {
     return res;
   }
 
+  /// ================================================================================================
+  ///!                                  Rate studants after closing a project
+  ///================================================================================================**/
+
+  Future<dynamic> rate(Student studentToRate, Rating mate) async {
+    logger.d("Verifying rating...");
+    try {
+      Response response = await get(
+        AppUrl.verifyRating + '/' + _student.user.id,
+        headers: {'Content-Type': 'application/json'},
+      );
+      logger.i(response.statusCode);
+      if (response.statusCode == 200) {
+        logger.i("You have rated this student");
+        return -1;
+      } else {
+        try {
+          Response res = await post(
+            AppUrl.rateMate,
+            body: json.encode(mate.toJson()),
+            headers: {'Content-Type': 'application/json'},
+          );
+          logger.d(res.body);
+          if (res.statusCode == 200) {
+            upload(studentToRate);
+            return res;
+          } else
+            return -1;
+        } catch (err) {
+          logger.e(err);
+          return -1;
+        }
+      }
+    } catch (err) {
+      logger.e(err);
+      return -1;
+    }
+  }
+
+  /// ================================================================================================
+  ///!                                  Verify if a stundet is in your team
+  ///================================================================================================**/
+//*******************************************************/
+  Future<int> verifyTeam(String idStu, String idmate) async {
+    try {
+      List<Team> teams;
+      List<Team> teamsMate;
+      Response response = await get(
+        AppUrl.getTeams + idStu,
+        headers: {'Content-Type': 'application/json'},
+      );
+      logger.i(response.statusCode);
+      if (response.statusCode == 200) {
+        logger.d("Projects retrieved:");
+        //Convert from json List of Map to List
+        var decodedList = (json.decode(response.body) as List<dynamic>);
+        teams = decodedList.map((i) => Team.fromJson(i)).toList();
+        //Send back List of Projects
+        Response res = await get(
+          AppUrl.getTeams + idmate,
+          headers: {'Content-Type': 'application/json'},
+        );
+        if (res.statusCode == 200) {
+          var decodedList = (json.decode(res.body) as List<dynamic>);
+          teamsMate = decodedList.map((i) => Team.fromJson(i)).toList();
+          bool teamFounded = false;
+          teams.forEach((team) {
+            teamsMate.forEach((mateTeam) {
+              if (team.name == mateTeam.name) teamFounded = true;
+            });
+          });
+          if (teamFounded) {
+            return 0;
+          } else
+            return null;
+        } else
+          return null;
+      } else
+        return null;
+    } catch (err) {
+      logger.e("Error getting projects: " + err.toString());
+      return null;
+    }
+  }
+
 //*******************************************************/
   Future<List<CourseProjects>> getProjects(String id) async {
     logger.d("Trying to get course students:");
@@ -270,7 +359,8 @@ class StudentProvider with ChangeNotifier {
         logger.d("Projects retrieved:");
         //Convert from json List of Map to List
         var decodedList = (json.decode(response.body) as List<dynamic>);
-        List<CourseProjects> projects = decodedList.map((i) => CourseProjects.fromJson(i)).toList();
+        List<CourseProjects> projects =
+            decodedList.map((i) => CourseProjects.fromJson(i)).toList();
         //Send back List of Projects
         return projects;
       }
@@ -289,14 +379,16 @@ class StudentProvider with ChangeNotifier {
     logger.d("Trying to get course students:");
     try {
       Response response = await get(
-        AppUrl.getCourseStudents + '/464951543030303032303230', //HABRÁ QUE PASAR EL ID COMO PARÁMETRO
+        AppUrl.getCourseStudents +
+            '/464951543030303032303230', //HABRÁ QUE PASAR EL ID COMO PARÁMETRO
         headers: {'Content-Type': 'application/json'},
       );
       if (response.statusCode == 200) {
         logger.d("Student retrieved:");
         //Convert from json List of Map to List of Student
         var decodedList = (json.decode(response.body) as List<dynamic>);
-        List<Student> students = decodedList.map((i) => Student.fromJson(i)).toList();
+        List<Student> students =
+            decodedList.map((i) => Student.fromJson(i)).toList();
         //Send back List of Students
         return students;
       }
@@ -324,7 +416,8 @@ class StudentProvider with ChangeNotifier {
         logger.d("Courses retrieved:");
         //Convert from json List of Map to List of Student
         var decodedList = (json.decode(response.body) as List<dynamic>);
-        List<CourseAndStudents> courses = decodedList.map((i) => CourseAndStudents.fromJson(i)).toList();
+        List<CourseAndStudents> courses =
+            decodedList.map((i) => CourseAndStudents.fromJson(i)).toList();
         //Send back List of Students
         return courses;
       }

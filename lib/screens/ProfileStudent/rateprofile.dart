@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/user.dart';
+import 'package:meet_your_mates/api/models/rating.dart';
 import 'package:meet_your_mates/api/services/mate_provider.dart';
+import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/api/services/socket_service.dart';
 import 'package:meet_your_mates/screens/Chat/chatDetail.dart';
 import 'package:meet_your_mates/screens/Chat/chatDetail2.dart';
@@ -14,12 +16,12 @@ import 'package:smooth_star_rating/smooth_star_rating.dart';
 
 import '../../api/services/auth_service.dart';
 
-class OtherProfileStudent extends StatefulWidget {
+class RateOtherStudent extends StatefulWidget {
   @override
   _ProfileStudentState createState() => _ProfileStudentState();
 }
 
-class _ProfileStudentState extends State<OtherProfileStudent> {
+class _ProfileStudentState extends State<RateOtherStudent> {
   final formKey = new GlobalKey<FormState>();
   var logger = Logger();
 
@@ -28,11 +30,15 @@ class _ProfileStudentState extends State<OtherProfileStudent> {
   @override
   Widget build(BuildContext context) {
     MateProvider _studentProvider = Provider.of<MateProvider>(context);
-    AuthProvider _authProvider = Provider.of<AuthProvider>(context, listen: false);
+    StudentProvider _realStudentProvider =
+        Provider.of<StudentProvider>(context);
+    AuthProvider _authProvider =
+        Provider.of<AuthProvider>(context, listen: false);
     double meanRating = 0;
     for (int i = 0; i < _studentProvider.student.ratings.length; i++) {
       meanRating = (meanRating + _studentProvider.student.ratings[i].stars);
     }
+
     meanRating = meanRating / (_studentProvider.student.ratings.length + 1);
     return SafeArea(
       child: Scaffold(
@@ -47,7 +53,11 @@ class _ProfileStudentState extends State<OtherProfileStudent> {
                   username: _studentProvider.student.user.name,
                   email: _studentProvider.student.user.email,
                 ),
-                RatingStars(rating: meanRating),
+                RatingStars(
+                  rating: meanRating,
+                  studentProvider: _realStudentProvider,
+                  mateProvider: _studentProvider,
+                ),
                 ListView.builder(
                   physics: NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) => InsigniaCard(),
@@ -82,7 +92,8 @@ class StackContainer extends StatelessWidget {
   final String username;
   final String email;
 
-  const StackContainer({Key key, @required this.username, @required this.email}) : super(key: key);
+  const StackContainer({Key key, @required this.username, @required this.email})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -203,7 +214,10 @@ class InsigniaCard extends StatelessWidget {
             children: <Widget>[
               IconButton(
                 onPressed: () {
-                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new InsigniasMate()));
+                  Navigator.push(
+                      context,
+                      new MaterialPageRoute(
+                          builder: (context) => new InsigniasMate()));
                 },
                 icon: Icon(
                   Icons.album_sharp,
@@ -260,7 +274,10 @@ class TrophiesCard extends StatelessWidget {
             children: <Widget>[
               IconButton(
                 onPressed: () {
-                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new TrophiesMate()));
+                  Navigator.push(
+                      context,
+                      new MaterialPageRoute(
+                          builder: (context) => new TrophiesMate()));
                 },
                 icon: Icon(
                   Icons.amp_stories_rounded,
@@ -304,7 +321,8 @@ class SendMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SocketProvider socketProvider = Provider.of<SocketProvider>(context, listen: false);
+    SocketProvider socketProvider =
+        Provider.of<SocketProvider>(context, listen: false);
     // ignore: unused_element
     void openChat(User user) {
       //Search if This user is already a mate
@@ -376,11 +394,14 @@ class SendMessage extends StatelessWidget {
 
 class RatingStars extends StatelessWidget {
   final double rating;
-  const RatingStars({
-    Key key,
-    @required this.rating,
-  }) : super(key: key);
-
+  final StudentProvider studentProvider;
+  final MateProvider mateProvider;
+  const RatingStars(
+      {Key key,
+      @required this.rating,
+      @required this.studentProvider,
+      @required this.mateProvider})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -395,7 +416,14 @@ class RatingStars extends StatelessWidget {
                   size: 30,
                   color: Colors.yellow,
                   rating: rating,
-                  isReadOnly: true,
+                  isReadOnly: false,
+                  onRated: (v) {
+                    Rating rated = new Rating();
+                    rated.stars = v.round().toInt();
+                    rated.ratedBy = studentProvider.student.user.id;
+                    rated.date = DateTime.now().toIso8601String();
+                    studentProvider.rate(mateProvider.student, rated);
+                  },
                   defaultIconData: Icons.star_border,
                   halfFilledIconData: Icons.star_half,
                   borderColor: Colors.black,
