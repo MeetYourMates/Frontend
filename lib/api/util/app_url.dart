@@ -20,10 +20,8 @@ class AppUrl {
   //Students
   static const String addsubjects = baseURL + "/course/addStudent";
   static const String getCourseStudents = baseURL + "/course/getStudents";
-  static const String getStudentsAndCourses =
-      baseURL + "/student/getStudentsAndCourses";
-  static const String getProfessorCoursesAndStudents =
-      baseURL + "/professor/getStudentsAndCourses";
+  static const String getStudentsAndCourses = baseURL + "/student/getStudentsAndCourses";
+  static const String getProfessorCoursesAndStudents = baseURL + "/professor/getStudentsAndCourses";
   static const String editProfileStudent = baseURL + "/student/updateStudent";
   static const String editProfileProfessor = baseURL + "/professor/update";
   static const String editProfilePhoto = baseURL + "/student/StudentPhoto";
@@ -33,9 +31,10 @@ class AppUrl {
   //Meetings
   static const String getMeeting = baseURL + "/meeting/get/";
   static const String addMeeting = baseURL + "/meeting/addMeeting";
-
+  //TeamsProfessor
+  static const String getTeams = baseURL + "/team/";
+  static const String addTeam = baseURL + "/team/addTeam";
   //Projects
-  static const String getCourseProjects =
-      baseURL + "/professor/getCourseProjects";
+  static const String getCourseProjects = baseURL + "/professor/getCourseProjects";
   static const String addProject = baseURL + "/project/add";
 }

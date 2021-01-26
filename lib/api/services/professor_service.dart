@@ -4,9 +4,10 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/courseAndStudents.dart';
-import 'package:meet_your_mates/api/models/professor.dart';
 import 'package:meet_your_mates/api/models/courseProjects.dart';
+import 'package:meet_your_mates/api/models/professor.dart';
 import 'package:meet_your_mates/api/models/project.dart';
+import 'package:meet_your_mates/api/models/team.dart';
 import 'package:meet_your_mates/api/models/user.dart';
 import 'package:meet_your_mates/api/util/app_url.dart';
 import 'package:meet_your_mates/api/util/shared_preference.dart';
@@ -65,8 +66,7 @@ class ProfessorProvider with ChangeNotifier {
         logger.d("Courses retrieved:");
         //Convert from json List of Map to List of Student
         var decodedList = (json.decode(response.body) as List<dynamic>);
-        List<CourseAndStudents> courses =
-            decodedList.map((i) => CourseAndStudents.fromJson(i)).toList();
+        List<CourseAndStudents> courses = decodedList.map((i) => CourseAndStudents.fromJson(i)).toList();
         //Send back List of Students
         return courses;
       }
@@ -140,6 +140,66 @@ class ProfessorProvider with ChangeNotifier {
     return res;
   }
 
+  /// Create a team
+  //Get reunions from Server
+  Future<Team> createTeam(Team team) async {
+    logger.d("Adding meeting!");
+    String _team = json.encode(team.toJson());
+    try {
+      Response response = await post(
+        AppUrl.addTeam,
+        body: _team,
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(Duration(seconds: 10));
+      logger.d("Team Response:" + response.body);
+      if (response.statusCode == 201) {
+        //Logged In succesfully  from server
+        try {
+          Map responseData = jsonDecode(response.body);
+          Team resTeam = (Team.fromJson(responseData));
+          return resTeam;
+        } catch (err) {
+          logger.e("Error creating Meeting 404: " + err.toString());
+          return team;
+        }
+      } else {
+        return team;
+      }
+    } catch (err) {
+      logger.e("Error creating Meeting: " + err.toString());
+      return team;
+    }
+  }
+
+  //Get reunions from Server
+  Future<List<Team>> getTeams(String projectId) async {
+    logger.d("Getting ReunionsData!");
+    List<Team> res = [];
+    try {
+      Response response = await get(
+        AppUrl.getTeams + projectId,
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(Duration(seconds: 10));
+      logger.d("Meeting Response:" + response.body);
+      if (response.statusCode == 200) {
+        //Logged In succesfully  from server
+        try {
+          List<dynamic> responseData = jsonDecode(response.body);
+          res = responseData != null ? List<Team>.from(responseData.map((x) => Team.fromJson(x))) : [];
+          return res;
+        } catch (err) {
+          logger.e("Error Meeting 404: " + err.toString());
+          return res;
+        }
+      } else {
+        return res;
+      }
+    } catch (err) {
+      logger.e("Error Meeting: " + err.toString());
+      return res;
+    }
+  }
+
   /// ================================================================================================
   ///!                                  Upload professor parameters
   ///================================================================================================**/
@@ -166,7 +226,7 @@ class ProfessorProvider with ChangeNotifier {
   }
 
 //*******************************************************/
-  //***********************************KRUNAL***********************************************************/
+//***********************************KRUNAL***********************************************************/
 
 //************************PEP****************************/
   /// ================================================================================================
@@ -184,8 +244,7 @@ class ProfessorProvider with ChangeNotifier {
         logger.d("Projects retrieved:");
         //Convert from json List of Map to List of courseProjects
         var decodedList = (json.decode(response.body) as List<dynamic>);
-        List<CourseProjects> courses =
-            decodedList.map((i) => CourseProjects.fromJson(i)).toList();
+        List<CourseProjects> courses = decodedList.map((i) => CourseProjects.fromJson(i)).toList();
         //Send back List of Courses and Projects
         return courses;
       }
