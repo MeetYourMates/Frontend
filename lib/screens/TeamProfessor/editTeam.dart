@@ -3,7 +3,7 @@ import "package:flutter/widgets.dart";
 import 'package:logger/logger.dart';
 import 'package:flutter/services.dart';
 
-import 'package:meet_your_mates/api/models/project.dart';
+import 'package:meet_your_mates/api/models/team.dart';
 import 'package:meet_your_mates/api/services/professor_service.dart';
 
 import 'package:provider/provider.dart';
@@ -14,7 +14,8 @@ import 'package:meet_your_mates/screens/TeamProfessor/background.dart';
 import 'package:meet_your_mates/screens/ProjectsProfessor/components/dropDown.dart';
 
 class EditTeam extends StatefulWidget {
-  const EditTeam();
+  final Team team;
+  const EditTeam({this.team});
 
   @override
   _EditTeamState createState() => _EditTeamState();
@@ -23,15 +24,90 @@ class EditTeam extends StatefulWidget {
 class _EditTeamState extends State<EditTeam> {
   final _formKey = GlobalKey<FormState>();
 
-  _saveForm() {
-    final form = _formKey.currentState;
-    if (form.validate()) {
-      Navigator.pop(context);
-      form.save();
-    }
+  TextEditingController displayNameController = TextEditingController();
+  TextEditingController displayNumberController = TextEditingController();
+
+  bool _displayNameValid = true;
+
+  Column buildDisplayNameField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.only(top: 12.0),
+          child: Text(
+            "Project Name",
+            style: TextStyle(color: Colors.black),
+          ),
+        ),
+        TextField(
+          controller: displayNameController,
+          decoration: InputDecoration(
+            hintText: widget.team.name,
+            errorText: _displayNameValid ? null : "Name invalid",
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.only(bottom: 15.0),
+        ),
+      ],
+    );
+  }
+
+  Column buildDisplayNumberField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.only(top: 12.0),
+          child: Text(
+            "Team number",
+            style: TextStyle(color: Colors.black),
+          ),
+        ),
+        TextField(
+          controller: displayNumberController,
+          decoration: InputDecoration(
+            hintText: widget.team.numberStudents.toString(),
+            errorText: _displayNameValid ? null : "Number invalid",
+          ),
+          keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        ),
+        Padding(
+          padding: EdgeInsets.only(bottom: 15.0),
+        ),
+      ],
+    );
   }
 
   Widget build(BuildContext context) {
+    _saveForm() {
+      final form = _formKey.currentState;
+      if (form.validate()) {
+        Team team;
+        if (displayNameController.text.length != 0 &&
+            int.parse(displayNumberController.text) > 0) {
+          team = new Team(
+              name: displayNameController.text,
+              numberStudents: int.parse(displayNumberController.text));
+        }
+        /*
+        _professorProvider.addProject(project, _selectedSubjectResult).then(
+          (response) {
+            if (response == 0)
+              logger.d("Project added succesfully");
+            else if (response == -1)
+              logger.d("Error adding project");
+            else if (response == -2) logger.d("Unexpected return code");
+          },
+        );
+        */
+        Navigator.pop(context);
+        form.save();
+      }
+    }
+
     return SafeArea(
       child: Scaffold(
         body: Background(
@@ -90,7 +166,10 @@ class _EditTeamState extends State<EditTeam> {
                         Padding(
                           padding: EdgeInsets.all(16.0),
                           child: Column(
-                            children: <Widget>[],
+                            children: <Widget>[
+                              buildDisplayNameField(),
+                              buildDisplayNumberField(),
+                            ],
                           ),
                         ),
                         /*
