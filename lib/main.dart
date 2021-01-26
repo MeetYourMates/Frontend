@@ -184,7 +184,7 @@ class MyApp extends StatelessWidget {
           RouteUri.passwordRecovery: (context) => PasswordRecovery(),
           RouteUri.changePassword: (context) => ChangePassword(),
           //* All Else
-          //RouteUri.dashboardStudent: (context) => DashBoardStudent(),
+          RouteUri.dashboardStudent: (context) => DashBoardStudent(),
 
           RouteUri.dashboardProfessor: (context) => DashBoardProfessor(),
 
