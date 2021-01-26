@@ -30,13 +30,10 @@ class TaskList {
   }
 
   factory TaskList.fromJson(Map<String, dynamic> json) {
-    List<Task> tmp1 = json["tasks"] != null
-        ? List<Task>.from(json["tasks"].map((x) => Task.fromJson(x)))
-        : [];
+    List<Task> tmp1 = json["tasks"] != null ? List<Task>.from(json["tasks"].map((x) => Task.fromJson(x))) : [];
 
     return TaskList(tasks: tmp1);
   }
 
-  Map<String, dynamic> toJson() =>
-      {"tasks": List<dynamic>.from(tasks.map((x) => x.toJson()))};
+  Map<String, dynamic> toJson() => {"tasks": List<dynamic>.from(tasks.map((x) => x.toJson()))};
 }

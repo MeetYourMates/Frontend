@@ -8,6 +8,7 @@ import 'package:meet_your_mates/components/error.dart';
 import 'package:meet_your_mates/components/loading.dart';
 import 'package:meet_your_mates/constants.dart';
 import 'package:meet_your_mates/screens/Meeting/meetings.dart';
+import 'package:meet_your_mates/screens/Task/taskPage.dart';
 import 'package:meet_your_mates/screens/TeamProfessor/background.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 //Constants
@@ -94,6 +95,20 @@ class _TeamsStudentState extends State<TeamsStudent> {
                               ),
                               onPressed: () {
                                 logger.i("Task Tapped");
+                                pushNewScreen(
+                                  context,
+                                  screen: TaskPage(
+                                    teamId: tempTeam.id,
+                                    //BDD always store location as latitude, longitude!
+                                  ),
+                                  withNavBar: true, // OPTIONAL VALUE. True by default.
+                                  pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                                ).then(
+                                  (value) => {
+                                    //? To set the original Launching Screen appBarTitle, in this case we are coming back to meetings
+                                    _appBarProvider.setTitle("Projects"),
+                                  },
+                                );
                               },
                             ),
                             IconButton(
