@@ -22,6 +22,8 @@ class EditTeam extends StatefulWidget {
 }
 
 class _EditTeamState extends State<EditTeam> {
+  var logger = Logger(level: Level.debug);
+
   final _formKey = GlobalKey<FormState>();
 
   TextEditingController displayNameController = TextEditingController();
@@ -82,6 +84,9 @@ class _EditTeamState extends State<EditTeam> {
   }
 
   Widget build(BuildContext context) {
+    ProfessorProvider _professorProvider =
+        Provider.of<ProfessorProvider>(context);
+
     _saveForm() {
       final form = _formKey.currentState;
       if (form.validate()) {
@@ -89,11 +94,11 @@ class _EditTeamState extends State<EditTeam> {
         if (displayNameController.text.length != 0 &&
             int.parse(displayNumberController.text) > 0) {
           team = new Team(
+              id: widget.team.id,
               name: displayNameController.text,
               numberStudents: int.parse(displayNumberController.text));
         }
-        /*
-        _professorProvider.addProject(project, _selectedSubjectResult).then(
+        _professorProvider.updateTeam(team).then(
           (response) {
             if (response == 0)
               logger.d("Project added succesfully");
@@ -102,7 +107,6 @@ class _EditTeamState extends State<EditTeam> {
             else if (response == -2) logger.d("Unexpected return code");
           },
         );
-        */
         Navigator.pop(context);
         form.save();
       }
