@@ -139,7 +139,9 @@ class StudentProvider with ChangeNotifier {
         //Logged In succesfully  from server
         try {
           List<dynamic> responseData = jsonDecode(response.body);
-          res = responseData != null ? List<Team>.from(responseData.map((x) => Team.fromJson(x))) : [];
+          res = responseData != null
+              ? List<Team>.from(responseData.map((x) => Team.fromJson(x)))
+              : [];
           return res;
         } catch (err) {
           logger.e("Error Meeting 404: " + err.toString());
@@ -165,7 +167,8 @@ class StudentProvider with ChangeNotifier {
         logger.d("Projects retrieved:");
         //Convert from json List of Map to List of courseProjects
         var decodedList = (json.decode(response.body) as List<dynamic>);
-        List<CourseProjects> courses = decodedList.map((i) => CourseProjects.fromJson(i)).toList();
+        List<CourseProjects> courses =
+            decodedList.map((i) => CourseProjects.fromJson(i)).toList();
         //Send back List of Courses and Projects
         return courses;
       }
@@ -311,7 +314,7 @@ class StudentProvider with ChangeNotifier {
       List<Team> teams;
       List<Team> teamsMate;
       Response response = await get(
-        AppUrl.getTeams + idStu,
+        AppUrl.getTeamsStudent + idStu,
         headers: {'Content-Type': 'application/json'},
       );
       logger.i(response.statusCode);
@@ -322,7 +325,7 @@ class StudentProvider with ChangeNotifier {
         teams = decodedList.map((i) => Team.fromJson(i)).toList();
         //Send back List of Projects
         Response res = await get(
-          AppUrl.getTeams + idmate,
+          AppUrl.getTeamsStudent + idmate,
           headers: {'Content-Type': 'application/json'},
         );
         if (res.statusCode == 200) {
@@ -438,49 +441,43 @@ class StudentProvider with ChangeNotifier {
         logger.d("Courses retrieved:");
         //Convert from json List of Map to List of Student
         var decodedList = (json.decode(response.body) as List<dynamic>);
-        List<Invitation> inv = decodedList.map((i) => Invitation.fromJson(i)).toList();
+        List<Invitation> inv =
+            decodedList.map((i) => Invitation.fromJson(i)).toList();
         int c = 1;
         return inv;
       }
-    }
-    catch (err) {
+    } catch (err) {
       logger.e("Error getting invitations: " + err.toString());
       return null;
     }
   }
+
   Future<void> AcceptOrRejectInv(Invitation inv, String action) async {
     try {
-      Response response = await get(
-        AppUrl.acceptOrRejectInv + inv.invId + "/" + action
-      );
+      Response response =
+          await get(AppUrl.acceptOrRejectInv + inv.invId + "/" + action);
       if (response.statusCode == 200) {
         logger.d(action + "invitation");
         //Convert from json List of Map to List of Student
       }
-    }
-    catch (err) {
+    } catch (err) {
       logger.e("Error getting invitations: " + err.toString());
       return null;
     }
-
   }
+
   Future<String> JoinTeam(String id) async {
     try {
-      String json = '{"studentId":'+'"'+this.student.id+'"}';
-      Response response = await post(
-          AppUrl.joinTeam + id,
-        headers: {'Content-Type': 'application/json'},
-        body: json
-      );
+      String json = '{"studentId":' + '"' + this.student.id + '"}';
+      Response response = await post(AppUrl.joinTeam + id,
+          headers: {'Content-Type': 'application/json'}, body: json);
       if (response.statusCode == 201) {
         logger.d("joined team");
         return "joined";
       }
-    }
-    catch (err) {
+    } catch (err) {
       logger.e("Error getting into team: " + err.toString());
       return null;
     }
-
   }
 }
