@@ -67,7 +67,8 @@ class ProfessorProvider with ChangeNotifier {
         logger.d("Courses retrieved:");
         //Convert from json List of Map to List of Student
         var decodedList = (json.decode(response.body) as List<dynamic>);
-        List<CourseAndStudents> courses = decodedList.map((i) => CourseAndStudents.fromJson(i)).toList();
+        List<CourseAndStudents> courses =
+            decodedList.map((i) => CourseAndStudents.fromJson(i)).toList();
         //Send back List of Students
         return courses;
       }
@@ -160,7 +161,9 @@ class ProfessorProvider with ChangeNotifier {
         //Logged In succesfully  from server
         try {
           List<dynamic> responseData = jsonDecode(response.body);
-          res = responseData != null ? List<Team>.from(responseData.map((x) => Team.fromJson(x))) : res;
+          res = responseData != null
+              ? List<Team>.from(responseData.map((x) => Team.fromJson(x)))
+              : res;
           return res;
         } catch (err) {
           logger.e("Error creating Meeting 404: " + err.toString());
@@ -189,7 +192,9 @@ class ProfessorProvider with ChangeNotifier {
         //Logged In succesfully  from server
         try {
           List<dynamic> responseData = jsonDecode(response.body);
-          res = responseData != null ? List<Team>.from(responseData.map((x) => Team.fromJson(x))) : [];
+          res = responseData != null
+              ? List<Team>.from(responseData.map((x) => Team.fromJson(x)))
+              : [];
           return res;
         } catch (err) {
           logger.e("Error Meeting 404: " + err.toString());
@@ -203,6 +208,32 @@ class ProfessorProvider with ChangeNotifier {
       return res;
     }
   }
+
+  //************************PEP****************************/
+  /// ================================================================================================
+  ///!                UPDATE TEAM INFO
+  ///
+  ///================================================================================================**/
+  Future<int> updateTeam(Team team) async {
+    logger.d("Trying to add new project:");
+    try {
+      Response response = await put(
+        AppUrl.updateTeam,
+        body: json.encode(team.toJson()),
+        headers: {'Content-Type': 'application/json'},
+      );
+      if (response.statusCode == 201) {
+        logger.d("Team updated");
+        return 0;
+      } else
+        return -2;
+    } catch (err) {
+      logger.e("Error updating team: " + err.toString());
+      return -1;
+    }
+  }
+
+  ///*******************************************************/
 
   /// ================================================================================================
   ///!                                  Upload professor parameters
@@ -248,7 +279,8 @@ class ProfessorProvider with ChangeNotifier {
         logger.d("Projects retrieved:");
         //Convert from json List of Map to List of courseProjects
         var decodedList = (json.decode(response.body) as List<dynamic>);
-        List<CourseProjects> courses = decodedList.map((i) => CourseProjects.fromJson(i)).toList();
+        List<CourseProjects> courses =
+            decodedList.map((i) => CourseProjects.fromJson(i)).toList();
         //Send back List of Courses and Projects
         return courses;
       }

@@ -10,6 +10,7 @@ import 'package:meet_your_mates/api/services/professor_service.dart';
 import 'package:meet_your_mates/api/services/socket_service.dart';
 import 'package:meet_your_mates/api/services/start_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
+import 'package:meet_your_mates/api/services/task_service.dart';
 import 'package:meet_your_mates/api/services/user_service.dart';
 import 'package:meet_your_mates/api/util/route_uri.dart';
 import 'package:meet_your_mates/components/error.dart';
@@ -58,6 +59,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ImagesProvider()),
         ChangeNotifierProvider(create: (_) => SocketProvider()),
         ChangeNotifierProvider(create: (_) => AppBarProvider()),
+        ChangeNotifierProvider(create: (_) => TaskProvider()),
       ],
       child: MyApp(),
     ),
@@ -182,7 +184,8 @@ class MyApp extends StatelessWidget {
           RouteUri.passwordRecovery: (context) => PasswordRecovery(),
           RouteUri.changePassword: (context) => ChangePassword(),
           //* All Else
-          RouteUri.dashboardStudent: (context) => DashBoardStudent(),
+          //RouteUri.dashboardStudent: (context) => DashBoardStudent(),
+
           RouteUri.dashboardProfessor: (context) => DashBoardProfessor(),
 
           RouteUri.getStartedStudent: (context) => GetStartedStudent(),

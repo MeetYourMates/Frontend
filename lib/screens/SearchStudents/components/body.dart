@@ -32,9 +32,11 @@ class _BodyState extends State<Body> {
   Widget build(BuildContext context) {
     //Consula los cursos de un estudiante (falta enviar id de estudiante como parametro)
     Future<List<CourseAndStudents>> _getCourses() async {
-      _professorProvider = Provider.of<ProfessorProvider>(context, listen: false);
+      _professorProvider =
+          Provider.of<ProfessorProvider>(context, listen: false);
       logger.d(_professorProvider.professor);
-      List<CourseAndStudents> _courses = await _professorProvider.getProfessorCourses(_professorProvider.professor.id);
+      List<CourseAndStudents> _courses = await _professorProvider
+          .getProfessorCourses(_professorProvider.professor.id);
       logger.d("****************COURSES & Students *************!!");
       logger.d(_courses);
       logger.d("****************COURSES & Students *************!!");

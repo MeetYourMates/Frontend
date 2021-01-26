@@ -172,9 +172,6 @@ class _DashBoardStudentState extends State<DashBoardStudent> {
           Navigator.popAndPushNamed(context, RouteUri.login);
         }),
         ChatSummaryList(),
-        /* Meetings(
-          teamId: '600069c5e508bd526c8d2b71',
-        ), */
         Home(),
         ProjectsStudent(),
         SearchMates()
