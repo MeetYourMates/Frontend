@@ -50,6 +50,11 @@ class ProjectListStudent extends StatelessWidget {
             Project project = queryResult.projects[index];
             return Card(
               child: ListTile(
+                leading: Icon(
+                  Icons.account_balance,
+                  size: 40.0,
+                  color: Colors.blue,
+                ),
                 title: Text(project.name != null ? project.name : "No name"),
                 onTap: () {
                   // add new teams with a selectable groccery type view
