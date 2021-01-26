@@ -9,6 +9,7 @@ import 'package:meet_your_mates/components/loading.dart';
 import 'package:meet_your_mates/constants.dart';
 import 'package:meet_your_mates/screens/TeamProfessor/background.dart';
 import 'package:meet_your_mates/screens/TeamProfessor/create_team.dart';
+import 'package:meet_your_mates/screens/TeamProfessor/editTeam.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 //Constants
 import 'package:provider/provider.dart';
@@ -41,8 +42,10 @@ class _TeamsProfessorState extends State<TeamsProfessor> {
   @override
   Widget build(BuildContext context) {
     /// Accessing the same Student Provider from the MultiProvider
-    ProfessorProvider _professorProvider = Provider.of<ProfessorProvider>(context, listen: true);
-    AppBarProvider _appBarProvider = Provider.of<AppBarProvider>(context, listen: false);
+    ProfessorProvider _professorProvider =
+        Provider.of<ProfessorProvider>(context, listen: true);
+    AppBarProvider _appBarProvider =
+        Provider.of<AppBarProvider>(context, listen: false);
     List<Team> teams = [];
 
     /// [_fetchReunions] We fetch the reunions from the server and notify in future
@@ -82,11 +85,21 @@ class _TeamsProfessorState extends State<TeamsProfessor> {
                     return Card(
                       child: ListTile(
                           title: Text(tempTeam.name),
-                          trailing: Icon(
-                            Icons.edit,
-                            color: Colors.blue,
-                            size: 24.0,
-                            semanticLabel: 'Edit Team',
+                          trailing: IconButton(
+                            icon: Icon(
+                              Icons.edit,
+                              color: Colors.blue,
+                              size: 24.0,
+                              semanticLabel: 'Edit Team',
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                new MaterialPageRoute(
+                                  builder: (context) => new EditTeam(),
+                                ),
+                              );
+                            },
                           ),
                           onTap: () {
                             //TODO: On Team Tap

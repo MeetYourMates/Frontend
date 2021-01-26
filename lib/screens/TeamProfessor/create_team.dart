@@ -5,7 +5,6 @@ import 'package:meet_your_mates/api/models/team.dart';
 import 'package:meet_your_mates/api/services/appbar_service.dart';
 import 'package:meet_your_mates/api/services/professor_service.dart';
 import 'package:meet_your_mates/components/counter.dart';
-import 'package:meet_your_mates/components/rounded_button.dart';
 import 'package:meet_your_mates/constants.dart';
 import 'package:meet_your_mates/screens/TeamProfessor/background.dart';
 //import 'package:meet_your_mates/screens/Meeting/map_google.saved';
