@@ -7,7 +7,9 @@ import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/components/error.dart';
 import 'package:meet_your_mates/components/loading.dart';
 import 'package:meet_your_mates/constants.dart';
+import 'package:meet_your_mates/screens/Meeting/meetings.dart';
 import 'package:meet_your_mates/screens/TeamProfessor/background.dart';
+import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 //Constants
 import 'package:provider/provider.dart';
 //Components
@@ -40,7 +42,7 @@ class _TeamsStudentState extends State<TeamsStudent> {
   Widget build(BuildContext context) {
     /// Accessing the same Student Provider from the MultiProvider
     StudentProvider _studentProvider = Provider.of<StudentProvider>(context, listen: true);
-    //AppBarProvider _appBarProvider = Provider.of<AppBarProvider>(context, listen: false);
+    AppBarProvider _appBarProvider = Provider.of<AppBarProvider>(context, listen: false);
     List<Team> teams = [];
 
     /// [_fetchReunions] We fetch the reunions from the server and notify in future
@@ -79,16 +81,54 @@ class _TeamsStudentState extends State<TeamsStudent> {
                     Team tempTeam = teams[index];
                     return Card(
                       child: ListTile(
-                          title: Text(tempTeam.name),
-                          trailing: Icon(
-                            Icons.edit,
-                            color: Colors.blue,
-                            size: 24.0,
-                            semanticLabel: 'Edit Team',
-                          ),
-                          onTap: () {
-                            //TODO: On Team Tap
-                          }),
+                        title: Text(tempTeam.name),
+                        trailing: Wrap(
+                          spacing: 1, // space between two icons
+                          children: <Widget>[
+                            IconButton(
+                              icon: Icon(
+                                Icons.assignment,
+                                color: Colors.blue,
+                                size: 24.0,
+                                semanticLabel: 'Tasks',
+                              ),
+                              onPressed: () {
+                                logger.i("Task Tapped");
+                              },
+                            ),
+                            IconButton(
+                              icon: Icon(
+                                Icons.calendar_today_rounded,
+                                color: Colors.blue,
+                                size: 24.0,
+                                semanticLabel: 'Meetings',
+                              ),
+                              onPressed: () {
+                                logger.i("Meeting Tapped");
+                                pushNewScreen(
+                                  context,
+                                  screen: Meetings(
+                                    teamId: tempTeam.id,
+                                    //BDD always store location as latitude, longitude!
+                                  ),
+                                  withNavBar: true, // OPTIONAL VALUE. True by default.
+                                  pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                                ).then(
+                                  (value) => {
+                                    //? To set the original Launching Screen appBarTitle, in this case we are coming back to meetings
+                                    _appBarProvider.setTitle("Projects"),
+                                  },
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                        onTap: () {
+                          //TODO: On Team Tap
+                          logger.i("Team Tapped");
+                          //Should show the possibility of showing the meetings for this team in the
+                        },
+                      ),
                     );
                   },
                 );

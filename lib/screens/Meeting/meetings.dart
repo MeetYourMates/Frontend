@@ -30,6 +30,13 @@ class Meetings extends StatefulWidget {
 class _MeetingsState extends State<Meetings> {
   /// [logger] to logg all of the logs in console prettily!
   var logger = Logger(level: Level.debug);
+  @override
+  void initState() {
+    super.initState();
+    new Future.delayed(Duration.zero, () {
+      Provider.of<AppBarProvider>(context, listen: false).setTitle("Meetings");
+    });
+  }
 
   /// [_memoizerReunions] to recieve all of the reunions from server just once
   /// all of the other runs it just gets data from local ram.
@@ -128,7 +135,9 @@ class _MeetingsState extends State<Meetings> {
                 teamId: widget.teamId,
                 onCreated: (meeting) {
                   logger.i("Added New Meeting succesfull");
-                  meetings.add(meeting);
+                  setState(() {
+                    meetings.add(meeting);
+                  });
                 },
               ),
               withNavBar: true, // OPTIONAL VALUE. True by default.
