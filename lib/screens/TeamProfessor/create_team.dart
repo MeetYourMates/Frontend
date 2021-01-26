@@ -19,7 +19,12 @@ class CreateTeamProfessor extends StatefulWidget {
   final String projectId;
   final num initialGroupValue;
   final onCreated;
-  const CreateTeamProfessor({Key key, @required this.projectId, @required this.onCreated, this.initialGroupValue = 1}) : super(key: key);
+  const CreateTeamProfessor(
+      {Key key,
+      @required this.projectId,
+      @required this.onCreated,
+      this.initialGroupValue = 1})
+      : super(key: key);
   @override
   _CreateTeamProfessorState createState() => _CreateTeamProfessorState();
 }
@@ -54,14 +59,16 @@ class _CreateTeamProfessorState extends State<CreateTeamProfessor> {
   @override
   Widget build(BuildContext context) {
     /// Accessing the same Student Provider from the MultiProvider
-    ProfessorProvider _professorProvider = Provider.of<ProfessorProvider>(context, listen: true);
+    ProfessorProvider _professorProvider =
+        Provider.of<ProfessorProvider>(context, listen: true);
 
     /// [_fetchReunions] We fetch the reunions from the server and notify in future
     // ignore: unused_element
     Future<List<Team>> _addTeams() async {
       logger.d("Creating a new Team");
       //meeting.date = dateTimeVal;
-      List<Team> result = await _professorProvider.createTeams(newTeams, widget.projectId);
+      List<Team> result =
+          await _professorProvider.createTeams(newTeams, widget.projectId);
       return result;
     }
 
@@ -141,29 +148,36 @@ class _CreateTeamProfessorState extends State<CreateTeamProfessor> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Expanded(
-                    flex: 1,
-                    child: SizedBox(
-                      height: size.height * 0.08,
-                      child: RoundedButton(
-                        text: "Cancel",
-                        press: () {
-                          //Exit
-                          Navigator.of(context).pop();
-                        },
+                  RaisedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      "Cancel",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
+                    color: Colors.cyan[400],
                   ),
-                  Expanded(
-                    flex: 1,
-                    child: SizedBox(
-                      //width: size.width * 0.46,
-                      height: size.height * 0.08,
-                      child: RoundedButton(
-                        text: "Create",
-                        press: createTeam,
+                  SizedBox(
+                    width: 18,
+                  ),
+                  RaisedButton(
+                    onPressed: () {
+                      createTeam();
+                    },
+                    child: Text(
+                      "Update",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
+                    color: Colors.cyan[400],
                   ),
                 ],
               ),
@@ -172,6 +186,7 @@ class _CreateTeamProfessorState extends State<CreateTeamProfessor> {
         ),
       ),
     );
+
     return SafeArea(
       child: Scaffold(
         body: Background(
@@ -182,7 +197,9 @@ class _CreateTeamProfessorState extends State<CreateTeamProfessor> {
           onPressed: () {
             // Add your onPressed code here!
             logger.i("Adding a new Team");
-            Team temp = new Team(name: "Group ${widget.initialGroupValue + newTeams.length}", numberStudents: 1);
+            Team temp = new Team(
+                name: "Group ${widget.initialGroupValue + newTeams.length}",
+                numberStudents: 1);
             setState(() {
               newTeams.add(temp);
             });
