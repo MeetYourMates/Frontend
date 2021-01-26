@@ -24,6 +24,7 @@ class Background extends StatelessWidget {
             alignment: Alignment.bottomLeft,
             child: Image.asset(
               "assets/images/getstarted_bottom_left.png",
+              color: Colors.green[200],
             ),
           ),
           Align(

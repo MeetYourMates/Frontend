@@ -10,6 +10,7 @@ import 'package:meet_your_mates/api/services/professor_service.dart';
 import 'package:meet_your_mates/api/services/socket_service.dart';
 import 'package:meet_your_mates/api/services/start_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
+import 'package:meet_your_mates/api/services/task_service.dart';
 import 'package:meet_your_mates/api/services/user_service.dart';
 import 'package:meet_your_mates/api/util/route_uri.dart';
 import 'package:meet_your_mates/components/error.dart';
@@ -26,6 +27,7 @@ import 'package:meet_your_mates/screens/ProfileProfessor/edit_profile_professor.
 import 'package:meet_your_mates/screens/ProfileStudent/edit_profile_student.dart';
 import 'package:meet_your_mates/screens/ProjectsProfessor/projectsProfessor.dart';
 import 'package:meet_your_mates/screens/Register/register.dart';
+import 'package:meet_your_mates/screens/Task/taskPage.dart';
 import 'package:meet_your_mates/screens/Validate/validate.dart';
 import 'package:overlay_support/overlay_support.dart';
 //Utilities
@@ -58,6 +60,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ImagesProvider()),
         ChangeNotifierProvider(create: (_) => SocketProvider()),
         ChangeNotifierProvider(create: (_) => AppBarProvider()),
+        ChangeNotifierProvider(create: (_) => TaskProvider()),
       ],
       child: MyApp(),
     ),
@@ -69,8 +72,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     /// Accessing the same Student Provider from the MultiProvider
-    StudentProvider _studentProvider = Provider.of<StudentProvider>(context, listen: true);
-    ProfessorProvider _professorProvider = Provider.of<ProfessorProvider>(context, listen: true);
+    StudentProvider _studentProvider =
+        Provider.of<StudentProvider>(context, listen: true);
+    ProfessorProvider _professorProvider =
+        Provider.of<ProfessorProvider>(context, listen: true);
 
     /// [_fetchLogin] Fetches AutoLogin Response
     Future<int> _fetchLogin(String email, String password) async {
@@ -110,13 +115,15 @@ class MyApp extends StatelessWidget {
               /// we ask server [_fetchlogin] if the user is still valid
               /// untill than we show something else to user.
               return FutureBuilder<int>(
-                future: _fetchLogin(snapshot.data.email, snapshot.data.password),
+                future:
+                    _fetchLogin(snapshot.data.email, snapshot.data.password),
                 builder: (context, snapshot2) {
                   switch (snapshot2.connectionState) {
                     case ConnectionState.none:
 
                       /// Show [ErrorScreen], as we are unable to get the response...
-                      return ErrorShow(errorText: "Cannot Connect to Server...");
+                      return ErrorShow(
+                          errorText: "Cannot Connect to Server...");
                     case ConnectionState.waiting:
 
                       /// Show [LoadingScreen], as we are waiting for the response...
@@ -129,11 +136,16 @@ class MyApp extends StatelessWidget {
                         );
                       } else if (snapshot2.data == 0) {
                         /// Redirect to [DashBoard Student]
-                        return DashBoardStudent();
+                        //return DashBoardStudent();
+                        return TaskPage();
                       } else if (snapshot2.data == 1) {
                         /// Redirect to [Validate Both Professor and Student]
-                        Provider.of<UserProvider>(context, listen: false).user.email = snapshot.data.email;
-                        Provider.of<UserProvider>(context, listen: false).user.password = snapshot.data.password;
+                        Provider.of<UserProvider>(context, listen: false)
+                            .user
+                            .email = snapshot.data.email;
+                        Provider.of<UserProvider>(context, listen: false)
+                            .user
+                            .password = snapshot.data.password;
                         return Validate();
                       } else if (snapshot2.data == 2) {
                         /// Redirect to [GetStarted Student]
@@ -182,7 +194,8 @@ class MyApp extends StatelessWidget {
           RouteUri.passwordRecovery: (context) => PasswordRecovery(),
           RouteUri.changePassword: (context) => ChangePassword(),
           //* All Else
-          RouteUri.dashboardStudent: (context) => DashBoardStudent(),
+          //RouteUri.dashboardStudent: (context) => DashBoardStudent(),
+          RouteUri.dashboardStudent: (context) => TaskPage(),
           RouteUri.dashboardProfessor: (context) => DashBoardProfessor(),
 
           RouteUri.getStartedStudent: (context) => GetStartedStudent(),
@@ -193,6 +206,7 @@ class MyApp extends StatelessWidget {
 
           //* Project Screens
           RouteUri.projectsProfessor: (context) => ProjectsProfessor(),
+          RouteUri.taskPage: (context) => TaskPage(),
         },
       ),
     );
