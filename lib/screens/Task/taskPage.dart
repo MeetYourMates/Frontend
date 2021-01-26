@@ -32,7 +32,7 @@ class taskPage extends StatefulWidget {
 class _taskPageState extends State<taskPage> {
   var logger = Logger();
   final AsyncMemoizer _memoizerTasks = AsyncMemoizer();
-  TaskList taskList = new TaskList();
+  TaskList taskList = new TaskList(tasks: []);
   List<String> taskNames = [];
   List<String> taskDates = [];
   String teamId = "Something";
@@ -149,57 +149,46 @@ class _taskPageState extends State<taskPage> {
                   initialCalendarFormat: CalendarFormat.week,
                 )
               : Container(),
-          SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 10,
-                ),
-                Container(
-                  padding: EdgeInsets.all(20),
-                  child: Text(
-                    "Today ${monthNames[today.month - 1]}, ${today.day}/${today.year}",
-                    style: TextStyle(fontSize: 18, color: Colors.grey),
-                  ),
-                ),
-                FutureBuilder<dynamic>(
-                  future: _fetchTasks(),
-                  builder: (context, snapshot) {
-                    switch (snapshot.connectionState) {
-                      case ConnectionState.none:
-                      case ConnectionState.waiting:
-                        return LoadingPage();
-                      default:
-                        if (snapshot.hasError)
-                          return ErrorShow(
-                              errorText: 'Error: ${snapshot.error}');
-                        else if ((snapshot.hasData)) {
-                          taskList = snapshot.data;
-                          taskNames.clear();
-                          taskDates.clear();
-                          taskNames.addAll(taskList.getTaskNames());
-                          taskDates.addAll(taskList.getTaskDates());
-
-                          //universityNames.value.remove("Select your University:");
-                          logger.d("Load Tasks: " + taskList.toString());
-                        } else {
-                          return ErrorShow(
-                              errorText:
-                                  "Unexpected error. Unable to Retrieve Tasks");
-                        }
-
-                        return ListView.builder(
-                          physics: ClampingScrollPhysics(),
-                          itemBuilder: (context, index) => TaskCard(
-                              name: taskNames[index], date: taskDates[index]),
-                          shrinkWrap: true,
-                          itemCount: taskList.tasks.length,
-                        );
+          Container(
+            padding: EdgeInsets.all(20),
+            child: Text(
+              "Today ${monthNames[today.month - 1]}, ${today.day}/${today.year}",
+              style: TextStyle(fontSize: 18, color: Colors.grey),
+            ),
+          ),
+          Expanded(
+            flex: 8,
+            child: FutureBuilder<dynamic>(
+              future: _fetchTasks(),
+              builder: (context, snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.none:
+                  case ConnectionState.waiting:
+                    return LoadingPage();
+                  default:
+                    if (snapshot.hasError)
+                      return ErrorShow(errorText: 'Error: ${snapshot.error}');
+                    else if ((snapshot.hasData)) {
+                      taskList = snapshot.data;
+                      taskNames.clear();
+                      taskDates.clear();
+                      taskNames.addAll(taskList.getTaskNames());
+                      taskDates.addAll(taskList.getTaskDates());
+                      logger.d("Load Tasks: " + taskList.toString());
+                      return ListView.builder(
+                        physics: ClampingScrollPhysics(),
+                        itemBuilder: (context, index) => TaskCard(
+                            name: taskNames[index], date: taskDates[index]),
+                        shrinkWrap: true,
+                        itemCount: taskList.tasks.length,
+                      );
+                    } else {
+                      return ErrorShow(
+                          errorText:
+                              "Unexpected error. Unable to Retrieve Tasks");
                     }
-                  },
-                ),
-              ],
+                }
+              },
             ),
           ),
         ],

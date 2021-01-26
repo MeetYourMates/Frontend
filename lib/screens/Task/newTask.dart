@@ -1,4 +1,10 @@
+import 'package:async/async.dart';
+import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
+import 'package:meet_your_mates/api/models/task.dart';
+import 'package:meet_your_mates/api/services/task_service.dart';
+import 'package:provider/provider.dart';
 import 'taskPage.dart';
 
 class NewTask extends StatelessWidget {
@@ -18,8 +24,20 @@ class newTask extends StatefulWidget {
 }
 
 class _newTaskState extends State<newTask> {
+  var logger = Logger(level: Level.debug);
+  final AsyncMemoizer _memoizerTasks = AsyncMemoizer();
+  String dateTimeVal;
   @override
   Widget build(BuildContext context) {
+    TaskProvider _taskProvider = Provider.of<TaskProvider>(context);
+    _createTask(Task task) async {
+      return _memoizerTasks.runOnce(() async {
+        logger.d("_memoizerTeams Executed");
+        bool result = await _taskProvider.createTask(task);
+        return result;
+      });
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -66,50 +84,6 @@ class _newTaskState extends State<newTask> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    SizedBox(
-                      height: 25,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Text(
-                          "For",
-                          style: TextStyle(fontSize: 18),
-                        ),
-                        Container(
-                          padding: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20)),
-                              color: Colors.grey.withOpacity(0.2)),
-                          child: Text(
-                            "Asignee",
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Text(
-                          "In",
-                          style: TextStyle(fontSize: 18),
-                        ),
-                        Container(
-                          padding: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20)),
-                              color: Colors.grey.withOpacity(0.2)),
-                          child: Text(
-                            "Project",
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
                     Container(
                       padding: EdgeInsets.all(10),
                       color: Colors.grey.withOpacity(0.2),
@@ -138,55 +112,15 @@ class _newTaskState extends State<newTask> {
                             height: 150,
                             width: double.infinity,
                             decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.only(
-                                    topRight: Radius.circular(15),
-                                    topLeft: Radius.circular(15)),
+                                color: Colors.grey.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(15),
                                 border: Border.all(
-                                    color: Colors.grey.withOpacity(0.5))),
+                                    color: Colors.grey.withOpacity(0.2))),
                             child: TextField(
                               maxLines: 6,
                               decoration: InputDecoration(
                                 border: InputBorder.none,
-                                hintText: "Add description here",
-                              ),
-                              style: TextStyle(fontSize: 18),
-                            ),
-                          ),
-                          Container(
-                            height: 50,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                                color: Colors.grey.withOpacity(0.2),
-                                borderRadius: BorderRadius.only(
-                                    bottomRight: Radius.circular(15),
-                                    bottomLeft: Radius.circular(15)),
-                                border: Border.all(
-                                    color: Colors.grey.withOpacity(0.5))),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Container(
-                                  child: IconButton(
-                                    icon: Icon(
-                                      Icons.attach_file,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Container(
-                            padding: EdgeInsets.all(10),
-                            color: Colors.grey.withOpacity(0.2),
-                            child: TextField(
-                              decoration: InputDecoration(
-                                hintText: "Due Date",
-                                border: InputBorder.none,
+                                hintText: " Add description here",
                               ),
                               style: TextStyle(fontSize: 18),
                             ),
@@ -195,7 +129,7 @@ class _newTaskState extends State<newTask> {
                             height: 20,
                           ),
                           Text(
-                            "Add member",
+                            "Due date",
                             style: TextStyle(fontSize: 18),
                           ),
                           SizedBox(
@@ -203,33 +137,45 @@ class _newTaskState extends State<newTask> {
                           ),
                           Container(
                             padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(20)),
-                                color: Colors.grey.withOpacity(0.2)),
-                            child: Text(
-                              "Anyone",
-                              style: TextStyle(fontSize: 18),
+                            color: Colors.grey.withOpacity(0.2),
+                            child: DateTimePicker(
+                              type: DateTimePickerType.dateTimeSeparate,
+                              dateMask: 'd MMM, yyyy',
+                              //"2021-01-23 09:03"
+                              initialValue: DateTime.now().toString(),
+                              firstDate: DateTime(2021),
+                              lastDate: DateTime(2100),
+                              icon: Icon(Icons.event),
+                              dateLabelText: 'Date',
+                              timeLabelText: "Time",
+                              onChanged: (val) =>
+                                  {logger.i(val), dateTimeVal = val},
+                              validator: (val) {
+                                dateTimeVal = val;
+                                return null;
+                              },
+                              onSaved: (val) =>
+                                  {logger.i(val), dateTimeVal = val},
                             ),
                           ),
                           SizedBox(
-                            height: 20,
+                            height: 100.0,
                           ),
-                          Container(
-                            padding: EdgeInsets.symmetric(vertical: 15),
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(15)),
-                                color: Color(0xffff96060)),
-                            child: Center(
-                              child: Text(
-                                "Add Task",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 18),
+                          SizedBox(
+                            width: 500.0,
+                            height: 50.0,
+                            child: RaisedButton(
+                              textColor: Colors.white,
+                              color: Colors.cyan,
+                              child: Text("Add Task"),
+                              onPressed: () {
+                                _createtask();
+                              },
+                              shape: new RoundedRectangleBorder(
+                                borderRadius: new BorderRadius.circular(20.0),
                               ),
                             ),
-                          )
+                          ),
                         ],
                       ),
                     )

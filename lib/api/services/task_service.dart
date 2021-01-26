@@ -32,7 +32,7 @@ class TaskProvider with ChangeNotifier {
         //Send back List of Projects
         return tasks;
       }
-      return null;
+      return new TaskList(tasks: []);
     } catch (err) {
       logger.e("Error getting projects: " + err.toString());
       return null;
@@ -40,7 +40,7 @@ class TaskProvider with ChangeNotifier {
   }
 
   //Add Task
-  Future createTask(Task task) async {
+  Future<bool> createTask(Task task) async {
     logger.d("Adding meeting!");
     String taskCreate = json.encode(task.toJson());
     try {
@@ -52,7 +52,9 @@ class TaskProvider with ChangeNotifier {
       if (response.statusCode == 201) {
         //Logged In succesfully  from server
         logger.d("Task Added");
+        return true;
       }
+      return false;
     } catch (err) {
       logger.e("Error adding task: " + err.toString());
     }
