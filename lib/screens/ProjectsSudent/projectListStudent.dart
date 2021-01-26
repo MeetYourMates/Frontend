@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:meet_your_mates/api/models/courseProjects.dart';
 import 'package:meet_your_mates/api/models/project.dart';
 import 'package:meet_your_mates/api/services/appbar_service.dart';
-import 'package:meet_your_mates/screens/TeamProfessor/teams_professor.dart';
+import 'package:meet_your_mates/screens/TeamStudent/teams_student.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 
-class ProjectList extends StatelessWidget {
+class ProjectListStudent extends StatelessWidget {
   final CourseProjects queryResult;
-  const ProjectList({
+  const ProjectListStudent({
     this.queryResult,
   });
   @override
@@ -60,7 +60,7 @@ class ProjectList extends StatelessWidget {
                   // add new teams with a selectable groccery type view
                   pushNewScreen(
                     context,
-                    screen: TeamsProfessor(
+                    screen: TeamsStudent(
                       projectId: project.id,
                       //BDD always store location as latitude, longitude!
                     ),

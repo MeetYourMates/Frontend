@@ -3,26 +3,24 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/team.dart';
 import 'package:meet_your_mates/api/services/appbar_service.dart';
-import 'package:meet_your_mates/api/services/professor_service.dart';
+import 'package:meet_your_mates/api/services/student_service.dart';
 import 'package:meet_your_mates/components/error.dart';
 import 'package:meet_your_mates/components/loading.dart';
 import 'package:meet_your_mates/constants.dart';
 import 'package:meet_your_mates/screens/TeamProfessor/background.dart';
-import 'package:meet_your_mates/screens/TeamProfessor/create_team.dart';
-import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 //Constants
 import 'package:provider/provider.dart';
 //Components
 
-class TeamsProfessor extends StatefulWidget {
+class TeamsStudent extends StatefulWidget {
   final String projectId;
 
-  const TeamsProfessor({Key key, @required this.projectId}) : super(key: key);
+  const TeamsStudent({Key key, @required this.projectId}) : super(key: key);
   @override
-  _TeamsProfessorState createState() => _TeamsProfessorState();
+  _TeamsStudentState createState() => _TeamsStudentState();
 }
 
-class _TeamsProfessorState extends State<TeamsProfessor> {
+class _TeamsStudentState extends State<TeamsStudent> {
   /// [logger] to logg all of the logs in console prettily!
   var logger = Logger(level: Level.debug);
 
@@ -41,15 +39,15 @@ class _TeamsProfessorState extends State<TeamsProfessor> {
   @override
   Widget build(BuildContext context) {
     /// Accessing the same Student Provider from the MultiProvider
-    ProfessorProvider _professorProvider = Provider.of<ProfessorProvider>(context, listen: true);
-    AppBarProvider _appBarProvider = Provider.of<AppBarProvider>(context, listen: false);
+    StudentProvider _studentProvider = Provider.of<StudentProvider>(context, listen: true);
+    //AppBarProvider _appBarProvider = Provider.of<AppBarProvider>(context, listen: false);
     List<Team> teams = [];
 
     /// [_fetchReunions] We fetch the reunions from the server and notify in future
     Future<List<Team>> _fetchReunions() async {
       return _memoizerReunions.runOnce(() async {
         logger.d("_memoizer Reunions Executed");
-        List<Team> result = await _professorProvider.getTeams(widget.projectId);
+        List<Team> result = await _studentProvider.getTeams(widget.projectId);
         return result;
       });
     }
@@ -108,24 +106,7 @@ class _TeamsProfessorState extends State<TeamsProfessor> {
           onPressed: () {
             // Add your onPressed code here!
             logger.i("Adding a new Reunion Button Pressed!");
-            pushNewScreen(
-              context,
-              screen: CreateTeamProfessor(
-                initialGroupValue: teams.length + 1,
-                projectId: widget.projectId,
-                onCreated: (newTeams) {
-                  logger.i("Added New Team succesfull");
-                  setState(() {
-                    teams.addAll(newTeams);
-                  });
-                },
-              ),
-              withNavBar: true, // OPTIONAL VALUE. True by default.
-              pageTransitionAnimation: PageTransitionAnimation.cupertino,
-            ).then((value) => {
-                  //? To set the original Launching Screen appBarTitle, in this case we are coming back to teams
-                  _appBarProvider.setTitle("Teams")
-                });
+            //TODO: Add your onPressed code here!
           },
           child: Icon(Icons.add),
           backgroundColor: kPrimaryColor,

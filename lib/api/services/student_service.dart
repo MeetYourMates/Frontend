@@ -122,6 +122,57 @@ class StudentProvider with ChangeNotifier {
   }
 
   //Get reunions from Server
+  Future<List<Team>> getTeams(String projectId) async {
+    logger.d("Getting ReunionsData!");
+    List<Team> res = [];
+    try {
+      Response response = await get(
+        AppUrl.getTeams + projectId,
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(Duration(seconds: 10));
+      logger.d("Meeting Response:" + response.body);
+      if (response.statusCode == 200) {
+        //Logged In succesfully  from server
+        try {
+          List<dynamic> responseData = jsonDecode(response.body);
+          res = responseData != null ? List<Team>.from(responseData.map((x) => Team.fromJson(x))) : [];
+          return res;
+        } catch (err) {
+          logger.e("Error Meeting 404: " + err.toString());
+          return res;
+        }
+      } else {
+        return res;
+      }
+    } catch (err) {
+      logger.e("Error Meeting: " + err.toString());
+      return res;
+    }
+  }
+
+  Future<List<CourseProjects>> getCourseProjects(String id) async {
+    logger.d("Trying to get professor projects:");
+    try {
+      Response response = await get(
+        AppUrl.getCourseProjectsStudent + '/' + id,
+        headers: {'Content-Type': 'application/json'},
+      );
+      if (response.statusCode == 200) {
+        logger.d("Projects retrieved:");
+        //Convert from json List of Map to List of courseProjects
+        var decodedList = (json.decode(response.body) as List<dynamic>);
+        List<CourseProjects> courses = decodedList.map((i) => CourseProjects.fromJson(i)).toList();
+        //Send back List of Courses and Projects
+        return courses;
+      }
+      return null;
+    } catch (err) {
+      logger.e("Error getting projects courses: " + err.toString());
+      return null;
+    }
+  }
+
+  //Get reunions from Server
   Future<List<Meeting>> getMeetings(String teamId) async {
     logger.d("Getting ReunionsData!");
     List<Meeting> res = [];
