@@ -4,6 +4,7 @@ import 'package:meet_your_mates/api/models/courseProjects.dart';
 import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/services/mate_provider.dart';
 import 'package:meet_your_mates/screens/ProfileStudent/otherprofile_student.dart';
+import 'package:meet_your_mates/screens/ProfileStudent/rateprofile.dart';
 import 'package:provider/provider.dart';
 
 class CourseList extends StatelessWidget {
@@ -63,10 +64,12 @@ class CourseList extends StatelessWidget {
                   trailing: Icon(Icons.arrow_forward),
                   onTap: () {
                     /* REDIRECCIONAR A PERFIL SELECCIONADO */
+                    _otherStudent.setStudent(student);
+                    
                     Navigator.push(
                       context,
                       new MaterialPageRoute(
-                        builder: (context) => new OtherProfileStudent(),
+                        builder: (context) => new RateOtherStudent(),
                       ),
                     );
                   }),

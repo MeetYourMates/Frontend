@@ -420,10 +420,10 @@ class RatingStars extends StatelessWidget {
                   rating: rating,
                   isReadOnly: false,
                   onRated: (v) {
-                    Rating rated;
-                    rated.stars = v.round().toInt();
-                    rated.ratedBy = studentProvider.student.user;
-                    rated.date = DateTime.now();
+                    Rating rated = new Rating();
+                    rated.stars = 5;
+                    rated.ratedBy = studentProvider.student.user.id;
+                    rated.date = DateTime.now().toIso8601String();
                     studentProvider.rate(mateProvider.student, rated);
                   },
                   defaultIconData: Icons.star_border,

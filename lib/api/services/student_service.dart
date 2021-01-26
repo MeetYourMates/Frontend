@@ -14,6 +14,8 @@ import 'package:meet_your_mates/api/models/rating.dart';
 import 'package:meet_your_mates/api/util/app_url.dart';
 import 'package:meet_your_mates/api/util/shared_preference.dart';
 
+import '../models/rating.dart';
+
 class StudentProvider with ChangeNotifier {
   Student _student = new Student();
   Student get student => _student;
@@ -212,44 +214,35 @@ class StudentProvider with ChangeNotifier {
   ///!                                  Rate studants after closing a project
   ///================================================================================================**/
 
-  Future<int> rate(Student studentToRate, Rating mate) async {
+  Future<dynamic> rate(Student studentToRate, Rating mate) async {
     logger.d("Verifying rating...");
-
     try {
       Response response = await get(
-        AppUrl.verifyRating + '/' + studentToRate.user.id,
+        AppUrl.verifyRating + '/' + _student.user.id,
         headers: {'Content-Type': 'application/json'},
       );
-      logger.d(response.body);
+      logger.i(response.statusCode);
       if (response.statusCode == 200) {
-        List<Rating> rating = json.decode(response.body);
-        bool founded = false;
-        for (int f = 0; f < rating.length && !founded; f++) {
-          if (rating.elementAt(f).ratedBy.toString() == _student.id)
-            founded = true;
-        }
-        if (founded) {
-          return -1;
-        } else {
-          try {
-            Response res = await post(
-              AppUrl.rateMate,
-              body: json.encode(mate.toJson()),
-              headers: {'Content-Type': 'application/json'},
-            );
-            logger.d(res.body);
-            if (res.statusCode == 200) {
-              upload(studentToRate);
-              return 0;
-            } else
-              return -1;
-          } catch (err) {
-            logger.e(err);
-            return -1;
-          }
-        }
-      } else
+        logger.i("You have rated this student");
         return -1;
+      } else {
+        try {
+          Response res = await post(
+            AppUrl.rateMate,
+            body: json.encode(mate.toJson()),
+            headers: {'Content-Type': 'application/json'},
+          );
+          logger.d(res.body);
+          if (res.statusCode == 200) {
+            upload(studentToRate);
+            return res;
+          } else
+            return -1;
+        } catch (err) {
+          logger.e(err);
+          return -1;
+        }
+      }
     } catch (err) {
       logger.e(err);
       return -1;

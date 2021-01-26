@@ -33,9 +33,7 @@ class _ProfileStudentState extends State<OtherProfileStudent> {
     for (int i = 0; i < _studentProvider.student.ratings.length; i++) {
       meanRating = (meanRating + _studentProvider.student.ratings[i].stars);
     }
-
     meanRating = meanRating / (_studentProvider.student.ratings.length + 1);
-
     return SafeArea(
       child: Scaffold(
         body: Background(

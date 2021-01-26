@@ -1,13 +1,16 @@
 import 'package:meet_your_mates/api/models/user.dart';
+
 class Rating {
+  String id;
   int stars;
-  User ratedBy = new User();
-  DateTime date;
-  Rating({this.stars, this.ratedBy, this.date});
+  String ratedBy;
+  String date;
+  Rating({this.id, this.stars, this.ratedBy, this.date});
   factory Rating.fromJson(Map<String, dynamic> responseData) {
     return Rating(
+      id: responseData['_id'],
       stars: responseData['stars'],
-      ratedBy: User.fromJson(responseData['ratedBy']),
+      ratedBy: responseData['ratedBy'],
       date: responseData['date'],
     );
   }
