@@ -104,16 +104,18 @@ class _TeamsProfessorState extends State<TeamsProfessor> {
           child: _reunionsgetFutureBuildWidget,
         ),
         floatingActionButton: FloatingActionButton(
+          heroTag: "teams",
           onPressed: () {
             // Add your onPressed code here!
             logger.i("Adding a new Reunion Button Pressed!");
             pushNewScreen(
               context,
               screen: CreateTeamProfessor(
+                initialGroupValue: teams.length + 1,
                 projectId: widget.projectId,
-                onCreated: (team) {
+                onCreated: (newTeams) {
                   logger.i("Added New Team succesfull");
-                  teams.add(team);
+                  teams.addAll(newTeams);
                 },
               ),
               withNavBar: true, // OPTIONAL VALUE. True by default.

@@ -8,27 +8,9 @@ typedef void CounterChangeCallback(num value);
 
 class Counter extends StatefulWidget {
   final CounterChangeCallback onChanged;
-  final textStyle;
-  final color;
-  Counter({
-    Key key,
-    @required num initialValue,
-    @required this.minValue,
-    @required this.maxValue,
-    @required this.onChanged,
-    @required this.decimalPlaces,
-    this.color,
-    this.textStyle,
-    this.step = 1,
-    this.buttonSize = 25,
-  })  : assert(initialValue != null),
-        assert(minValue != null),
-        assert(maxValue != null),
-        assert(maxValue > minValue),
-        assert(initialValue >= minValue && initialValue <= maxValue),
-        assert(step > 0),
-        selectedValue = initialValue,
-        super(key: key);
+  final TextStyle textStyle;
+  final num initialValue;
+  final Color color;
 
   ///min value user can pick
   final num minValue;
@@ -40,12 +22,30 @@ class Counter extends StatefulWidget {
   final int decimalPlaces;
 
   ///Currently selected integer value
-  num selectedValue;
 
   /// if min=0, max=5, step=3, then items will be 0 and 3.
   final num step;
 
   final double buttonSize;
+
+  const Counter({
+    Key key,
+    @required this.minValue,
+    @required this.maxValue,
+    @required this.onChanged,
+    @required this.decimalPlaces,
+    this.color,
+    this.textStyle,
+    this.step = 1,
+    this.buttonSize = 25,
+    @required this.initialValue,
+  })  : assert(initialValue != null),
+        assert(minValue != null),
+        assert(maxValue != null),
+        assert(maxValue > minValue),
+        assert(initialValue >= minValue && initialValue <= maxValue),
+        assert(step > 0),
+        super(key: key);
 
   @override
   _CounterState createState() => _CounterState();
@@ -54,18 +54,30 @@ class Counter extends StatefulWidget {
 class _CounterState extends State<Counter> {
   /// indicates the color of fab used for increment and decrement
   Color color;
+  num selectedValue;
+  @override
+  void initState() {
+    super.initState();
+    selectedValue = widget.initialValue;
+  }
 
   /// text syle
   TextStyle textStyle;
   void _incrementCounter() {
-    if (widget.selectedValue + widget.step <= widget.maxValue) {
-      widget.onChanged((widget.selectedValue + widget.step));
+    if (selectedValue + widget.step <= widget.maxValue) {
+      widget.onChanged((selectedValue + widget.step));
+      setState(() {
+        selectedValue = selectedValue + widget.step;
+      });
     }
   }
 
   void _decrementCounter() {
-    if (widget.selectedValue - widget.step >= widget.minValue) {
-      widget.onChanged((widget.selectedValue - widget.step));
+    if (selectedValue - widget.step >= widget.minValue) {
+      widget.onChanged((selectedValue - widget.step));
+      setState(() {
+        selectedValue = selectedValue - widget.step;
+      });
     }
   }
 
@@ -97,7 +109,7 @@ class _CounterState extends State<Counter> {
           ),
           new Container(
             padding: EdgeInsets.all(4.0),
-            child: new Text('${num.parse((widget.selectedValue).toStringAsFixed(widget.decimalPlaces))}', style: widget.textStyle),
+            child: new Text('${num.parse((selectedValue).toStringAsFixed(widget.decimalPlaces))}', style: widget.textStyle),
           ),
           new SizedBox(
             width: widget.buttonSize,

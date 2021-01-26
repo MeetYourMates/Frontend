@@ -21,9 +21,13 @@ class Team {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['_id'] = this.id;
     data['name'] = this.name;
-    data['meetings'] = List<dynamic>.from(meetings.map((x) => x.toJson()));
+    if (meetings != null) {
+      data['meetings'] = List<dynamic>.from(meetings.map((x) => x.toJson()));
+    }
     data['numberStudents'] = this.numberStudents;
-    data['tasks'] = List<dynamic>.from(tasks.map((x) => x.toJson()));
+    if (tasks != null) {
+      data['tasks'] = List<dynamic>.from(tasks.map((x) => x.toJson()));
+    }
     return data;
   }
 }

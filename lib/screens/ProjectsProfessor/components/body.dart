@@ -1,16 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-
 import 'package:meet_your_mates/api/models/courseProjects.dart';
 import 'package:meet_your_mates/api/services/professor_service.dart';
-
 import 'package:meet_your_mates/components/error.dart';
 import 'package:meet_your_mates/components/loading.dart';
-
-import 'package:meet_your_mates/screens/ProjectsProfessor/projectList.dart';
 import 'package:meet_your_mates/screens/ProjectsProfessor/addProject.dart';
-
+import 'package:meet_your_mates/screens/ProjectsProfessor/projectList.dart';
 import 'package:provider/provider.dart';
 
 import 'background.dart';
@@ -38,10 +34,8 @@ class _BodyState extends State<Body> {
   Widget build(BuildContext context) {
     //Consula los cursos de un estudiante (falta enviar id de estudiante como parametro)
     Future<List<CourseProjects>> _getProjects() async {
-      _professorProvider =
-          Provider.of<ProfessorProvider>(context, listen: false);
-      List<CourseProjects> _projects = await _professorProvider
-          .getCourseProjects(_professorProvider.professor.id);
+      _professorProvider = Provider.of<ProfessorProvider>(context, listen: false);
+      List<CourseProjects> _projects = await _professorProvider.getCourseProjects(_professorProvider.professor.id);
       return _projects;
     }
 
@@ -81,12 +75,12 @@ class _BodyState extends State<Body> {
                     ),
                   ),
                   floatingActionButton: FloatingActionButton(
+                    heroTag: "ProjectsList",
                     onPressed: () {
                       Navigator.push(
                         context,
                         new MaterialPageRoute(
-                          builder: (context) =>
-                              new AddProject(courseProjects: snapshot.data),
+                          builder: (context) => new AddProject(courseProjects: snapshot.data),
                         ),
                       );
                     },

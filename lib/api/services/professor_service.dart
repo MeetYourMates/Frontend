@@ -8,6 +8,7 @@ import 'package:meet_your_mates/api/models/courseProjects.dart';
 import 'package:meet_your_mates/api/models/professor.dart';
 import 'package:meet_your_mates/api/models/project.dart';
 import 'package:meet_your_mates/api/models/team.dart';
+import 'package:meet_your_mates/api/models/teamsList.dart';
 import 'package:meet_your_mates/api/models/user.dart';
 import 'package:meet_your_mates/api/util/app_url.dart';
 import 'package:meet_your_mates/api/util/shared_preference.dart';
@@ -142,32 +143,35 @@ class ProfessorProvider with ChangeNotifier {
 
   /// Create a team
   //Get reunions from Server
-  Future<Team> createTeam(Team team) async {
+  Future<List<Team>> createTeams(List<Team> teams, String projectId) async {
     logger.d("Adding meeting!");
-    String _team = json.encode(team.toJson());
+    List<Team> res = [];
+    //String _team = jsonEncode(teams);
+    TeamsList teamsList = new TeamsList(teams: teams, projectId: projectId);
+    /* json.encode(team.toJson()) */
     try {
       Response response = await post(
         AppUrl.addTeam,
-        body: _team,
+        body: json.encode(teamsList.toJson()),
         headers: {'Content-Type': 'application/json'},
       ).timeout(Duration(seconds: 10));
       logger.d("Team Response:" + response.body);
       if (response.statusCode == 201) {
         //Logged In succesfully  from server
         try {
-          Map responseData = jsonDecode(response.body);
-          Team resTeam = (Team.fromJson(responseData));
-          return resTeam;
+          List<dynamic> responseData = jsonDecode(response.body);
+          res = responseData != null ? List<Team>.from(responseData.map((x) => Team.fromJson(x))) : res;
+          return res;
         } catch (err) {
           logger.e("Error creating Meeting 404: " + err.toString());
-          return team;
+          return res;
         }
       } else {
-        return team;
+        return res;
       }
     } catch (err) {
       logger.e("Error creating Meeting: " + err.toString());
-      return team;
+      return res;
     }
   }
 
