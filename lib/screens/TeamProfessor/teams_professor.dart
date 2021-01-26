@@ -96,7 +96,8 @@ class _TeamsProfessorState extends State<TeamsProfessor> {
                               Navigator.push(
                                 context,
                                 new MaterialPageRoute(
-                                  builder: (context) => new EditTeam(),
+                                  builder: (context) =>
+                                      new EditTeam(team: teams[index]),
                                 ),
                               );
                             },
