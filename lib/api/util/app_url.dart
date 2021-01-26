@@ -39,7 +39,7 @@ class AppUrl {
   static const String getCourseProjectsProfessor = baseURL + "/professor/getCourseProjects";
   static const String getCourseProjectsStudent = baseURL + "/student/getCourseProjects";
   //Teams
-  static const String getTeams = baseURL + "/team/get/";
+  static const String getTeams = baseURL + "/team/";
   //Projects
   static const String getCourseProjects = baseURL + "/professor/getCourseProjects";
   static const String addProject = baseURL + "/project/add";
