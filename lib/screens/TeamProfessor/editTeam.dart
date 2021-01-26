@@ -202,6 +202,7 @@ class _EditTeamState extends State<EditTeam> {
                             RaisedButton(
                               onPressed: () {
                                 _saveForm();
+                                Navigator.pop(context);
                               },
                               child: Text(
                                 "Update",
