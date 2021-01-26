@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:meet_your_mates/api/models/invitation.dart';
 import 'package:meet_your_mates/api/services/appbar_service.dart';
 import 'package:meet_your_mates/api/services/socket_service.dart';
 import 'package:meet_your_mates/api/services/student_service.dart';
@@ -26,6 +27,7 @@ class DashBoardStudent extends StatefulWidget {
   _DashBoardStudentState createState() => _DashBoardStudentState();
 }
 
+
 class _DashBoardStudentState extends State<DashBoardStudent> {
   List usersList = [];
   Logger logger = Logger(level: Level.debug);
@@ -46,6 +48,9 @@ class _DashBoardStudentState extends State<DashBoardStudent> {
     super.dispose();
   }
 
+
+
+
   /// =======================================================================================================================
   ///                                                    DASHBOARD
   ///=======================================================================================================================**/
@@ -61,6 +66,87 @@ class _DashBoardStudentState extends State<DashBoardStudent> {
     Future<void> openSocketConnection() async {
       Provider.of<SocketProvider>(context, listen: false)
           .createSocketConnection(_studentProvider.student.user.token, _studentProvider.student.user.id);
+    }
+
+    void showInv() async{
+      List<Invitation> invitations = await _studentProvider.getInvitations(_studentProvider.student.id);
+      showModalBottomSheet(
+          context: context,
+          builder: (context) {
+            Size size = MediaQuery.of(context).size;
+            return Container(
+              //constraints:
+              //BoxConstraints.tightForFinite(width: size.width, height: size.height * 0.5),
+              color: Color(0xff737373),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(topRight: Radius.circular(20), topLeft: Radius.circular(20)),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 2,
+                      child: SizedBox(
+                        height: 4,
+                      ),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: Center(
+                        child: Container(
+                          width: size.width * 0.30,
+                          color: Colors.grey.shade200,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: SizedBox(
+                        height: 1,
+                      ),
+                    ),
+                    Flexible(
+                      flex: 96,
+                      child: ListView.builder(
+                        itemCount: invitations.length,
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          return Container(
+                            //padding: EdgeInsets.only(top: 10, bottom: 10),
+                            child: Column(
+                              children: [
+                                ListTile(
+                                  leading: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                    child: Icon(
+                                      Icons.add_alarm
+                                    ),
+                                  ),
+                                  title: Text(invitations[index].sender + " te ha invitado a " + invitations[index].group),
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    FlatButton(onPressed: () => {_studentProvider.AcceptOrRejectInv(invitations[index], "accept")}, child: Text("Accept")),
+                                    FlatButton(onPressed: () => {_studentProvider.AcceptOrRejectInv(invitations[index], "reject")}, child: Text("Reject")),
+                                  ],
+                                )
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          });
     }
 
     /// Listens to external events from other screens, when the title changes
@@ -140,6 +226,7 @@ class _DashBoardStudentState extends State<DashBoardStudent> {
       onInit: () {
         //Connect to Socket
         openSocketConnection();
+
       },
       child: Scaffold(
         appBar: PreferredSize(
@@ -154,10 +241,8 @@ class _DashBoardStudentState extends State<DashBoardStudent> {
                 actions: <Widget>[
                   IconButton(
                       icon: Icon(Icons.notifications_none_rounded),
-                      onPressed: () {
-                        //showSearch(context: context, delegate: DataSearch(listWords));
-                      })
-                ],
+                      onPressed: showInv,
+                  )],
               );
             },
             valueListenable: listentabletTitle,

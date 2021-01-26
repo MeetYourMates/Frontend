@@ -6,6 +6,7 @@ import 'package:http/http.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/courseAndStudents.dart';
 import 'package:meet_your_mates/api/models/courseProjects.dart';
+import 'package:meet_your_mates/api/models/invitation.dart';
 import 'package:meet_your_mates/api/models/meeting.dart';
 import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/models/team.dart';
@@ -284,6 +285,39 @@ class StudentProvider with ChangeNotifier {
     }
   }
 
-//*******************************************************/
+  Future<List<Invitation>> getInvitations(String userId) async {
+    try {
+      Response response = await get(
+        AppUrl.getInvitations + userId,
+      );
+      if (response.statusCode == 200) {
+        logger.d("Courses retrieved:");
+        //Convert from json List of Map to List of Student
+        var decodedList = (json.decode(response.body) as List<dynamic>);
+        List<Invitation> inv = decodedList.map((i) => Invitation.fromJson(i)).toList();
+        int c = 1;
+        return inv;
+      }
+    }
+    catch (err) {
+      logger.e("Error getting invitations: " + err.toString());
+      return null;
+    }
+  }
+  Future<void> AcceptOrRejectInv(Invitation inv, String action) async {
+    try {
+      Response response = await get(
+        AppUrl.acceptOrRejectInv + inv.invId + "/" + action
+      );
+      if (response.statusCode == 200) {
+        logger.d(action + "invitation");
+        //Convert from json List of Map to List of Student
+      }
+    }
+    catch (err) {
+      logger.e("Error getting invitations: " + err.toString());
+      return null;
+    }
 
+  }
 }
