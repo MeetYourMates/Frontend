@@ -80,11 +80,41 @@ class _TeamsStudentState extends State<TeamsStudent> {
                     return Card(
                       child: ListTile(
                           title: Text(tempTeam.name),
-                          trailing: Icon(
-                            Icons.edit,
-                            color: Colors.blue,
-                            size: 24.0,
-                            semanticLabel: 'Edit Team',
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.edit,
+                                color: Colors.blue,
+                                size: 24.0,
+                                semanticLabel: 'Edit Team',
+                              ),
+                              SizedBox(width: 20,),
+                              GestureDetector(
+                                child: Icon(
+                                  Icons.accessible_forward,
+                                  color: Colors.blue,
+                                  size: 24.0,
+                                  semanticLabel: 'Join Team',
+                                ),
+                                onTap: () {
+                                  _studentProvider.JoinTeam(tempTeam.id).then((value) =>
+                                  {
+                                    if (value == "joined") {
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context){
+                                            return AlertDialog(
+                                              title: Text("Joined Team"),
+                                              content: Text("You joined the team! now you can start inviting mates"),
+                                            );
+                                          }
+                                      )
+                                  }
+                                  });
+                                },
+                              ),
+                            ],
                           ),
                           onTap: () {
                             //TODO: On Team Tap

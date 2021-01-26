@@ -1,5 +1,5 @@
 class AppUrl {
-  static const String liveBaseURL = "http://147.83.7.157:3000";
+  static const String liveBaseURL = "https://api.meetyourmates.tk";
   static const String localBaseURL = "http://10.0.2.2:3000";
   static const String localhostBaseURL = "http://localhost:3000";
   static const String baseURL = localhostBaseURL;
@@ -48,4 +48,7 @@ class AppUrl {
   static const String getCourseProjects =
       baseURL + "/professor/getCourseProjects";
   static const String addProject = baseURL + "/project/add";
+  static const String getInvitations = baseURL + "/team/invitations/";
+  static const String acceptOrRejectInv = baseURL + "/team/invitations/";
+  static const String joinTeam = baseURL + "/team/";
 }
