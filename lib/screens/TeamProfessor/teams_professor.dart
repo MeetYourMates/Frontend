@@ -115,7 +115,9 @@ class _TeamsProfessorState extends State<TeamsProfessor> {
                 projectId: widget.projectId,
                 onCreated: (newTeams) {
                   logger.i("Added New Team succesfull");
-                  teams.addAll(newTeams);
+                  setState(() {
+                    teams.addAll(newTeams);
+                  });
                 },
               ),
               withNavBar: true, // OPTIONAL VALUE. True by default.
