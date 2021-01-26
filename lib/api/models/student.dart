@@ -31,7 +31,7 @@ class Student {
         ? List<Trophy>.from(
             responseData["trophies"].map((x) => Trophy.fromJson(x)))
         : null;
-    List<Insignia> tmp3 = responseData["ratings"] != null
+    List<Insignia> tmp3 = responseData["insignias"] != null
         ? List<Insignia>.from(
             responseData["insignias"].map((x) => Insignia.fromJson(x)))
         : null;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meet_your_mates/api/models/courseAndStudents.dart';
+import 'package:meet_your_mates/api/models/courseProjects.dart';
 import 'package:meet_your_mates/api/models/student.dart';
 import 'package:meet_your_mates/api/services/mate_provider.dart';
 import 'package:meet_your_mates/screens/ProfileStudent/otherprofile_student.dart';
@@ -50,13 +51,18 @@ class CourseList extends StatelessWidget {
             Student student = queryResult.students[index];
             return Card(
               child: ListTile(
-                  leading: student.user.picture != null ? Image.network(student.user.picture) : Text("No Picture"),
-                  title: Text(student.user.name != null ? student.user.name : "No name"),
-                  subtitle: Text(student.degree != null ? queryResult.students[index].degree : "No Degree"),
+                  leading: student.user.picture != null
+                      ? Image.network(student.user.picture)
+                      : Text("No Picture"),
+                  title: Text(student.user.name != null
+                      ? student.user.name
+                      : "No name"),
+                  subtitle: Text(student.degree != null
+                      ? queryResult.students[index].degree
+                      : "No Degree"),
                   trailing: Icon(Icons.arrow_forward),
                   onTap: () {
                     /* REDIRECCIONAR A PERFIL SELECCIONADO */
-                    _otherStudent.setStudent(student);
                     Navigator.push(
                       context,
                       new MaterialPageRoute(
