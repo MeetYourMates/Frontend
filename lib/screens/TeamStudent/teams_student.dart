@@ -97,10 +97,7 @@ class _TeamsStudentState extends State<TeamsStudent> {
                                 logger.i("Task Tapped");
                                 pushNewScreen(
                                   context,
-                                  screen: TaskPage(
-                                    teamId: tempTeam.id,
-                                    //BDD always store location as latitude, longitude!
-                                  ),
+                                  screen: TaskPage(teamId: tempTeam.id),
                                   withNavBar: true, // OPTIONAL VALUE. True by default.
                                   pageTransitionAnimation: PageTransitionAnimation.cupertino,
                                 ).then(

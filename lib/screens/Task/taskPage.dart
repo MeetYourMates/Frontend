@@ -1,9 +1,11 @@
 import 'package:async/async.dart';
+import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:logger/logger.dart';
 import 'package:meet_your_mates/api/models/takslist.dart';
+import 'package:meet_your_mates/api/models/task.dart';
 import 'package:meet_your_mates/api/services/appbar_service.dart';
 import 'package:meet_your_mates/api/services/task_service.dart';
 import 'package:meet_your_mates/components/error.dart';
@@ -16,6 +18,7 @@ import 'newTask.dart';
 
 class TaskPage extends StatelessWidget {
   final String teamId;
+
   const TaskPage({Key key, @required this.teamId}) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -31,25 +34,25 @@ class TaskPage extends StatelessWidget {
 
 class taskPage extends StatefulWidget {
   final String teamId;
+
   const taskPage({Key key, @required this.teamId}) : super(key: key);
   @override
   _taskPageState createState() => _taskPageState();
 }
 
 class _taskPageState extends State<taskPage> {
+  AppBarProvider _appBarProvider;
   @override
   void initState() {
     super.initState();
     new Future.delayed(Duration.zero, () {
-      Provider.of<AppBarProvider>(context, listen: false).setTitle("Tasks");
+      if (_appBarProvider != null) _appBarProvider.setTitle("Tasks");
     });
   }
 
   var logger = Logger();
   final AsyncMemoizer _memoizerTasks = AsyncMemoizer();
   TaskList taskList = new TaskList(tasks: []);
-  List<String> taskNames = [];
-  List<String> taskDates = [];
   /* String teamId = "Something"; */
   String filterType = "today";
   DateTime today = new DateTime.now();
@@ -59,7 +62,7 @@ class _taskPageState extends State<taskPage> {
   @override
   Widget build(BuildContext context) {
     TaskProvider _taskProvider = Provider.of<TaskProvider>(context);
-    AppBarProvider _appBarProvider = Provider.of<AppBarProvider>(context, listen: false);
+    _appBarProvider = Provider.of<AppBarProvider>(context, listen: false);
     Future _fetchTasks() async {
       return _memoizerTasks.runOnce(() async {
         logger.d("_memoizerTeams Executed");
@@ -86,9 +89,16 @@ class _taskPageState extends State<taskPage> {
                   onPressed: () {
                     pushNewScreen(
                       context,
-                      screen: NewTask(teamId: widget.teamId
-                          //BDD always store location as latitude, longitude!
-                          ),
+                      screen: NewTask(
+                        teamId: widget.teamId,
+                        onNewTask: (val) {
+                          //New Tasks
+                          setState(() {
+                            taskList.tasks.add(val);
+                          });
+                        },
+                        //BDD always store location as latitude, longitude!
+                      ),
                       withNavBar: true, // OPTIONAL VALUE. True by default.
                       pageTransitionAnimation: PageTransitionAnimation.cupertino,
                     ).then(
@@ -179,18 +189,17 @@ class _taskPageState extends State<taskPage> {
                   default:
                     if (snapshot.hasError)
                       return ErrorShow(errorText: 'Error: ${snapshot.error}');
-                    else if ((snapshot.hasData)) {
+                    else if (snapshot.hasData) {
                       taskList = snapshot.data;
-                      taskNames.clear();
-                      taskDates.clear();
-                      taskNames.addAll(taskList.getTaskNames());
-                      taskDates.addAll(taskList.getTaskDates());
                       logger.d("Load Tasks: " + taskList.toString());
                       return ListView.builder(
                         physics: ClampingScrollPhysics(),
-                        itemBuilder: (context, index) => TaskCard(name: taskNames[index], date: taskDates[index]),
                         shrinkWrap: true,
                         itemCount: taskList.tasks.length,
+                        itemBuilder: (context, index) {
+                          Task tmp = taskList.tasks[index];
+                          return TaskCard(name: tmp.name, date: tmp.deadline);
+                        },
                       );
                     } else {
                       return ErrorShow(errorText: "Unexpected error. Unable to Retrieve Tasks");
@@ -223,7 +232,6 @@ class _taskPageState extends State<taskPage> {
 class TaskCard extends StatelessWidget {
   final String name;
   final String date;
-
   const TaskCard({Key key, @required this.name, @required this.date}) : super(key: key);
 
   @override
@@ -239,7 +247,11 @@ class TaskCard extends StatelessWidget {
               decoration: BoxDecoration(
                   color: Colors.white,
                   boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), offset: Offset(0, 9), blurRadius: 20, spreadRadius: 1)]),
-              child: CheckboxListTile(title: Text(name), subtitle: Text(date), value: timeDilation != 1.0, onChanged: (bool value) {})),
+              child: CheckboxListTile(
+                  title: Text(name),
+                  subtitle: Text(new DateFormat('hh:mm dd-MM-y').format(DateTime.parse(date))),
+                  value: timeDilation != 1.0,
+                  onChanged: (bool value) {})),
           secondaryActions: [
             IconSlideAction(
               caption: "Edit",
