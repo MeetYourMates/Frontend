@@ -2,7 +2,7 @@ class AppUrl {
   static const String liveBaseURL = "https://api.meetyourmates.tk";
   static const String localBaseURL = "http://10.0.2.2:3000";
   static const String localhostBaseURL = "http://localhost:3000";
-  static const String baseURL = localhostBaseURL;
+  static const String baseURL = localBaseURL;
 
   static const String login = baseURL + "/auth/signIn";
   static const String register = baseURL + "/auth/signUp";
@@ -20,10 +20,8 @@ class AppUrl {
   //Students
   static const String addsubjects = baseURL + "/course/addStudent";
   static const String getCourseStudents = baseURL + "/course/getStudents";
-  static const String getStudentsAndCourses =
-      baseURL + "/student/getStudentsAndCourses";
-  static const String getProfessorCoursesAndStudents =
-      baseURL + "/professor/getStudentsAndCourses";
+  static const String getStudentsAndCourses = baseURL + "/student/getStudentsAndCourses";
+  static const String getProfessorCoursesAndStudents = baseURL + "/professor/getStudentsAndCourses";
   static const String editProfileStudent = baseURL + "/student/updateStudent";
   static const String editProfileProfessor = baseURL + "/professor/update";
   static const String editProfilePhoto = baseURL + "/student/StudentPhoto";
@@ -38,15 +36,12 @@ class AppUrl {
   //TeamsProfessor
   static const String addTeam = baseURL + "/team/add";
   //Projects
-  static const String getCourseProjectsProfessor =
-      baseURL + "/professor/getCourseProjects";
-  static const String getCourseProjectsStudent =
-      baseURL + "/student/getCourseProjects";
+  static const String getCourseProjectsProfessor = baseURL + "/professor/getCourseProjects";
+  static const String getCourseProjectsStudent = baseURL + "/student/getCourseProjects";
   //Teams
-  static const String getTeams = baseURL + "/team/studentsTeam/";
+  static const String getTeams = baseURL + "/team/get/";
   //Projects
-  static const String getCourseProjects =
-      baseURL + "/professor/getCourseProjects";
+  static const String getCourseProjects = baseURL + "/professor/getCourseProjects";
   static const String addProject = baseURL + "/project/add";
   static const String getInvitations = baseURL + "/team/invitations/";
   static const String acceptOrRejectInv = baseURL + "/team/invitations/";

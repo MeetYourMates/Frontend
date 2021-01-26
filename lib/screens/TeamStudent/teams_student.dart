@@ -89,7 +89,9 @@ class _TeamsStudentState extends State<TeamsStudent> {
                                 size: 24.0,
                                 semanticLabel: 'Edit Team',
                               ),
-                              SizedBox(width: 20,),
+                              SizedBox(
+                                width: 20,
+                              ),
                               GestureDetector(
                                 child: Icon(
                                   Icons.accessible_forward,
@@ -98,20 +100,19 @@ class _TeamsStudentState extends State<TeamsStudent> {
                                   semanticLabel: 'Join Team',
                                 ),
                                 onTap: () {
-                                  _studentProvider.JoinTeam(tempTeam.id).then((value) =>
-                                  {
-                                    if (value == "joined") {
-                                      showDialog(
-                                          context: context,
-                                          builder: (BuildContext context){
-                                            return AlertDialog(
-                                              title: Text("Joined Team"),
-                                              content: Text("You joined the team! now you can start inviting mates"),
-                                            );
+                                  _studentProvider.JoinTeam(tempTeam.id).then((value) => {
+                                        if (value == "joined")
+                                          {
+                                            showDialog(
+                                                context: context,
+                                                builder: (BuildContext context) {
+                                                  return AlertDialog(
+                                                    title: Text("Joined Team"),
+                                                    content: Text("You joined the team! now you can start inviting mates"),
+                                                  );
+                                                })
                                           }
-                                      )
-                                  }
-                                  });
+                                      });
                                 },
                               ),
                             ],
