@@ -241,7 +241,7 @@ class ProfessorProvider with ChangeNotifier {
     logger.d("Trying to get professor projects:");
     try {
       Response response = await get(
-        AppUrl.getCourseProjects + '/' + id,
+        AppUrl.getCourseProjectsProfessor + '/' + id,
         headers: {'Content-Type': 'application/json'},
       );
       if (response.statusCode == 200) {

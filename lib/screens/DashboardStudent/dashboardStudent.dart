@@ -9,7 +9,7 @@ import 'package:meet_your_mates/constants.dart';
 import 'package:meet_your_mates/screens/Chat/chatSummaryList.dart';
 import 'package:meet_your_mates/screens/Home/home.dart';
 import 'package:meet_your_mates/screens/ProfileStudent/profile_student.dart';
-import 'package:meet_your_mates/screens/Projects/projects.dart';
+import 'package:meet_your_mates/screens/ProjectsSudent/projectsStudent.dart';
 import 'package:meet_your_mates/screens/SearchMates/searchMates.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
@@ -90,7 +90,7 @@ class _DashBoardStudentState extends State<DashBoardStudent> {
           teamId: '600069c5e508bd526c8d2b71',
         ), */
         Home(),
-        Projects(),
+        ProjectsStudent(),
         SearchMates()
       ];
     }
