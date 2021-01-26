@@ -26,4 +26,5 @@ class RouteUri {
 
   //* Projects
   static const String projectsProfessor = '/projectsProfessor';
+  static const String taskPage = '/taskPage';
 }
